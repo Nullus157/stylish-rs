@@ -3,6 +3,7 @@ extern crate self as stylish;
 pub mod ansi;
 pub mod plain;
 pub mod style;
+pub mod html;
 
 mod arguments;
 mod formatter;
