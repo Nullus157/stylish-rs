@@ -1,5 +1,6 @@
 use std::fmt::Write;
 use stylish::{Style, Result, Color, Intensity};
+use askama_escape::{escape, Html};
 
 #[derive(Clone, Debug)]
 pub struct String {
@@ -60,7 +61,7 @@ impl stylish::Write for String {
                 )?;
             self.current = style;
         }
-        self.inner.push_str(s);
+        write!(self.inner, "{}", escape(s, Html))?;
         Ok(())
     }
 }
