@@ -1,5 +1,4 @@
-use std::fmt::Write;
-use stylish::{Style, Result, Color, Intensity};
+use stylish::{Style, Color, Intensity};
 use askama_escape::{escape, Html};
 
 #[derive(Clone, Debug)]
@@ -51,7 +50,11 @@ fn intensity(intensity: Intensity) -> &'static str {
 }
 
 impl stylish::Write for String {
-    fn write_str(&mut self, s: &str, style: Style) -> Result {
+    type Error = std::fmt::Error;
+
+    fn write_str(&mut self, s: &str, style: Style) -> std::fmt::Result {
+        use std::fmt::Write;
+
         if style != self.current {
             write!(
                 self.inner,

@@ -1,12 +1,12 @@
-use stylish::{Style, Write, Result, style, Argument, Arguments};
+use stylish::{Style, Write, style, Argument, Arguments};
 
 pub struct Formatter<'a> {
     style: Style,
-    write: &'a mut (dyn Write + 'a),
+    write: &'a mut (dyn Write<Error = std::fmt::Error> + 'a),
 }
 
 impl<'a> Formatter<'a> {
-    pub fn new(write: &'a mut (dyn Write + 'a)) -> Self {
+    pub fn new(write: &'a mut (dyn Write<Error = std::fmt::Error> + 'a)) -> Self {
         Self {
             style: Style::default(),
             write,
@@ -20,31 +20,17 @@ impl<'a> Formatter<'a> {
         }
     }
 
-    pub fn write_str(&mut self, s: &str) -> Result {
+    pub fn write_str(&mut self, s: &str) -> std::fmt::Result {
         self.write.write_str(s, self.style)?;
         Ok(())
     }
 
-    pub fn write_char(&mut self, c: char) -> Result {
+    pub fn write_char(&mut self, c: char) -> std::fmt::Result {
         self.write_str(c.encode_utf8(&mut [0; 4]))?;
         Ok(())
     }
-}
 
-impl<'a> std::fmt::Write for Formatter<'a> {
-    fn write_str(&mut self, s: &str) -> Result {
-        self.write.write_str(s, self.style)?;
-        Ok(())
-    }
-}
-
-impl<'a> Write for Formatter<'a> {
-    fn write_str(&mut self, s: &str, style: Style) -> Result {
-        self.write.write_str(s, style)?;
-        Ok(())
-    }
-
-    fn write_fmt(self: &mut Self, args: &Arguments<'_>) -> Result {
+    pub fn write_fmt(self: &mut Self, args: &Arguments<'_>) -> std::fmt::Result {
         for piece in args.pieces {
             match piece {
                 Argument::Lit(lit) => self.write_str(lit)?,
@@ -54,6 +40,13 @@ impl<'a> Write for Formatter<'a> {
                 }
             }
         }
+        Ok(())
+    }
+}
+
+impl<'a> std::fmt::Write for Formatter<'a> {
+    fn write_str(&mut self, s: &str) -> std::fmt::Result {
+        self.write.write_str(s, self.style)?;
         Ok(())
     }
 }

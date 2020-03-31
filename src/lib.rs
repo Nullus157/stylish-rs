@@ -10,5 +10,4 @@ mod formatter;
 mod display;
 mod write;
 
-pub use std::fmt::{Error, Result};
 pub use self::{style::{Color, Intensity, Style}, formatter::Formatter, display::Display, write::Write, arguments::{Arguments, Argument}};

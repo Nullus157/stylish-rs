@@ -1,4 +1,4 @@
-use stylish::{Style, Result};
+use stylish::Style;
 
 #[derive(Clone, Debug, Default)]
 pub struct String {
@@ -16,7 +16,9 @@ impl String {
 }
 
 impl stylish::Write for String {
-    fn write_str(&mut self, s: &str, _style: Style) -> Result {
+    type Error = std::fmt::Error;
+
+    fn write_str(&mut self, s: &str, _style: Style) -> std::fmt::Result {
         self.inner.push_str(s);
         Ok(())
     }
