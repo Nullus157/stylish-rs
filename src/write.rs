@@ -43,6 +43,11 @@ impl<W: Write> Write for ErrorTrap<W> {
             }
         }
     }
+
+    fn write_fmt(&mut self, args: &Arguments<'_>) -> Result<(), Self::Error> {
+        Formatter::new(self).write_fmt(args)?;
+        Ok(())
+    }
 }
 
 impl<W: Write + ?Sized> Write for &mut W {
