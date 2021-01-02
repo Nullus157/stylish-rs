@@ -1,5 +1,5 @@
 use core::cell::RefCell;
-use stylish::{Style, Arguments, Formatter};
+use stylish::{Arguments, Formatter, Style};
 
 pub trait Write {
     type Error;
@@ -8,7 +8,9 @@ pub trait Write {
 
     fn write_fmt(&mut self, args: &Arguments<'_>) -> Result<(), Self::Error> {
         let mut trap = ErrorTrap::new(self);
-        Formatter::new(&mut trap).write_fmt(args).or_else(|std::fmt::Error| trap.check())?;
+        Formatter::new(&mut trap)
+            .write_fmt(args)
+            .or_else(|std::fmt::Error| trap.check())?;
         Ok(())
     }
 }
@@ -58,7 +60,7 @@ impl<W: Write + ?Sized> Write for &mut W {
         Ok(())
     }
 
-    fn write_fmt(self: &mut Self, args: &Arguments<'_>) -> Result<(), Self::Error> {
+    fn write_fmt(&mut self, args: &Arguments<'_>) -> Result<(), Self::Error> {
         (&mut **self).write_fmt(args)?;
         Ok(())
     }
@@ -72,8 +74,21 @@ impl<W: Write + ?Sized> Write for Box<W> {
         Ok(())
     }
 
-    fn write_fmt(self: &mut Self, args: &Arguments<'_>) -> Result<(), Self::Error> {
+    fn write_fmt(&mut self, args: &Arguments<'_>) -> Result<(), Self::Error> {
         (&mut **self).write_fmt(args)?;
         Ok(())
     }
 }
+
+// use core::ops::{Deref, DerefMut};
+// default impl<P: Deref<Target: Write + ?Sized> + DerefMut> Write for P {
+//     type Error = <<P as std::ops::Deref>::Target as Write>::Error;
+//
+//     fn write_str(&mut self, s: &str, style: Style) -> Result<(), Self::Error> {
+//         (&mut **self).write_str(s, style)
+//     }
+//
+//     fn write_fmt(&mut self, args: &Arguments<'_>) -> Result<(), Self::Error> {
+//         (&mut **self).write_fmt(args)
+//     }
+// }

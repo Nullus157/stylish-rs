@@ -1,11 +1,14 @@
 [package]
-name = "stylish"
+name = "stylish-macros"
 version = "0.1.0"
 authors = ["Wim Looman <crates.stylish@nemo157.com>"]
 edition = "2018"
 
-[workspace]
+[lib]
+proc-macro = true
 
 [dependencies]
-askama_escape = "0.3.0"
-stylish-macros = { path = "macros" }
+proc-macro2 = "1.0.24"
+quote = "1.0.8"
+syn = "1.0.57"
+nom = "6.0.1"

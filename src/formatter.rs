@@ -1,12 +1,12 @@
-use stylish::{Style, Write, style, Argument, Arguments};
+use stylish::{style, Argument, Arguments, Style};
 
 pub struct Formatter<'a> {
     style: Style,
-    write: &'a mut (dyn Write<Error = std::fmt::Error> + 'a),
+    write: &'a mut (dyn stylish::Write<Error = std::fmt::Error> + 'a),
 }
 
 impl<'a> Formatter<'a> {
-    pub fn new(write: &'a mut (dyn Write<Error = std::fmt::Error> + 'a)) -> Self {
+    pub fn new(write: &'a mut (dyn stylish::Write<Error = std::fmt::Error> + 'a)) -> Self {
         Self {
             style: Style::default(),
             write,
@@ -30,11 +30,24 @@ impl<'a> Formatter<'a> {
         Ok(())
     }
 
-    pub fn write_fmt(self: &mut Self, args: &Arguments<'_>) -> std::fmt::Result {
+    pub fn write_fmt(&mut self, args: &Arguments<'_>) -> std::fmt::Result {
         for piece in args.pieces {
             match piece {
                 Argument::Lit(lit) => self.write_str(lit)?,
-                Argument::Val(val) => val.fmt(self)?,
+                Argument::Display(val) => val.fmt(self)?,
+                Argument::StdDisplay(val) => {
+                    use std::fmt::Write;
+                    std::write!(StdProxy(self), "{}", val)?;
+                }
+                Argument::Debug(alternate, val) => {
+                    use std::fmt::Write;
+
+                    if *alternate {
+                        std::write!(StdProxy(self), "{:#?}", val)?;
+                    } else {
+                        std::write!(StdProxy(self), "{:?}", val)?;
+                    }
+                }
                 Argument::With { restyle, arguments } => {
                     self.with(restyle).write_fmt(arguments)?;
                 }
@@ -44,9 +57,11 @@ impl<'a> Formatter<'a> {
     }
 }
 
-impl<'a> std::fmt::Write for Formatter<'a> {
+struct StdProxy<'a, 'b>(&'a mut Formatter<'b>);
+
+impl<'a, 'b> std::fmt::Write for StdProxy<'a, 'b> {
     fn write_str(&mut self, s: &str) -> std::fmt::Result {
-        self.write.write_str(s, self.style)?;
+        self.0.write.write_str(s, self.0.style)?;
         Ok(())
     }
 }

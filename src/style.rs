@@ -62,12 +62,18 @@ impl Apply for Style {
 
 impl Apply for Color {
     fn apply(&self, style: Style) -> Style {
-        Style { color: *self, ..style }
+        Style {
+            color: *self,
+            ..style
+        }
     }
 }
 
 impl Apply for Intensity {
     fn apply(&self, style: Style) -> Style {
-        Style { intensity: *self, ..style }
+        Style {
+            intensity: *self,
+            ..style
+        }
     }
 }

@@ -1,5 +1,5 @@
-use stylish::{Style, Color, Intensity};
 use askama_escape::{escape, Html};
+use stylish::{Color, Intensity, Style};
 
 #[derive(Clone, Debug)]
 pub struct String {
@@ -61,7 +61,7 @@ impl stylish::Write for String {
                 r#"</span><span style="color: {}; font-weight: {}">"#,
                 color(style.color),
                 intensity(style.intensity),
-                )?;
+            )?;
             self.current = style;
         }
         write!(self.inner, "{}", escape(s, Html))?;

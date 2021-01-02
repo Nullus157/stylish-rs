@@ -24,7 +24,10 @@ impl String {
 
 impl<T> Write<T> {
     pub fn new(inner: T) -> Self {
-        Self { inner, current: Style::default() }
+        Self {
+            inner,
+            current: Style::default(),
+        }
     }
 
     pub fn into_inner(self) -> T {
