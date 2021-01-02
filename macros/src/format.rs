@@ -1,9 +1,9 @@
 use nom::{
     branch::alt,
-    bytes::complete::{tag, take_until},
-    character::complete::{alpha1, alphanumeric1, digit1},
+    bytes::complete::tag,
+    character::complete::{alpha1, alphanumeric1, digit1, none_of},
     combinator::{all_consuming, map, map_res, opt, recognize, rest, value, verify},
-    multi::many0,
+    multi::{many0, many1},
     sequence::{delimited, pair, preceded},
     IResult,
 };
@@ -133,7 +133,10 @@ pub(crate) enum Piece<'a> {
 
 impl<'a> Piece<'a> {
     pub(crate) fn parse_lit(input: &'a str) -> IResult<&str, Self> {
-        map(take_until("{"), Self::Lit)(input)
+        map(
+            recognize(many1(alt((value((), none_of("{")), value((), tag("{{")))))),
+            Self::Lit,
+        )(input)
     }
 
     pub(crate) fn parse_final_lit(input: &'a str) -> IResult<&str, Self> {

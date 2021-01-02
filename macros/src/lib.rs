@@ -71,7 +71,7 @@ fn format_args_impl(ArgsInput { format, args }: ArgsInput) -> impl ToTokens {
         .into_iter()
         .map(|piece| match piece {
             Piece::Lit(lit) => {
-                let lit = LitStr::new(lit, span);
+                let lit = LitStr::new(&lit.replace("{{", "{"), span);
                 quote!(stylish::Argument::Lit(#lit))
             }
             Piece::Arg(format::FormatArg {
