@@ -60,11 +60,6 @@ impl Parse for WriteLnInput {
 }
 
 fn format_args_impl(ArgsInput { format, args }: ArgsInput) -> impl ToTokens {
-    // With {
-    //     restyle: &'a dyn style::Apply,
-    //     arguments: Arguments<'a>,
-    // }
-
     let span = format.span();
     let format = format.value();
     let (leftover, format) = format::Format::parse(&format).unwrap();
@@ -81,11 +76,11 @@ fn format_args_impl(ArgsInput { format, args }: ArgsInput) -> impl ToTokens {
             format::Piece::Arg(format::FormatArg { variant }) => {
                 let arg = args.next().expect("missing argument");
                 match variant {
-                    format::Variant::Display => {
-                        quote!(stylish::Argument::Display(&#arg))
+                    format::Variant::Display(format) => {
+                        quote!(stylish::Argument::Display(#format, &#arg))
                     }
-                    format::Variant::Debug(alternate) => {
-                        quote!(stylish::Argument::Debug(#alternate, &#arg))
+                    format::Variant::Debug(format) => {
+                        quote!(stylish::Argument::Debug(#format, &#arg))
                     }
                 }
             }
@@ -121,7 +116,7 @@ pub fn writeln(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
             args: Punctuated::new(),
         })
     };
-    quote!({ use stylish::Write; #target.write_fmt(&#args) })
+    quote!({ #target.write_fmt(&#args) })
         .into_token_stream()
         .into()
 }
@@ -130,7 +125,7 @@ pub fn writeln(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
 pub fn write(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
     let WriteInput { target, args, .. } = parse_macro_input!(input as WriteInput);
     let args = format_args_impl(args);
-    quote!({ use stylish::Write; #target.write_fmt(&#args) })
+    quote!({ #target.write_fmt(&#args) })
         .into_token_stream()
         .into()
 }

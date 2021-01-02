@@ -30,18 +30,14 @@ impl<T> Write<T> {
     }
 }
 
-impl stylish::Write for String {
-    type Error = std::fmt::Error;
-
+impl stylish::fmt::Write for String {
     fn write_str(&mut self, s: &str, _style: Style) -> std::fmt::Result {
         self.inner.push_str(s);
         Ok(())
     }
 }
 
-impl<T: std::io::Write> stylish::Write for Write<T> {
-    type Error = std::io::Error;
-
+impl<T: std::io::Write> stylish::io::Write for Write<T> {
     fn write_str(&mut self, s: &str, _style: Style) -> std::io::Result<()> {
         self.inner.write_all(s.as_bytes())?;
         Ok(())

@@ -1,22 +1,42 @@
 use stylish::{style, Argument, Arguments, Style};
 
+#[doc(hidden)]
+#[derive(Clone, Copy)]
+pub struct FormatterArgs<'a> {
+    pub alternate: bool,
+    pub restyle: &'a dyn style::Apply,
+}
+
+impl Default for FormatterArgs<'static> {
+    fn default() -> Self {
+        Self {
+            alternate: false,
+            restyle: &(),
+        }
+    }
+}
+
 pub struct Formatter<'a> {
     style: Style,
-    write: &'a mut (dyn stylish::Write<Error = std::fmt::Error> + 'a),
+    format: FormatterArgs<'a>,
+    write: &'a mut (dyn stylish::fmt::Write + 'a),
 }
 
 impl<'a> Formatter<'a> {
-    pub fn new(write: &'a mut (dyn stylish::Write<Error = std::fmt::Error> + 'a)) -> Self {
+    #[doc(hidden)]
+    pub fn new(write: &'a mut (dyn stylish::fmt::Write + 'a)) -> Self {
         Self {
             style: Style::default(),
+            format: FormatterArgs::default(),
             write,
         }
     }
 
-    pub fn with(&mut self, adj: impl style::Apply) -> Formatter<'_> {
+    fn with<'b>(&'b mut self, format: &FormatterArgs<'b>) -> Formatter<'b> {
         Formatter {
             write: &mut *self.write,
-            style: self.style.with(&adj),
+            format: *format,
+            style: self.style.with(format.restyle),
         }
     }
 
@@ -34,22 +54,33 @@ impl<'a> Formatter<'a> {
         for piece in args.pieces {
             match piece {
                 Argument::Lit(lit) => self.write_str(lit)?,
-                Argument::Display(val) => val.fmt(self)?,
+                Argument::Display(format, val) => val.fmt(&mut self.with(format))?,
+                Argument::Debug(format, val) => val.fmt(&mut self.with(format))?,
                 Argument::StdDisplay(val) => {
                     use std::fmt::Write;
-                    std::write!(StdProxy(self), "{}", val)?;
-                }
-                Argument::Debug(alternate, val) => {
-                    use std::fmt::Write;
-
-                    if *alternate {
-                        std::write!(StdProxy(self), "{:#?}", val)?;
-                    } else {
-                        std::write!(StdProxy(self), "{:?}", val)?;
+                    match self.format {
+                        FormatterArgs {
+                            alternate: false,
+                            restyle: _,
+                        } => std::write!(StdProxy(self), "{}", val)?,
+                        FormatterArgs {
+                            alternate: true,
+                            restyle: _,
+                        } => std::write!(StdProxy(self), "{:#}", val)?,
                     }
                 }
-                Argument::With { restyle, arguments } => {
-                    self.with(restyle).write_fmt(arguments)?;
+                Argument::StdDebug(val) => {
+                    use std::fmt::Write;
+                    match self.format {
+                        FormatterArgs {
+                            alternate: false,
+                            restyle: _,
+                        } => std::write!(StdProxy(self), "{:?}", val)?,
+                        FormatterArgs {
+                            alternate: true,
+                            restyle: _,
+                        } => std::write!(StdProxy(self), "{:#?}", val)?,
+                    }
                 }
             }
         }

@@ -1,14 +1,16 @@
-use stylish::{style, Display};
+use stylish::{Debug, Display, FormatterArgs};
 
 pub enum Argument<'a> {
+    #[doc(hidden)]
     Lit(&'a str),
-    Display(&'a dyn Display),
+    #[doc(hidden)]
+    Display(FormatterArgs<'a>, &'a dyn Display),
+    #[doc(hidden)]
+    Debug(FormatterArgs<'a>, &'a dyn Debug),
+    #[doc(hidden)]
     StdDisplay(&'a dyn std::fmt::Display),
-    Debug(bool, &'a dyn std::fmt::Debug),
-    With {
-        restyle: &'a dyn style::Apply,
-        arguments: Arguments<'a>,
-    },
+    #[doc(hidden)]
+    StdDebug(&'a dyn std::fmt::Debug),
 }
 
 pub struct Arguments<'a> {

@@ -49,9 +49,7 @@ fn intensity(intensity: Intensity) -> &'static str {
     }
 }
 
-impl stylish::Write for String {
-    type Error = std::fmt::Error;
-
+impl stylish::fmt::Write for String {
     fn write_str(&mut self, s: &str, style: Style) -> std::fmt::Result {
         use std::fmt::Write;
 

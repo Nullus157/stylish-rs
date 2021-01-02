@@ -77,3 +77,15 @@ impl Apply for Intensity {
         }
     }
 }
+
+impl Apply for () {
+    fn apply(&self, style: Style) -> Style {
+        style
+    }
+}
+
+impl<T: Apply, U: Apply> Apply for (T, U) {
+    fn apply(&self, style: Style) -> Style {
+        style.with(&self.0).with(&self.1)
+    }
+}
