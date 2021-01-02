@@ -1,3 +1,4 @@
+use self::format::{Format, FormatArgRef, Piece, Variant};
 use proc_macro2::Span;
 use quote::{quote, ToTokens};
 use syn::{
@@ -62,25 +63,33 @@ impl Parse for WriteLnInput {
 fn format_args_impl(ArgsInput { format, args }: ArgsInput) -> impl ToTokens {
     let span = format.span();
     let format = format.value();
-    let (leftover, format) = format::Format::parse(&format).unwrap();
+    let (leftover, format) = Format::parse(&format).unwrap();
+    assert!(leftover.is_empty());
     let mut args = args.into_iter();
     let pieces: Vec<_> = format
         .pieces
         .into_iter()
-        .chain(std::iter::once(format::Piece::Lit(leftover)))
         .map(|piece| match piece {
-            format::Piece::Lit(lit) => {
+            Piece::Lit(lit) => {
                 let lit = LitStr::new(lit, span);
                 quote!(stylish::Argument::Lit(#lit))
             }
-            format::Piece::Arg(format::FormatArg { variant }) => {
-                let arg = args.next().expect("missing argument");
+            Piece::Arg(format::FormatArg {
+                variant,
+                arg,
+                args: formatter_args,
+            }) => {
+                let arg = match arg {
+                    FormatArgRef::Next => args.next().expect("missing argument"),
+                    FormatArgRef::Index(_) => unimplemented!(),
+                    FormatArgRef::Named(_) => unimplemented!(),
+                };
                 match variant {
-                    format::Variant::Display(format) => {
-                        quote!(stylish::Argument::Display(#format, &#arg))
+                    Variant::Display => {
+                        quote!(stylish::Argument::Display(#formatter_args, &#arg))
                     }
-                    format::Variant::Debug(format) => {
-                        quote!(stylish::Argument::Debug(#format, &#arg))
+                    Variant::Debug => {
+                        quote!(stylish::Argument::Debug(#formatter_args, &#arg))
                     }
                 }
             }
