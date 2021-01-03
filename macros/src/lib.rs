@@ -5,7 +5,7 @@ use syn::{
     parse::{Parse, ParseStream, Result},
     parse_macro_input,
     punctuated::Punctuated,
-    Expr, LitStr, Token,
+    Expr, Ident, Index, LitStr, Token,
 };
 
 mod format;
@@ -65,7 +65,13 @@ fn format_args_impl(ArgsInput { format, args }: ArgsInput) -> impl ToTokens {
     let format = format.value();
     let (leftover, format) = Format::parse(&format).unwrap();
     assert!(leftover.is_empty());
-    let mut args = args.into_iter();
+    let num_args = args.len();
+    let positional_args_ident = Ident::new("__stylish_positional_args", Span::call_site());
+    let args = args.into_iter();
+    let positional_args = quote! {
+        (#(&#args,)*)
+    };
+    let mut next_arg_iter = (0..num_args).map(Index::from);
     let pieces: Vec<_> = format
         .pieces
         .into_iter()
@@ -74,22 +80,24 @@ fn format_args_impl(ArgsInput { format, args }: ArgsInput) -> impl ToTokens {
                 let lit = LitStr::new(&lit.replace("{{", "{"), span);
                 quote!(stylish::Argument::Lit(#lit))
             }
-            Piece::Arg(format::FormatArg {
-                variant,
-                arg,
-                args: formatter_args,
-            }) => {
+            Piece::Arg(format::FormatArg { variant, arg, args }) => {
                 let arg = match arg {
-                    FormatArgRef::Next => args.next().expect("missing argument"),
-                    FormatArgRef::Index(_) => unimplemented!(),
+                    FormatArgRef::Next => {
+                        let index = next_arg_iter.next().expect("missing argument");
+                        quote!(#positional_args_ident.#index)
+                    }
+                    FormatArgRef::Positional(i) => {
+                        let index = Index::from(i);
+                        quote!(#positional_args_ident.#index)
+                    }
                     FormatArgRef::Named(_) => unimplemented!(),
                 };
                 match variant {
                     Variant::Display => {
-                        quote!(stylish::Argument::Display(#formatter_args, &#arg))
+                        quote!(stylish::Argument::Display(#args, #arg))
                     }
                     Variant::Debug => {
-                        quote!(stylish::Argument::Debug(#formatter_args, &#arg))
+                        quote!(stylish::Argument::Debug(#args, #arg))
                     }
                 }
             }
@@ -97,9 +105,11 @@ fn format_args_impl(ArgsInput { format, args }: ArgsInput) -> impl ToTokens {
         .collect();
     quote! {
         stylish::Arguments {
-            pieces: &[
-                #(#pieces),*
-            ],
+            pieces: &match #positional_args {
+                #positional_args_ident => [
+                    #(#pieces),*
+                ],
+            }
         }
     }
 }
@@ -109,6 +119,42 @@ pub fn format_args(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
     format_args_impl(parse_macro_input!(input as ArgsInput))
         .into_token_stream()
         .into()
+}
+
+#[proc_macro]
+pub fn format_plain(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
+    let args = format_args_impl(parse_macro_input!(input as ArgsInput));
+    quote!({
+        let mut string = stylish::plain::String::new();
+        stylish::fmt::Write::write_fmt(&mut string, &#args).unwrap();
+        string.into_inner()
+    })
+    .into_token_stream()
+    .into()
+}
+
+#[proc_macro]
+pub fn format_ansi(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
+    let args = format_args_impl(parse_macro_input!(input as ArgsInput));
+    quote!({
+        let mut string = stylish::ansi::String::new();
+        stylish::fmt::Write::write_fmt(&mut string, &#args).unwrap();
+        string.into_inner()
+    })
+    .into_token_stream()
+    .into()
+}
+
+#[proc_macro]
+pub fn format_html(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
+    let args = format_args_impl(parse_macro_input!(input as ArgsInput));
+    quote!({
+        let mut string = stylish::html::String::new();
+        stylish::fmt::Write::write_fmt(&mut string, &#args).unwrap();
+        string.into_inner()
+    })
+    .into_token_stream()
+    .into()
 }
 
 #[proc_macro]

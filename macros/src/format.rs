@@ -71,7 +71,7 @@ impl<'a> FormatterArgs<'a> {
 #[derive(Debug, Clone, Copy)]
 pub(crate) enum FormatArgRef<'a> {
     Next,
-    Index(usize),
+    Positional(usize),
     Named(&'a str),
 }
 
@@ -84,7 +84,7 @@ impl<'a> Default for FormatArgRef<'a> {
 impl<'a> FormatArgRef<'a> {
     pub(crate) fn parse(input: &'a str) -> IResult<&str, Self> {
         alt((
-            map(map_res(digit1, usize::from_str), FormatArgRef::Index),
+            map(map_res(digit1, usize::from_str), FormatArgRef::Positional),
             map(identifier, FormatArgRef::Named),
         ))(input)
     }

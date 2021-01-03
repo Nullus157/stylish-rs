@@ -1,6 +1,8 @@
 use askama_escape::{escape, Html};
 use stylish::{Color, Intensity, Style};
 
+pub use stylish_macros::format_html as format;
+
 #[derive(Clone, Debug)]
 pub struct String {
     inner: std::string::String,

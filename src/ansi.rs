@@ -1,5 +1,7 @@
 use stylish::Style;
 
+pub use stylish_macros::format_ansi as format;
+
 #[derive(Clone, Debug, Default)]
 pub struct String {
     inner: std::string::String,
