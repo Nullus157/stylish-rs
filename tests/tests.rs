@@ -25,8 +25,14 @@ fn four() {
     assert_eq!(stylish::plain::format!("{x}", x = 1), "1")
 }
 
-// #[test]
-// fn five() {
-//     let x = 1;
-//     assert_eq!(stylish::plain::format!("{x}"), "1")
-// }
+#[test]
+fn five() {
+    let x = 1;
+    assert_eq!(stylish::plain::format!("{x}"), "1")
+}
+
+#[test]
+fn six() {
+    let x = 1;
+    assert_eq!(stylish::plain::format!("{x}", x = 2), "2")
+}

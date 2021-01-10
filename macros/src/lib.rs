@@ -112,6 +112,8 @@ fn format_args_impl(
     let named_args = quote! {
         (#(&#named_args_values,)*)
     };
+    let implicit_named_args_ident = Ident::new("__stylish_implicit_named_args", Span::call_site());
+    let mut implicit_named_args_values = Vec::new();
     let mut next_arg_iter = (0..num_positional_args).map(Index::from);
     let pieces: Vec<_> = format
         .pieces
@@ -132,9 +134,19 @@ fn format_args_impl(
                         quote!(#positional_args_ident.#index)
                     }
                     FormatArgRef::Named(name) => {
-                        let i = *named_args_names.get(name).expect("missing named argument");
-                        let index = Index::from(i);
-                        quote!(#named_args_ident.#index)
+                        if let Some(&i) = named_args_names.get(name) {
+                            let index = Index::from(i);
+                            quote!(#named_args_ident.#index)
+                        } else {
+                            let i = implicit_named_args_values.len();
+                            implicit_named_args_values.push(ExprPath {
+                                attrs: Vec::new(),
+                                qself: None,
+                                path: Ident::new(name, Span::call_site()).into(),
+                            });
+                            let index = Index::from(i);
+                            quote!(#implicit_named_args_ident.#index)
+                        }
                     }
                 };
                 match variant {
@@ -148,10 +160,13 @@ fn format_args_impl(
             }
         })
         .collect();
+    let implicit_named_args = quote! {
+        (#(&#implicit_named_args_values,)*)
+    };
     quote! {
         stylish::Arguments {
-            pieces: &match (#positional_args, #named_args) {
-                (#positional_args_ident, #named_args_ident) => [
+            pieces: &match (#positional_args, #named_args, #implicit_named_args) {
+                (#positional_args_ident, #named_args_ident, #implicit_named_args_ident) => [
                     #(#pieces),*
                 ],
             }
