@@ -1,8 +1,83 @@
 use stylish::{style, Argument, Arguments, Style};
 
+macro_rules! std_write {
+    (@trait_str Display) => { "" };
+    (@trait_str Debug) => { "?" };
+    (@trait_str Octal) => { "o" };
+    (@trait_str LowerHex) => { "x" };
+    (@trait_str UpperHex) => { "X" };
+    (@trait_str Pointer) => { "p" };
+    (@trait_str Binary) => { "b" };
+    (@trait_str LowerExp) => { "e" };
+    (@trait_str UpperExp) => { "E" };
+
+    ($self:ident, $trait:ident, $val:ident) => {{
+        use std::fmt::Write;
+        match $self.format {
+            FormatterArgs {
+                align: None,
+                sign: None,
+                zero: false,
+                width: None,
+                precision: None,
+                alternate: false,
+                restyle: _,
+            } => std::write!(StdProxy($self), concat!("{:", std_write!(@trait_str $trait), "}"), $val),
+            FormatterArgs {
+                align: None,
+                sign: None,
+                zero: false,
+                width: None,
+                precision: None,
+                alternate: true,
+                restyle: _,
+            } => std::write!(StdProxy($self), concat!("{:#", std_write!(@trait_str $trait), "}"), $val),
+            FormatterArgs {
+                align: Some((' ', Align::Left)),
+                sign: None,
+                zero: false,
+                width: None,
+                precision: None,
+                alternate: false,
+                restyle: _,
+            } => std::write!(StdProxy($self), concat!("{:<", std_write!(@trait_str $trait), "}"), $val),
+            FormatterArgs {
+                align: Some((' ', Align::Left)),
+                sign: None,
+                zero: false,
+                width: None,
+                precision: None,
+                alternate: true,
+                restyle: _,
+            } => std::write!(StdProxy($self), concat!("{:<#", std_write!(@trait_str $trait), "}"), $val),
+            FormatterArgs { ..  } => todo!(),
+        }
+    }};
+}
+
+#[doc(hidden)]
+#[derive(Clone, Copy)]
+pub enum Align {
+    Left,
+    Center,
+    Right,
+}
+
+#[doc(hidden)]
+#[derive(Clone, Copy)]
+pub enum Sign {
+    Plus,
+    Minus,
+}
+
 #[doc(hidden)]
 #[derive(Clone, Copy)]
 pub struct FormatterArgs<'a> {
+    pub align: Option<(char, Align)>,
+    pub sign: Option<Sign>,
+    pub zero: bool,
+    pub width: Option<&'a usize>,
+    pub precision: Option<&'a usize>,
     pub alternate: bool,
     pub restyle: &'a dyn style::Apply,
 }
@@ -10,6 +85,11 @@ pub struct FormatterArgs<'a> {
 impl Default for FormatterArgs<'static> {
     fn default() -> Self {
         Self {
+            align: None,
+            sign: None,
+            zero: false,
+            width: None,
+            precision: None,
             alternate: false,
             restyle: &(),
         }
@@ -56,32 +136,24 @@ impl<'a> Formatter<'a> {
                 Argument::Lit(lit) => self.write_str(lit)?,
                 Argument::Display(format, val) => val.fmt(&mut self.with(format))?,
                 Argument::Debug(format, val) => val.fmt(&mut self.with(format))?,
-                Argument::StdDisplay(val) => {
-                    use std::fmt::Write;
-                    match self.format {
-                        FormatterArgs {
-                            alternate: false,
-                            restyle: _,
-                        } => std::write!(StdProxy(self), "{}", val)?,
-                        FormatterArgs {
-                            alternate: true,
-                            restyle: _,
-                        } => std::write!(StdProxy(self), "{:#}", val)?,
-                    }
-                }
-                Argument::StdDebug(val) => {
-                    use std::fmt::Write;
-                    match self.format {
-                        FormatterArgs {
-                            alternate: false,
-                            restyle: _,
-                        } => std::write!(StdProxy(self), "{:?}", val)?,
-                        FormatterArgs {
-                            alternate: true,
-                            restyle: _,
-                        } => std::write!(StdProxy(self), "{:#?}", val)?,
-                    }
-                }
+                Argument::DebugLowerHex(format, val) => val.fmt(&mut self.with(format))?,
+                Argument::DebugUpperHex(format, val) => val.fmt(&mut self.with(format))?,
+                Argument::Octal(format, val) => val.fmt(&mut self.with(format))?,
+                Argument::LowerHex(format, val) => val.fmt(&mut self.with(format))?,
+                Argument::UpperHex(format, val) => val.fmt(&mut self.with(format))?,
+                Argument::Pointer(format, val) => val.fmt(&mut self.with(format))?,
+                Argument::Binary(format, val) => val.fmt(&mut self.with(format))?,
+                Argument::LowerExp(format, val) => val.fmt(&mut self.with(format))?,
+                Argument::UpperExp(format, val) => val.fmt(&mut self.with(format))?,
+                Argument::StdDisplay(val) => std_write!(self, Display, val)?,
+                Argument::StdDebug(val) => std_write!(self, Debug, val)?,
+                Argument::StdOctal(val) => std_write!(self, Octal, val)?,
+                Argument::StdLowerHex(val) => std_write!(self, LowerHex, val)?,
+                Argument::StdUpperHex(val) => std_write!(self, UpperHex, val)?,
+                Argument::StdPointer(val) => std_write!(self, Pointer, val)?,
+                Argument::StdBinary(val) => std_write!(self, Binary, val)?,
+                Argument::StdLowerExp(val) => std_write!(self, LowerExp, val)?,
+                Argument::StdUpperExp(val) => std_write!(self, UpperExp, val)?,
             }
         }
         Ok(())

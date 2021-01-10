@@ -33,6 +33,7 @@ fn five() {
 
 #[test]
 fn six() {
+    #[allow(unused_variables)]
     let x = 1;
     assert_eq!(stylish::plain::format!("{x}", x = 2), "2")
 }

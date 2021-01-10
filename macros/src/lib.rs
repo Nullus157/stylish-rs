@@ -1,4 +1,4 @@
-use self::format::{Format, FormatArgRef, Piece, Variant};
+use self::format::{Format, FormatArg, FormatArgRef, FormatSpec, FormatTrait, Piece};
 use proc_macro2::Span;
 use quote::{quote, ToTokens};
 use std::collections::HashMap;
@@ -23,6 +23,9 @@ impl Parse for ArgsInput {
         let mut onto_named = false;
         while input.peek(Token![,]) {
             input.parse::<Token![,]>()?;
+            if input.is_empty() {
+                break;
+            }
             let expr = input.parse::<Expr>()?;
             match expr {
                 Expr::Assign(ExprAssign { left, right, .. }) if matches!(&*left, Expr::Path(ExprPath { path, .. }) if path.segments.len() == 1 && matches!(path.segments[0].arguments, PathArguments::None)) =>
@@ -123,17 +126,24 @@ fn format_args_impl(
                 let lit = LitStr::new(&lit.replace("{{", "{"), span);
                 quote!(stylish::Argument::Lit(#lit))
             }
-            Piece::Arg(format::FormatArg { variant, arg, args }) => {
+            Piece::Arg(FormatArg {
+                arg,
+                format_spec:
+                    FormatSpec {
+                        formatter_args,
+                        format_trait,
+                    },
+            }) => {
                 let arg = match arg {
-                    FormatArgRef::Next => {
+                    None => {
                         let index = next_arg_iter.next().expect("missing argument");
                         quote!(#positional_args_ident.#index)
                     }
-                    FormatArgRef::Positional(i) => {
+                    Some(FormatArgRef::Positional(i)) => {
                         let index = Index::from(i);
                         quote!(#positional_args_ident.#index)
                     }
-                    FormatArgRef::Named(name) => {
+                    Some(FormatArgRef::Named(name)) => {
                         if let Some(&i) = named_args_names.get(name) {
                             let index = Index::from(i);
                             quote!(#named_args_ident.#index)
@@ -149,12 +159,39 @@ fn format_args_impl(
                         }
                     }
                 };
-                match variant {
-                    Variant::Display => {
-                        quote!(stylish::Argument::Display(#args, #arg))
+                match format_trait {
+                    FormatTrait::Display => {
+                        quote!(stylish::Argument::Display(#formatter_args, #arg))
                     }
-                    Variant::Debug => {
-                        quote!(stylish::Argument::Debug(#args, #arg))
+                    FormatTrait::Debug => {
+                        quote!(stylish::Argument::Debug(#formatter_args, #arg))
+                    }
+                    FormatTrait::DebugLowerHex => {
+                        quote!(stylish::Argument::DebugLowerHex(#formatter_args, #arg))
+                    }
+                    FormatTrait::DebugUpperHex => {
+                        quote!(stylish::Argument::DebugUpperHex(#formatter_args, #arg))
+                    }
+                    FormatTrait::Octal => {
+                        quote!(stylish::Argument::Octal(#formatter_args, #arg))
+                    }
+                    FormatTrait::LowerHex => {
+                        quote!(stylish::Argument::LowerHex(#formatter_args, #arg))
+                    }
+                    FormatTrait::UpperHex => {
+                        quote!(stylish::Argument::UpperHex(#formatter_args, #arg))
+                    }
+                    FormatTrait::Pointer => {
+                        quote!(stylish::Argument::Pointer(#formatter_args, #arg))
+                    }
+                    FormatTrait::Binary => {
+                        quote!(stylish::Argument::Binary(#formatter_args, #arg))
+                    }
+                    FormatTrait::LowerExp => {
+                        quote!(stylish::Argument::LowerExp(#formatter_args, #arg))
+                    }
+                    FormatTrait::UpperExp => {
+                        quote!(stylish::Argument::UpperExp(#formatter_args, #arg))
                     }
                 }
             }
