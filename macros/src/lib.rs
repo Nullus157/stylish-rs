@@ -166,12 +166,6 @@ fn format_args_impl(
                     FormatTrait::Debug => {
                         quote!(stylish::Argument::Debug(#formatter_args, #arg))
                     }
-                    FormatTrait::DebugLowerHex => {
-                        quote!(stylish::Argument::DebugLowerHex(#formatter_args, #arg))
-                    }
-                    FormatTrait::DebugUpperHex => {
-                        quote!(stylish::Argument::DebugUpperHex(#formatter_args, #arg))
-                    }
                     FormatTrait::Octal => {
                         quote!(stylish::Argument::Octal(#formatter_args, #arg))
                     }

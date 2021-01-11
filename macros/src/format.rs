@@ -85,14 +85,31 @@ impl Sign {
     }
 }
 
+#[derive(Debug, Clone, Copy)]
+pub(crate) enum DebugHex {
+    Lower,
+    Upper,
+}
+
+impl ToTokens for DebugHex {
+    fn to_tokens(&self, tokens: &mut TokenStream) {
+        match self {
+            Self::Lower => quote!(stylish::DebugHex::Lower),
+            Self::Upper => quote!(stylish::DebugHex::Upper),
+        }
+        .to_tokens(tokens)
+    }
+}
+
 #[derive(Debug, Default, Clone, Copy)]
 pub(crate) struct FormatterArgs<'a> {
-    align: Option<(char, Align)>,
+    align: Option<Align>,
     sign: Option<Sign>,
+    alternate: bool,
     zero: bool,
     width: Option<Count<'a>>,
     precision: Option<Count<'a>>,
-    alternate: bool,
+    debug_hex: Option<DebugHex>,
     restyle: Restyle<'a>,
 }
 
@@ -108,24 +125,27 @@ impl<'a> ToTokens for FormatterArgs<'a> {
         let FormatterArgs {
             align,
             sign,
+            alternate,
             zero,
             width,
             precision,
-            alternate,
+            debug_hex,
             restyle,
         } = self;
-        let align = quote_opt(&align.map(|(char, align)| quote!((#char, #align))));
+        let align = quote_opt(align);
         let sign = quote_opt(sign);
         let width = quote_opt(width);
         let precision = quote_opt(precision);
+        let debug_hex = quote_opt(debug_hex);
         (quote! {
             stylish::FormatterArgs {
                 align: #align,
                 sign: #sign,
+                alternate: #alternate,
                 zero: #zero,
                 width: #width,
                 precision: #precision,
-                alternate: #alternate,
+                debug_hex: #debug_hex,
                 restyle: #restyle,
             }
         })
@@ -137,8 +157,6 @@ impl<'a> ToTokens for FormatterArgs<'a> {
 pub(crate) enum FormatTrait {
     Display,
     Debug,
-    DebugLowerHex,
-    DebugUpperHex,
     Octal,
     LowerHex,
     UpperHex,
@@ -190,34 +208,43 @@ impl<'a> FormatSpec<'a> {
             pair(anychar, Align::parse),
             map(Align::parse, |align| (' ', align)),
         )))(input)?;
+        let align = align.map(|(fill, align)| {
+            if fill != ' ' {
+                todo!()
+            }
+            align
+        });
         let (input, sign) = opt(Sign::parse)(input)?;
         let (input, alternate) = opt(value(true, tag("#")))(input)?;
         let (input, zero) = opt(value(true, tag("0")))(input)?;
         let (input, width) = opt(Count::parse)(input)?;
         let (input, precision) = opt(preceded(tag("."), Count::parse))(input)?;
         let (input, color) = opt(delimited(tag("("), identifier, tag(")")))(input)?;
-        let (input, format_trait) = opt(alt((
-            value(FormatTrait::Debug, tag("?")),
-            value(FormatTrait::DebugLowerHex, tag("x?")),
-            value(FormatTrait::DebugUpperHex, tag("X?")),
-            value(FormatTrait::Octal, tag("o")),
-            value(FormatTrait::LowerHex, tag("x")),
-            value(FormatTrait::UpperHex, tag("X")),
-            value(FormatTrait::Pointer, tag("p")),
-            value(FormatTrait::Binary, tag("b")),
-            value(FormatTrait::LowerExp, tag("e")),
-            value(FormatTrait::UpperExp, tag("E")),
+        let (input, debug_hex_and_format_trait) = opt(alt((
+            value((None, FormatTrait::Debug), tag("?")),
+            value((Some(DebugHex::Lower), FormatTrait::Debug), tag("x?")),
+            value((Some(DebugHex::Upper), FormatTrait::Debug), tag("X?")),
+            value((None, FormatTrait::Octal), tag("o")),
+            value((None, FormatTrait::LowerHex), tag("x")),
+            value((None, FormatTrait::UpperHex), tag("X")),
+            value((None, FormatTrait::Pointer), tag("p")),
+            value((None, FormatTrait::Binary), tag("b")),
+            value((None, FormatTrait::LowerExp), tag("e")),
+            value((None, FormatTrait::UpperExp), tag("E")),
         )))(input)?;
+        let debug_hex = debug_hex_and_format_trait.and_then(|(debug_hex, _)| debug_hex);
+        let format_trait = debug_hex_and_format_trait.map(|(_, format_trait)| format_trait);
         Ok((
             input,
             FormatSpec {
                 formatter_args: FormatterArgs {
                     align,
                     sign,
+                    alternate: alternate.unwrap_or_default(),
                     zero: zero.unwrap_or_default(),
                     width,
                     precision,
-                    alternate: alternate.unwrap_or_default(),
+                    debug_hex,
                     restyle: Restyle { color },
                 },
                 format_trait: format_trait.unwrap_or_default(),

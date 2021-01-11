@@ -11,10 +11,6 @@ pub enum Argument<'a> {
     #[doc(hidden)]
     Debug(FormatterArgs<'a>, &'a dyn Debug),
     #[doc(hidden)]
-    DebugLowerHex(FormatterArgs<'a>, &'a dyn Debug),
-    #[doc(hidden)]
-    DebugUpperHex(FormatterArgs<'a>, &'a dyn Debug),
-    #[doc(hidden)]
     Octal(FormatterArgs<'a>, &'a dyn Octal),
     #[doc(hidden)]
     LowerHex(FormatterArgs<'a>, &'a dyn LowerHex),

@@ -16,7 +16,7 @@ mod write;
 
 pub use stylish::{
     arguments::{Argument, Arguments},
-    formatter::{Align, Formatter, FormatterArgs, Sign},
+    formatter::{Align, DebugHex, Formatter, FormatterArgs, Sign},
     style::{Color, Intensity, Style},
     traits::{Binary, Debug, Display, LowerExp, LowerHex, Octal, Pointer, UpperExp, UpperHex},
 };
