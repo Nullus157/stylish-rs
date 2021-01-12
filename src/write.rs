@@ -70,8 +70,12 @@ pub mod io {
 
             Formatter::new(&mut trap)
                 .write_fmt(args)
-                .or_else(|std::fmt::Error| {
-                    trap.error.borrow_mut().take().map_or_else(|| Ok(()), Err)
+                .map_err(|std::fmt::Error| {
+                    if let Some(err) = trap.error.borrow_mut().take() {
+                        err
+                    } else {
+                        std::io::Error::new(std::io::ErrorKind::Other, "formatter error")
+                    }
                 })?;
 
             Ok(())

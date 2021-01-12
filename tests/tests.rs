@@ -37,3 +37,19 @@ fn six() {
     let x = 1;
     assert_eq!(stylish::plain::format!("{x}", x = 2), "2")
 }
+
+#[test]
+fn error() {
+    struct Foo;
+
+    impl stylish::Display for Foo {
+        fn fmt(&self, f: &mut stylish::Formatter<'_>) -> std::fmt::Result {
+            Err(std::fmt::Error)
+        }
+    }
+
+    use stylish::io::Write;
+    let mut s = Vec::<u8>::new();
+    let mut writer = stylish::plain::Write::new(&mut s);
+    assert!(stylish::writeln!(writer, "{}", Foo).is_err());
+}
