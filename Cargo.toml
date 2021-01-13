@@ -8,4 +8,5 @@ edition = "2018"
 
 [dependencies]
 askama_escape = "0.3.0"
+stack_dst = "0.6.0"
 stylish-macros = { path = "macros" }

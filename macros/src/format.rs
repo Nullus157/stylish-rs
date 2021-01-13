@@ -172,6 +172,41 @@ impl Default for FormatTrait {
     }
 }
 
+impl ToTokens for FormatTrait {
+    fn to_tokens(&self, tokens: &mut TokenStream) {
+        match self {
+            FormatTrait::Display => {
+                quote!(stylish::Display)
+            }
+            FormatTrait::Debug => {
+                quote!(stylish::Debug)
+            }
+            FormatTrait::Octal => {
+                quote!(stylish::Octal)
+            }
+            FormatTrait::LowerHex => {
+                quote!(stylish::LowerHex)
+            }
+            FormatTrait::UpperHex => {
+                quote!(stylish::UpperHex)
+            }
+            FormatTrait::Pointer => {
+                quote!(stylish::Pointer)
+            }
+            FormatTrait::Binary => {
+                quote!(stylish::Binary)
+            }
+            FormatTrait::LowerExp => {
+                quote!(stylish::LowerExp)
+            }
+            FormatTrait::UpperExp => {
+                quote!(stylish::UpperExp)
+            }
+        }
+        .to_tokens(tokens)
+    }
+}
+
 #[derive(Debug, Clone, Copy)]
 pub(crate) enum Count<'a> {
     Parameter(FormatArgRef<'a>),

@@ -43,7 +43,7 @@ fn error() {
     struct Foo;
 
     impl stylish::Display for Foo {
-        fn fmt(&self, f: &mut stylish::Formatter<'_>) -> std::fmt::Result {
+        fn fmt(&self, _: &mut stylish::Formatter<'_>) -> std::fmt::Result {
             Err(std::fmt::Error)
         }
     }
@@ -52,4 +52,17 @@ fn error() {
     let mut s = Vec::<u8>::new();
     let mut writer = stylish::plain::Write::new(&mut s);
     assert!(stylish::writeln!(writer, "{}", Foo).is_err());
+}
+
+#[test]
+fn large() {
+    struct Foo([usize; 24]);
+
+    impl stylish::Display for Foo {
+        fn fmt(&self, f: &mut stylish::Formatter<'_>) -> std::fmt::Result {
+            f.write_str("foo")
+        }
+    }
+
+    assert_eq!(stylish::plain::format!("{}", Foo([0; 24])), "foo");
 }

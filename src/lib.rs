@@ -9,7 +9,8 @@ pub mod html;
 pub mod plain;
 pub mod style;
 
-mod arguments;
+#[doc(hidden)]
+pub mod arguments;
 mod formatter;
 mod traits;
 mod write;

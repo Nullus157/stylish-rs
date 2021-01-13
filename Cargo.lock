@@ -104,6 +104,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "71d301d4193d031abdd79ff7e3dd721168a9572ef3fe51a1517aba235bd8f86e"
 
 [[package]]
+name = "stack_dst"
+version = "0.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "86d5e1dc9a5f4ac56709c87eeeacd25cb58eca03f4d6a3103ef65b6beb9307eb"
+
+[[package]]
 name = "static_assertions"
 version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -114,6 +120,7 @@ name = "stylish"
 version = "0.1.0"
 dependencies = [
  "askama_escape",
+ "stack_dst",
  "stylish-macros",
 ]
 

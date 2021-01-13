@@ -10,7 +10,7 @@ macro_rules! std_write {
         match $self.format {
             $(
                 FormatterArgs { $($field : $pat,)* } => {
-                    write!(StdProxy($self), concat!("{:", $($s,)* "}"), $val, $($($arg)*,)*)
+                    write!(StdProxy($self), concat!("{:", $($s,)* "}"), *$val, $($($arg)*,)*)
                 }
             )*
         }
@@ -188,30 +188,59 @@ impl<'a> Formatter<'a> {
         Ok(())
     }
 
+    pub(crate) fn write_std_display(&mut self, val: &impl std::fmt::Display) -> std::fmt::Result {
+        std_write!(self, Display, val)
+    }
+
+    pub(crate) fn write_std_debug(&mut self, val: &impl std::fmt::Debug) -> std::fmt::Result {
+        std_write!(self, Debug, val)
+    }
+
+    pub(crate) fn write_std_octal(&mut self, val: &impl std::fmt::Octal) -> std::fmt::Result {
+        std_write!(self, Octal, val)
+    }
+
+    pub(crate) fn write_std_lower_hex(
+        &mut self,
+        val: &impl std::fmt::LowerHex,
+    ) -> std::fmt::Result {
+        std_write!(self, LowerHex, val)
+    }
+
+    pub(crate) fn write_std_upper_hex(
+        &mut self,
+        val: &impl std::fmt::UpperHex,
+    ) -> std::fmt::Result {
+        std_write!(self, UpperHex, val)
+    }
+
+    pub(crate) fn write_std_pointer(&mut self, val: &impl std::fmt::Pointer) -> std::fmt::Result {
+        std_write!(self, Pointer, val)
+    }
+
+    pub(crate) fn write_std_binary(&mut self, val: &impl std::fmt::Binary) -> std::fmt::Result {
+        std_write!(self, Binary, val)
+    }
+
+    pub(crate) fn write_std_lower_exp(
+        &mut self,
+        val: &impl std::fmt::LowerExp,
+    ) -> std::fmt::Result {
+        std_write!(self, LowerExp, val)
+    }
+
+    pub(crate) fn write_std_upper_exp(
+        &mut self,
+        val: &impl std::fmt::UpperExp,
+    ) -> std::fmt::Result {
+        std_write!(self, UpperExp, val)
+    }
+
     pub fn write_fmt(&mut self, args: &Arguments<'_>) -> std::fmt::Result {
         for piece in args.pieces {
             match piece {
                 Argument::Lit(lit) => self.write_str(lit)?,
-
-                Argument::Display(format, val) => val.fmt(&mut self.with(format))?,
-                Argument::Debug(format, val) => val.fmt(&mut self.with(format))?,
-                Argument::Octal(format, val) => val.fmt(&mut self.with(format))?,
-                Argument::LowerHex(format, val) => val.fmt(&mut self.with(format))?,
-                Argument::UpperHex(format, val) => val.fmt(&mut self.with(format))?,
-                Argument::Pointer(format, val) => val.fmt(&mut self.with(format))?,
-                Argument::Binary(format, val) => val.fmt(&mut self.with(format))?,
-                Argument::LowerExp(format, val) => val.fmt(&mut self.with(format))?,
-                Argument::UpperExp(format, val) => val.fmt(&mut self.with(format))?,
-
-                Argument::StdDisplay(val) => std_write!(self, Display, val)?,
-                Argument::StdDebug(val) => std_write!(self, Debug, val)?,
-                Argument::StdOctal(val) => std_write!(self, Octal, val)?,
-                Argument::StdLowerHex(val) => std_write!(self, LowerHex, val)?,
-                Argument::StdUpperHex(val) => std_write!(self, UpperHex, val)?,
-                Argument::StdPointer(val) => std_write!(self, Pointer, val)?,
-                Argument::StdBinary(val) => std_write!(self, Binary, val)?,
-                Argument::StdLowerExp(val) => std_write!(self, LowerExp, val)?,
-                Argument::StdUpperExp(val) => std_write!(self, UpperExp, val)?,
+                Argument::Arg(format, fmt) => fmt(&mut self.with(format))?,
             }
         }
         Ok(())

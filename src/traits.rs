@@ -1,4 +1,4 @@
-use stylish::{Argument, Arguments, Formatter};
+use stylish::Formatter;
 
 pub trait Display {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result;
@@ -38,81 +38,54 @@ pub trait UpperExp {
 
 impl<T: std::fmt::Display> Display for T {
     default fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        f.write_fmt(&Arguments {
-            pieces: &[Argument::StdDisplay(self)],
-        })?;
-        Ok(())
+        f.write_std_display(self)
     }
 }
 
 impl<T: std::fmt::Debug> Debug for T {
     default fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        f.write_fmt(&Arguments {
-            pieces: &[Argument::StdDebug(self)],
-        })?;
-        Ok(())
+        f.write_std_debug(self)
     }
 }
 
 impl<T: std::fmt::Octal> Octal for T {
     default fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        f.write_fmt(&Arguments {
-            pieces: &[Argument::StdOctal(self)],
-        })?;
-        Ok(())
+        f.write_std_octal(self)
     }
 }
 
 impl<T: std::fmt::LowerHex> LowerHex for T {
     default fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        f.write_fmt(&Arguments {
-            pieces: &[Argument::StdLowerHex(self)],
-        })?;
-        Ok(())
+        f.write_std_lower_hex(self)
     }
 }
 
 impl<T: std::fmt::UpperHex> UpperHex for T {
     default fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        f.write_fmt(&Arguments {
-            pieces: &[Argument::StdUpperHex(self)],
-        })?;
-        Ok(())
+        f.write_std_upper_hex(self)
     }
 }
 
 impl<T: std::fmt::Pointer> Pointer for T {
     default fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        f.write_fmt(&Arguments {
-            pieces: &[Argument::StdPointer(self)],
-        })?;
-        Ok(())
+        f.write_std_pointer(self)
     }
 }
 
 impl<T: std::fmt::Binary> Binary for T {
     default fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        f.write_fmt(&Arguments {
-            pieces: &[Argument::StdBinary(self)],
-        })?;
-        Ok(())
+        f.write_std_binary(self)
     }
 }
 
 impl<T: std::fmt::LowerExp> LowerExp for T {
     default fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        f.write_fmt(&Arguments {
-            pieces: &[Argument::StdLowerExp(self)],
-        })?;
-        Ok(())
+        f.write_std_lower_exp(self)
     }
 }
 
 impl<T: std::fmt::UpperExp> UpperExp for T {
     default fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        f.write_fmt(&Arguments {
-            pieces: &[Argument::StdUpperExp(self)],
-        })?;
-        Ok(())
+        f.write_std_upper_exp(self)
     }
 }

@@ -1,4 +1,4 @@
-use self::format::{Format, FormatArg, FormatArgRef, FormatSpec, FormatTrait, Piece};
+use self::format::{Format, FormatArg, FormatArgRef, FormatSpec, Piece};
 use proc_macro2::Span;
 use quote::{quote, ToTokens};
 use std::collections::HashMap;
@@ -159,35 +159,7 @@ fn format_args_impl(
                         }
                     }
                 };
-                match format_trait {
-                    FormatTrait::Display => {
-                        quote!(stylish::Argument::Display(#formatter_args, #arg))
-                    }
-                    FormatTrait::Debug => {
-                        quote!(stylish::Argument::Debug(#formatter_args, #arg))
-                    }
-                    FormatTrait::Octal => {
-                        quote!(stylish::Argument::Octal(#formatter_args, #arg))
-                    }
-                    FormatTrait::LowerHex => {
-                        quote!(stylish::Argument::LowerHex(#formatter_args, #arg))
-                    }
-                    FormatTrait::UpperHex => {
-                        quote!(stylish::Argument::UpperHex(#formatter_args, #arg))
-                    }
-                    FormatTrait::Pointer => {
-                        quote!(stylish::Argument::Pointer(#formatter_args, #arg))
-                    }
-                    FormatTrait::Binary => {
-                        quote!(stylish::Argument::Binary(#formatter_args, #arg))
-                    }
-                    FormatTrait::LowerExp => {
-                        quote!(stylish::Argument::LowerExp(#formatter_args, #arg))
-                    }
-                    FormatTrait::UpperExp => {
-                        quote!(stylish::Argument::UpperExp(#formatter_args, #arg))
-                    }
-                }
+                quote!(stylish::arguments::arg(#formatter_args, move |f| #format_trait::fmt(#arg, f)))
             }
         })
         .collect();
