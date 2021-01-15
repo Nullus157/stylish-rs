@@ -148,8 +148,8 @@ impl<'a> ToTokens for Scoped<'a, (FormatTrait, TokenStream)> {
             (FormatTrait::UpperHex, arg) => {
                 quote!(#export::FormatTrait::UpperHex(#arg))
             }
-            (FormatTrait::Pointer, arg) => {
-                quote!(#export::FormatTrait::Pointer(#arg))
+            (FormatTrait::Pointer, _arg) => {
+                panic!("Not possible to support std::fmt::Pointer for reasons")
             }
             (FormatTrait::Binary, arg) => {
                 quote!(#export::FormatTrait::Binary(#arg))

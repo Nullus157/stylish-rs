@@ -48,5 +48,5 @@ fn large() {
         }
     }
 
-    assert_eq!(stylish_plain::format!("{}", Foo([0; 24])), "foo");
+    assert_eq!(stylish_plain::format!("{:s}", Foo([0; 24])), "foo");
 }
