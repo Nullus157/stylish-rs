@@ -22,7 +22,9 @@ pub use self::{
     to_string::ToStylishString,
     write::Write,
 };
-pub use core::fmt::{Error, Result};
+pub use core::fmt::Error;
+
+pub type Result<T = (), E = Error> = core::result::Result<T, E>;
 
 #[doc(hidden)]
 pub mod __export {
