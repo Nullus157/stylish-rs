@@ -108,14 +108,12 @@ impl<'a, 'b: 'a> ToTokens for Scoped<'a, FormatterArgs<'b>> {
             width,
             precision,
             debug_hex,
-            restyle,
         } = self.as_ref();
         let align = quote_opt(self.scope(align));
         let sign = quote_opt(self.scope(sign));
         let width = quote_opt(self.scope(width));
         let precision = quote_opt(self.scope(precision));
         let debug_hex = quote_opt(self.scope(debug_hex));
-        let restyle = self.scope(restyle);
         (quote! {
             #export::FormatterArgs {
                 align: #align,
@@ -125,7 +123,6 @@ impl<'a, 'b: 'a> ToTokens for Scoped<'a, FormatterArgs<'b>> {
                 width: #width,
                 precision: #precision,
                 debug_hex: #debug_hex,
-                restyle: #restyle,
             }
         })
         .to_tokens(tokens)

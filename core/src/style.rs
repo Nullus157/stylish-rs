@@ -26,7 +26,7 @@ pub struct Style {
     pub intensity: Intensity,
 }
 
-pub trait Apply {
+pub trait Restyle {
     fn apply(&self, style: Style) -> Style;
 }
 
@@ -43,24 +43,24 @@ impl Default for Intensity {
 }
 
 impl Style {
-    pub fn with(self, adj: impl Apply) -> Self {
+    pub fn with(self, adj: impl Restyle) -> Self {
         adj.apply(self)
     }
 }
 
-impl<T: Apply + ?Sized> Apply for &T {
+impl<T: Restyle + ?Sized> Restyle for &T {
     fn apply(&self, style: Style) -> Style {
         (&**self).apply(style)
     }
 }
 
-impl Apply for Style {
+impl Restyle for Style {
     fn apply(&self, style: Style) -> Style {
         style
     }
 }
 
-impl Apply for Color {
+impl Restyle for Color {
     fn apply(&self, style: Style) -> Style {
         Style {
             color: *self,
@@ -69,7 +69,7 @@ impl Apply for Color {
     }
 }
 
-impl Apply for Intensity {
+impl Restyle for Intensity {
     fn apply(&self, style: Style) -> Style {
         Style {
             intensity: *self,
@@ -78,13 +78,13 @@ impl Apply for Intensity {
     }
 }
 
-impl Apply for () {
+impl Restyle for () {
     fn apply(&self, style: Style) -> Style {
         style
     }
 }
 
-impl<T: Apply, U: Apply> Apply for (T, U) {
+impl<T: Restyle, U: Restyle> Restyle for (T, U) {
     fn apply(&self, style: Style) -> Style {
         style.with(&self.0).with(&self.1)
     }

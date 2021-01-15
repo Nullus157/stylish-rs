@@ -1,4 +1,4 @@
-use crate::{arguments::Argument, style::Apply, Arguments, Style, Write};
+use crate::{arguments::Argument, Arguments, Restyle, Style, Write};
 
 macro_rules! std_write {
     (@str $self:ident $val:ident [] { $({ $($field:ident : $pat:pat,)* } => (($($s:literal,)*), $(($($arg:tt)*),)*);)* }) => {{
@@ -11,12 +11,6 @@ macro_rules! std_write {
             )*
         }
     }};
-
-    (@str $self:ident $val:ident [restyle $($flag:ident)*] { $({ $($field:ident : $pat:pat,)* } => (($($s:literal,)*), $(($($arg:tt)*),)*);)* }) => {
-        std_write!(@str $self $val [$($flag)*] {
-            $({ restyle: _, $($field : $pat,)* } => (($($s,)*), $(($($arg)*),)*);)*
-        })
-    };
 
     (@str $self:ident $val:ident [precision $($flag:ident)*] { $({ $($field:ident : $pat:pat,)* } => (($($s:literal,)*), $(($($arg:tt)*),)*);)* }) => {
         std_write!(@str $self $val [$($flag)*] {
@@ -96,7 +90,7 @@ macro_rules! std_write {
     };
 
     ($self:ident, $trait:ident, $val:ident) => {
-        std_write!(@str $self $val [$trait restyle precision width zero alternate sign align])
+        std_write!(@str $self $val [$trait precision width zero alternate sign align])
     };
 }
 
@@ -128,7 +122,6 @@ pub struct FormatterArgs<'a> {
     pub width: Option<&'a usize>,
     pub precision: Option<&'a usize>,
     pub debug_hex: Option<DebugHex>,
-    pub restyle: &'a dyn Apply,
 }
 
 impl Default for FormatterArgs<'static> {
@@ -141,7 +134,6 @@ impl Default for FormatterArgs<'static> {
             precision: None,
             alternate: false,
             debug_hex: None,
-            restyle: &(),
         }
     }
 }
@@ -161,7 +153,7 @@ impl<'a> Formatter<'a> {
         }
     }
 
-    pub fn with(&mut self, restyle: impl Apply) -> Formatter<'_> {
+    pub fn with(&mut self, restyle: impl Restyle) -> Formatter<'_> {
         Formatter {
             write: &mut *self.write,
             format: self.format,
@@ -173,7 +165,7 @@ impl<'a> Formatter<'a> {
         Formatter {
             write: &mut *self.write,
             format: *format,
-            style: self.style.with(format.restyle),
+            style: self.style,
         }
     }
 
@@ -239,7 +231,9 @@ impl<'a> Formatter<'a> {
         for piece in args.pieces {
             match piece {
                 Argument::Lit(lit) => self.write_str(lit)?,
-                Argument::Arg(format, fmt) => fmt(&mut self.with_args(format))?,
+                Argument::Arg { args, restyle, fmt } => {
+                    fmt(&mut self.with(restyle).with_args(args))?
+                }
             }
         }
         Ok(())

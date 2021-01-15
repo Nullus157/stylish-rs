@@ -120,10 +120,12 @@ fn format_args_impl(
                 format_spec:
                     FormatSpec {
                         formatter_args,
+                        restyle,
                         format_trait,
                     },
             }) => {
                 let formatter_args = Scoped::new(&export, &formatter_args);
+                let restyle = Scoped::new(&export, &restyle);
                 let format_trait = Scoped::new(&export, &format_trait);
                 let arg = match arg {
                     None => {
@@ -154,7 +156,7 @@ fn format_args_impl(
                         }
                     }
                 };
-                quote!(#export::arg(#formatter_args, move |f| #format_trait::fmt(#arg, f)))
+                quote!(#export::arg(#formatter_args, #restyle, move |f| #format_trait::fmt(#arg, f)))
             }
         })
         .collect();

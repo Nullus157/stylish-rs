@@ -4,17 +4,17 @@
 #![feature(associated_type_bounds)]
 
 pub mod io;
-pub mod style;
 
 mod arguments;
 mod formatter;
+mod style;
 mod traits;
 mod write;
 
 pub use self::{
     arguments::Arguments,
     formatter::Formatter,
-    style::{Color, Intensity, Style},
+    style::{Color, Intensity, Restyle, Style},
     traits::{Binary, Debug, Display, LowerExp, LowerHex, Octal, Pointer, UpperExp, UpperHex},
     write::Write,
 };

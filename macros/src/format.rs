@@ -65,7 +65,6 @@ pub struct FormatterArgs<'a> {
     pub width: Option<Count<'a>>,
     pub precision: Option<Count<'a>>,
     pub debug_hex: Option<DebugHex>,
-    pub restyle: Restyle<'a>,
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -105,6 +104,7 @@ impl<'a> Count<'a> {
 #[derive(Debug, Default, Clone, Copy)]
 pub struct FormatSpec<'a> {
     pub formatter_args: FormatterArgs<'a>,
+    pub restyle: Restyle<'a>,
     pub format_trait: FormatTrait,
 }
 
@@ -151,8 +151,8 @@ impl<'a> FormatSpec<'a> {
                     width,
                     precision,
                     debug_hex,
-                    restyle: Restyle { color },
                 },
+                restyle: Restyle { color },
                 format_trait: format_trait.unwrap_or_default(),
             },
         ))
