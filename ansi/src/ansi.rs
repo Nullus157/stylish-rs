@@ -18,6 +18,7 @@ impl<T: core::fmt::Write> Ansi<T> {
     pub fn finish(mut self) -> Result<T> {
         if self.current.is_some() {
             write!(self.inner.as_mut().unwrap(), "[0m")?;
+            self.current = None;
         }
         Ok(self.inner.take().unwrap())
     }

@@ -42,6 +42,7 @@ pub mod __export {
     pub use crate::{
         arguments::{Argument, Arguments, FormatTrait, StdFmt},
         formatter::{Align, DebugHex, FormatterArgs, Sign},
+        style::{Color, Intensity},
         Display,
     };
     pub use core::{fmt, option::Option};

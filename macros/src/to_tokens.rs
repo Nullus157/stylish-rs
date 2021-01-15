@@ -44,13 +44,18 @@ impl<'a, T> Scoped<'a, T> {
 impl<'a, 'b: 'a> ToTokens for Scoped<'a, Restyle<'b>> {
     fn to_tokens(&self, tokens: &mut TokenStream) {
         let export = &self.export;
-        let Restyle { color } = self.as_ref();
-        let color = match color {
-            Some("blue") => quote!(&#export::Color::Blue),
-            Some(color) => panic!("Unknown color {}", color),
-            None => quote!(&()),
-        };
-        (quote! { #color }).to_tokens(tokens)
+        let Restyle { styles } = self.as_ref();
+        let mut style = quote!(());
+        for &(key, value) in styles {
+            style = match (key, value) {
+                ("color", "blue") => quote!((#export::Color::Blue, #style)),
+                ("color", color) => panic!("Unknown color {}", color),
+                ("intensity", "bold") => quote!((#export::Intensity::Bold, #style)),
+                ("intensity", intensity) => panic!("Unknown intensity {}", intensity),
+                (key, _) => panic!("Unknown key {}", key),
+            }
+        }
+        (quote! { &#style }).to_tokens(tokens)
     }
 }
 

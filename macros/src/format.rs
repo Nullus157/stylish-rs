@@ -3,8 +3,8 @@ use nom::{
     bytes::complete::tag,
     character::complete::{alpha1, alphanumeric1, anychar, digit1, none_of},
     combinator::{all_consuming, cut, map, map_res, opt, recognize, value},
-    multi::{many0, many1},
-    sequence::{delimited, pair, preceded, terminated},
+    multi::{many0, many1, separated_list0},
+    sequence::{delimited, pair, preceded, separated_pair, terminated},
     IResult,
 };
 use std::str::FromStr;
@@ -16,9 +16,18 @@ fn identifier(input: &str) -> IResult<&str, &str> {
     ))(input)
 }
 
-#[derive(Debug, Default, Clone, Copy)]
+#[derive(Debug, Default, Clone)]
 pub struct Restyle<'a> {
-    pub color: Option<&'a str>,
+    pub styles: Vec<(&'a str, &'a str)>,
+}
+
+impl<'a> Restyle<'a> {
+    pub fn parse(input: &'a str) -> IResult<&str, Self> {
+        map(
+            separated_list0(tag(","), separated_pair(identifier, tag("="), identifier)),
+            |styles| Restyle { styles },
+        )(input)
+    }
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -102,7 +111,7 @@ impl<'a> Count<'a> {
     }
 }
 
-#[derive(Debug, Default, Clone, Copy)]
+#[derive(Debug, Default, Clone)]
 pub struct FormatSpec<'a> {
     pub formatter_args: FormatterArgs<'a>,
     pub restyle: Restyle<'a>,
@@ -126,7 +135,7 @@ impl<'a> FormatSpec<'a> {
         let (input, zero) = opt(value(true, tag("0")))(input)?;
         let (input, width) = opt(Count::parse)(input)?;
         let (input, precision) = opt(preceded(tag("."), Count::parse))(input)?;
-        let (input, color) = opt(delimited(tag("("), identifier, tag(")")))(input)?;
+        let (input, restyle) = opt(delimited(tag("("), cut(Restyle::parse), tag(")")))(input)?;
         let (input, debug_hex_and_format_trait) = opt(alt((
             value((None, FormatTrait::Debug), tag("?")),
             value((Some(DebugHex::Lower), FormatTrait::Debug), tag("x?")),
@@ -154,7 +163,7 @@ impl<'a> FormatSpec<'a> {
                     precision,
                     debug_hex,
                 },
-                restyle: Restyle { color },
+                restyle: restyle.unwrap_or_default(),
                 format_trait: format_trait.unwrap_or_default(),
             },
         ))
@@ -176,7 +185,7 @@ impl<'a> FormatArgRef<'a> {
     }
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone)]
 pub struct FormatArg<'a> {
     pub arg: Option<FormatArgRef<'a>>,
     pub format_spec: FormatSpec<'a>,
@@ -196,7 +205,7 @@ impl<'a> FormatArg<'a> {
     }
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone)]
 pub enum Piece<'a> {
     Lit(&'a str),
     Arg(FormatArg<'a>),
