@@ -1,10 +1,8 @@
-use stylish::{Formatter, FormatterArgs};
+use crate::{formatter::FormatterArgs, Formatter};
 
 pub enum Argument<'a> {
-    #[doc(hidden)]
     Lit(&'a str),
 
-    #[doc(hidden)]
     Arg(
         FormatterArgs<'a>,
         stack_dst::ValueA<dyn Fn(&mut Formatter<'_>) -> std::fmt::Result + 'a, [usize; 3]>,
@@ -12,6 +10,7 @@ pub enum Argument<'a> {
 }
 
 pub struct Arguments<'a> {
+    #[doc(hidden)]
     pub pieces: &'a [Argument<'a>],
 }
 

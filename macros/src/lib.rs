@@ -1,15 +1,21 @@
-use self::format::{Format, FormatArg, FormatArgRef, FormatSpec, Piece};
+use self::{
+    format::{Format, FormatArg, FormatArgRef, FormatSpec, Piece},
+    to_tokens::Scoped,
+};
 use proc_macro2::Span;
 use quote::{quote, ToTokens};
 use std::collections::HashMap;
 use syn::{
     parse::{Parse, ParseStream, Result},
-    parse_macro_input, Expr, ExprAssign, ExprPath, Ident, Index, LitStr, PathArguments, Token,
+    parse_macro_input, Expr, ExprAssign, ExprPath, Ident, Index, LitStr, Path, PathArguments,
+    Token,
 };
 
 mod format;
+mod to_tokens;
 
 struct ArgsInput {
+    krate: Option<Path>,
     format: LitStr,
     positional_args: Vec<Expr>,
     named_args: Vec<(Ident, Expr)>,
@@ -17,6 +23,15 @@ struct ArgsInput {
 
 impl Parse for ArgsInput {
     fn parse(input: ParseStream<'_>) -> Result<Self> {
+        let krate = if input.peek(Token![crate]) {
+            input.parse::<Token![crate]>()?;
+            input.parse::<Token![=]>()?;
+            let res = input.parse()?;
+            input.parse::<Token![,]>()?;
+            Some(res)
+        } else {
+            None
+        };
         let format = input.parse()?;
         let mut positional_args = Vec::new();
         let mut named_args = Vec::new();
@@ -47,6 +62,7 @@ impl Parse for ArgsInput {
             }
         }
         Ok(Self {
+            krate,
             format,
             positional_args,
             named_args,
@@ -54,52 +70,25 @@ impl Parse for ArgsInput {
     }
 }
 
-struct WriteInput {
-    target: Expr,
-    args: ArgsInput,
-}
-
-impl Parse for WriteInput {
-    fn parse(input: ParseStream<'_>) -> Result<Self> {
-        let target = input.parse()?;
-        input.parse::<Token![,]>()?;
-        let args = input.parse()?;
-        Ok(Self { target, args })
-    }
-}
-
-struct WriteLnInput {
-    target: Expr,
-    args: Option<ArgsInput>,
-}
-
-impl Parse for WriteLnInput {
-    fn parse(input: ParseStream<'_>) -> Result<Self> {
-        let target = input.parse()?;
-        let args = if input.peek(Token![,]) {
-            input.parse::<Token![,]>()?;
-            Some(input.parse()?)
-        } else {
-            None
-        };
-        Ok(Self { target, args })
-    }
-}
-
 fn format_args_impl(
     ArgsInput {
+        krate,
         format,
         positional_args,
         named_args,
     }: ArgsInput,
 ) -> impl ToTokens {
+    let krate = krate.expect("base crate not specified (are you using stylish-macros directly instead of through stylish-core?)");
+    let export: syn::Path = syn::parse_quote!(#krate::__export);
+
     let span = format.span();
+    let format_string = &format;
     let format = format.value();
     let (leftover, format) = Format::parse(&format).unwrap();
     assert!(leftover.is_empty());
     let num_positional_args = positional_args.len();
-    let positional_args_ident = Ident::new("__stylish_positional_args", Span::call_site());
-    let named_args_ident = Ident::new("__stylish_named_args", Span::call_site());
+    let positional_args_ident = Ident::new("__stylish_positional_args", Span::mixed_site());
+    let named_args_ident = Ident::new("__stylish_named_args", Span::mixed_site());
     let positional_args = positional_args.into_iter();
     let positional_args = quote! {
         (#(&#positional_args,)*)
@@ -115,7 +104,7 @@ fn format_args_impl(
     let named_args = quote! {
         (#(&#named_args_values,)*)
     };
-    let implicit_named_args_ident = Ident::new("__stylish_implicit_named_args", Span::call_site());
+    let implicit_named_args_ident = Ident::new("__stylish_implicit_named_args", Span::mixed_site());
     let mut implicit_named_args_values = Vec::new();
     let mut next_arg_iter = (0..num_positional_args).map(Index::from);
     let pieces: Vec<_> = format
@@ -124,7 +113,7 @@ fn format_args_impl(
         .map(|piece| match piece {
             Piece::Lit(lit) => {
                 let lit = LitStr::new(&lit.replace("{{", "{"), span);
-                quote!(stylish::Argument::Lit(#lit))
+                quote!(#export::Argument::Lit(#lit))
             }
             Piece::Arg(FormatArg {
                 arg,
@@ -134,6 +123,8 @@ fn format_args_impl(
                         format_trait,
                     },
             }) => {
+                let formatter_args = Scoped::new(&export, &formatter_args);
+                let format_trait = Scoped::new(&export, &format_trait);
                 let arg = match arg {
                     None => {
                         let index = next_arg_iter.next().expect("missing argument");
@@ -152,14 +143,18 @@ fn format_args_impl(
                             implicit_named_args_values.push(ExprPath {
                                 attrs: Vec::new(),
                                 qself: None,
-                                path: Ident::new(name, Span::call_site()).into(),
+                                path: Ident::new(
+                                    name,
+                                    Span::call_site().resolved_at(format_string.span()),
+                                )
+                                .into(),
                             });
                             let index = Index::from(i);
                             quote!(#implicit_named_args_ident.#index)
                         }
                     }
                 };
-                quote!(stylish::arguments::arg(#formatter_args, move |f| #format_trait::fmt(#arg, f)))
+                quote!(#export::arg(#formatter_args, move |f| #format_trait::fmt(#arg, f)))
             }
         })
         .collect();
@@ -167,7 +162,7 @@ fn format_args_impl(
         (#(&#implicit_named_args_values,)*)
     };
     quote! {
-        stylish::Arguments {
+        #export::Arguments {
             pieces: &match (#positional_args, #named_args, #implicit_named_args) {
                 (#positional_args_ident, #named_args_ident, #implicit_named_args_ident) => [
                     #(#pieces),*
@@ -185,66 +180,10 @@ pub fn format_args(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
 }
 
 #[proc_macro]
-pub fn format_plain(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
-    let args = format_args_impl(parse_macro_input!(input as ArgsInput));
-    quote!({
-        let mut string = stylish::plain::String::new();
-        stylish::fmt::Write::write_fmt(&mut string, &#args).unwrap();
-        string.into_inner()
-    })
-    .into_token_stream()
-    .into()
-}
-
-#[proc_macro]
-pub fn format_ansi(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
-    let args = format_args_impl(parse_macro_input!(input as ArgsInput));
-    quote!({
-        let mut string = stylish::ansi::String::new();
-        stylish::fmt::Write::write_fmt(&mut string, &#args).unwrap();
-        string.into_inner()
-    })
-    .into_token_stream()
-    .into()
-}
-
-#[proc_macro]
-pub fn format_html(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
-    let args = format_args_impl(parse_macro_input!(input as ArgsInput));
-    quote!({
-        let mut string = stylish::html::String::new();
-        stylish::fmt::Write::write_fmt(&mut string, &#args).unwrap();
-        string.into_inner()
-    })
-    .into_token_stream()
-    .into()
-}
-
-#[proc_macro]
-pub fn writeln(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
-    let WriteLnInput { target, args } = parse_macro_input!(input as WriteLnInput);
-    let args = if let Some(args) = args {
-        format_args_impl(ArgsInput {
-            format: LitStr::new(&(args.format.value() + "\n"), args.format.span()),
-            ..args
-        })
-    } else {
-        format_args_impl(ArgsInput {
-            format: LitStr::new("\n", Span::call_site()),
-            positional_args: Vec::new(),
-            named_args: Vec::new(),
-        })
-    };
-    quote!({ #target.write_fmt(&#args) })
-        .into_token_stream()
-        .into()
-}
-
-#[proc_macro]
-pub fn write(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
-    let WriteInput { target, args, .. } = parse_macro_input!(input as WriteInput);
-    let args = format_args_impl(args);
-    quote!({ #target.write_fmt(&#args) })
+pub fn format_args_nl(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
+    let input = parse_macro_input!(input as ArgsInput);
+    let format = LitStr::new(&(input.format.value() + "\n"), input.format.span());
+    format_args_impl(ArgsInput { format, ..input })
         .into_token_stream()
         .into()
 }

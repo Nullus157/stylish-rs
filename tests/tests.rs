@@ -50,7 +50,7 @@ fn error() {
 
     use stylish::io::Write;
     let mut s = Vec::<u8>::new();
-    let mut writer = stylish::plain::Write::new(&mut s);
+    let mut writer = stylish::plain::Plain::new(&mut s);
     assert!(stylish::writeln!(writer, "{}", Foo).is_err());
 }
 

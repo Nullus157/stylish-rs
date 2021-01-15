@@ -1,8 +1,4 @@
-use stylish::{style, Argument, Arguments, Style};
-
-// macro_rules! write {
-//     ($($t:tt)*) => { write($($t)*) }
-// }
+use crate::{arguments::Argument, style::Apply, Arguments, Style, Write};
 
 macro_rules! std_write {
     (@str $self:ident $val:ident [] { $({ $($field:ident : $pat:pat,)* } => (($($s:literal,)*), $(($($arg:tt)*),)*);)* }) => {{
@@ -136,7 +132,7 @@ pub struct FormatterArgs<'a> {
     pub width: Option<&'a usize>,
     pub precision: Option<&'a usize>,
     pub debug_hex: Option<DebugHex>,
-    pub restyle: &'a dyn style::Apply,
+    pub restyle: &'a dyn Apply,
 }
 
 impl Default for FormatterArgs<'static> {
@@ -157,12 +153,12 @@ impl Default for FormatterArgs<'static> {
 pub struct Formatter<'a> {
     style: Style,
     format: FormatterArgs<'a>,
-    write: &'a mut (dyn stylish::fmt::Write + 'a),
+    write: &'a mut (dyn Write + 'a),
 }
 
 impl<'a> Formatter<'a> {
     #[doc(hidden)]
-    pub fn new(write: &'a mut (dyn stylish::fmt::Write + 'a)) -> Self {
+    pub fn new(write: &'a mut (dyn Write + 'a)) -> Self {
         Self {
             style: Style::default(),
             format: FormatterArgs::default(),

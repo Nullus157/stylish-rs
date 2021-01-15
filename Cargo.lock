@@ -119,8 +119,35 @@ checksum = "a2eb9349b6444b326872e140eb1cf5e7c522154d69e7a0ffb0fb81c06b37543f"
 name = "stylish"
 version = "0.1.0"
 dependencies = [
- "askama_escape",
+ "stylish-ansi",
+ "stylish-core",
+ "stylish-html",
+ "stylish-macros",
+ "stylish-plain",
+]
+
+[[package]]
+name = "stylish-ansi"
+version = "0.1.0"
+dependencies = [
+ "stylish-core",
+ "stylish-macros",
+]
+
+[[package]]
+name = "stylish-core"
+version = "0.1.0"
+dependencies = [
  "stack_dst",
+ "stylish-macros",
+]
+
+[[package]]
+name = "stylish-html"
+version = "0.1.0"
+dependencies = [
+ "askama_escape",
+ "stylish-core",
  "stylish-macros",
 ]
 
@@ -132,6 +159,14 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn",
+]
+
+[[package]]
+name = "stylish-plain"
+version = "0.1.0"
+dependencies = [
+ "stylish-core",
+ "stylish-macros",
 ]
 
 [[package]]

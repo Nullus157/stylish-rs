@@ -7,11 +7,9 @@ use nom::{
     sequence::{delimited, pair, preceded, terminated},
     IResult,
 };
-use proc_macro2::TokenStream;
-use quote::{quote, ToTokens};
 use std::str::FromStr;
 
-pub(crate) fn identifier(input: &str) -> IResult<&str, &str> {
+fn identifier(input: &str) -> IResult<&str, &str> {
     recognize(pair(
         alt((alpha1, tag("_"))),
         many0(alt((alphanumeric1, tag("_")))),
@@ -19,42 +17,19 @@ pub(crate) fn identifier(input: &str) -> IResult<&str, &str> {
 }
 
 #[derive(Debug, Default, Clone, Copy)]
-pub(crate) struct Restyle<'a> {
-    color: Option<&'a str>,
-}
-
-impl<'a> ToTokens for Restyle<'a> {
-    fn to_tokens(&self, tokens: &mut TokenStream) {
-        let Restyle { color } = self;
-        let color = match color {
-            Some("blue") => quote!(&stylish::style::Color::Blue),
-            Some(color) => panic!("Unknown color {}", color),
-            None => quote!(&()),
-        };
-        (quote! { #color }).to_tokens(tokens)
-    }
+pub struct Restyle<'a> {
+    pub color: Option<&'a str>,
 }
 
 #[derive(Debug, Clone, Copy)]
-pub(crate) enum Align {
+pub enum Align {
     Left,
     Center,
     Right,
 }
 
-impl ToTokens for Align {
-    fn to_tokens(&self, tokens: &mut TokenStream) {
-        match self {
-            Self::Left => quote!(stylish::Align::Left),
-            Self::Center => quote!(stylish::Align::Center),
-            Self::Right => quote!(stylish::Align::Right),
-        }
-        .to_tokens(tokens)
-    }
-}
-
 impl Align {
-    pub(crate) fn parse(input: &str) -> IResult<&str, Self> {
+    pub fn parse(input: &str) -> IResult<&str, Self> {
         alt((
             value(Self::Left, tag("<")),
             value(Self::Center, tag("^")),
@@ -64,97 +39,37 @@ impl Align {
 }
 
 #[derive(Debug, Clone, Copy)]
-pub(crate) enum Sign {
+pub enum Sign {
     Plus,
     Minus,
 }
 
-impl ToTokens for Sign {
-    fn to_tokens(&self, tokens: &mut TokenStream) {
-        match self {
-            Self::Plus => quote!(stylish::Sign::Plus),
-            Self::Minus => quote!(stylish::Sign::Minus),
-        }
-        .to_tokens(tokens)
-    }
-}
-
 impl Sign {
-    pub(crate) fn parse(input: &str) -> IResult<&str, Self> {
+    pub fn parse(input: &str) -> IResult<&str, Self> {
         alt((value(Self::Plus, tag("+")), value(Self::Minus, tag("-"))))(input)
     }
 }
 
 #[derive(Debug, Clone, Copy)]
-pub(crate) enum DebugHex {
+pub enum DebugHex {
     Lower,
     Upper,
 }
 
-impl ToTokens for DebugHex {
-    fn to_tokens(&self, tokens: &mut TokenStream) {
-        match self {
-            Self::Lower => quote!(stylish::DebugHex::Lower),
-            Self::Upper => quote!(stylish::DebugHex::Upper),
-        }
-        .to_tokens(tokens)
-    }
-}
-
 #[derive(Debug, Default, Clone, Copy)]
-pub(crate) struct FormatterArgs<'a> {
-    align: Option<Align>,
-    sign: Option<Sign>,
-    alternate: bool,
-    zero: bool,
-    width: Option<Count<'a>>,
-    precision: Option<Count<'a>>,
-    debug_hex: Option<DebugHex>,
-    restyle: Restyle<'a>,
-}
-
-fn quote_opt<T: ToTokens>(value: &Option<T>) -> TokenStream {
-    match value {
-        Some(value) => quote!(core::option::Option::Some(#value)),
-        None => quote!(core::option::Option::None),
-    }
-}
-
-impl<'a> ToTokens for FormatterArgs<'a> {
-    fn to_tokens(&self, tokens: &mut TokenStream) {
-        let FormatterArgs {
-            align,
-            sign,
-            alternate,
-            zero,
-            width,
-            precision,
-            debug_hex,
-            restyle,
-        } = self;
-        let align = quote_opt(align);
-        let sign = quote_opt(sign);
-        let width = quote_opt(width);
-        let precision = quote_opt(precision);
-        let debug_hex = quote_opt(debug_hex);
-        (quote! {
-            stylish::FormatterArgs {
-                align: #align,
-                sign: #sign,
-                alternate: #alternate,
-                zero: #zero,
-                width: #width,
-                precision: #precision,
-                debug_hex: #debug_hex,
-                restyle: #restyle,
-            }
-        })
-        .to_tokens(tokens)
-    }
+pub struct FormatterArgs<'a> {
+    pub align: Option<Align>,
+    pub sign: Option<Sign>,
+    pub alternate: bool,
+    pub zero: bool,
+    pub width: Option<Count<'a>>,
+    pub precision: Option<Count<'a>>,
+    pub debug_hex: Option<DebugHex>,
+    pub restyle: Restyle<'a>,
 }
 
 #[derive(Debug, Clone, Copy)]
-pub(crate) enum FormatTrait {
+pub enum FormatTrait {
     Display,
     Debug,
     Octal,
@@ -172,49 +87,14 @@ impl Default for FormatTrait {
     }
 }
 
-impl ToTokens for FormatTrait {
-    fn to_tokens(&self, tokens: &mut TokenStream) {
-        match self {
-            FormatTrait::Display => {
-                quote!(stylish::Display)
-            }
-            FormatTrait::Debug => {
-                quote!(stylish::Debug)
-            }
-            FormatTrait::Octal => {
-                quote!(stylish::Octal)
-            }
-            FormatTrait::LowerHex => {
-                quote!(stylish::LowerHex)
-            }
-            FormatTrait::UpperHex => {
-                quote!(stylish::UpperHex)
-            }
-            FormatTrait::Pointer => {
-                quote!(stylish::Pointer)
-            }
-            FormatTrait::Binary => {
-                quote!(stylish::Binary)
-            }
-            FormatTrait::LowerExp => {
-                quote!(stylish::LowerExp)
-            }
-            FormatTrait::UpperExp => {
-                quote!(stylish::UpperExp)
-            }
-        }
-        .to_tokens(tokens)
-    }
-}
-
 #[derive(Debug, Clone, Copy)]
-pub(crate) enum Count<'a> {
+pub enum Count<'a> {
     Parameter(FormatArgRef<'a>),
     Integer(usize),
 }
 
 impl<'a> Count<'a> {
-    pub(crate) fn parse(input: &'a str) -> IResult<&str, Self> {
+    pub fn parse(input: &'a str) -> IResult<&str, Self> {
         alt((
             map(terminated(FormatArgRef::parse, tag("$")), Self::Parameter),
             map(map_res(digit1, usize::from_str), Self::Integer),
@@ -222,23 +102,14 @@ impl<'a> Count<'a> {
     }
 }
 
-impl<'a> ToTokens for Count<'a> {
-    fn to_tokens(&self, tokens: &mut TokenStream) {
-        match self {
-            Count::Parameter(_) => todo!(),
-            Count::Integer(value) => quote!(&#value).to_tokens(tokens),
-        }
-    }
-}
-
 #[derive(Debug, Default, Clone, Copy)]
-pub(crate) struct FormatSpec<'a> {
-    pub(crate) formatter_args: FormatterArgs<'a>,
-    pub(crate) format_trait: FormatTrait,
+pub struct FormatSpec<'a> {
+    pub formatter_args: FormatterArgs<'a>,
+    pub format_trait: FormatTrait,
 }
 
 impl<'a> FormatSpec<'a> {
-    pub(crate) fn parse(input: &'a str) -> IResult<&str, Self> {
+    pub fn parse(input: &'a str) -> IResult<&str, Self> {
         let (input, align) = opt(alt((
             pair(anychar, Align::parse),
             map(Align::parse, |align| (' ', align)),
@@ -289,13 +160,13 @@ impl<'a> FormatSpec<'a> {
 }
 
 #[derive(Debug, Clone, Copy)]
-pub(crate) enum FormatArgRef<'a> {
+pub enum FormatArgRef<'a> {
     Positional(usize),
     Named(&'a str),
 }
 
 impl<'a> FormatArgRef<'a> {
-    pub(crate) fn parse(input: &'a str) -> IResult<&str, Self> {
+    pub fn parse(input: &'a str) -> IResult<&str, Self> {
         alt((
             map(map_res(digit1, usize::from_str), FormatArgRef::Positional),
             map(identifier, FormatArgRef::Named),
@@ -304,13 +175,13 @@ impl<'a> FormatArgRef<'a> {
 }
 
 #[derive(Debug, Clone, Copy)]
-pub(crate) struct FormatArg<'a> {
-    pub(crate) arg: Option<FormatArgRef<'a>>,
-    pub(crate) format_spec: FormatSpec<'a>,
+pub struct FormatArg<'a> {
+    pub arg: Option<FormatArgRef<'a>>,
+    pub format_spec: FormatSpec<'a>,
 }
 
 impl<'a> FormatArg<'a> {
-    pub(crate) fn parse(input: &'a str) -> IResult<&str, Self> {
+    pub fn parse(input: &'a str) -> IResult<&str, Self> {
         let (input, arg) = opt(FormatArgRef::parse)(input)?;
         let (input, format_spec) = opt(preceded(tag(":"), FormatSpec::parse))(input)?;
         Ok((
@@ -324,13 +195,13 @@ impl<'a> FormatArg<'a> {
 }
 
 #[derive(Debug, Clone, Copy)]
-pub(crate) enum Piece<'a> {
+pub enum Piece<'a> {
     Lit(&'a str),
     Arg(FormatArg<'a>),
 }
 
 impl<'a> Piece<'a> {
-    pub(crate) fn parse_lit(input: &'a str) -> IResult<&str, Self> {
+    pub fn parse_lit(input: &'a str) -> IResult<&str, Self> {
         alt((
             map(recognize(many1(none_of("{}"))), Self::Lit),
             value(Self::Lit("{"), tag("{{")),
@@ -338,25 +209,25 @@ impl<'a> Piece<'a> {
         ))(input)
     }
 
-    pub(crate) fn parse_arg(input: &'a str) -> IResult<&str, Self> {
+    pub fn parse_arg(input: &'a str) -> IResult<&str, Self> {
         map(
             delimited(tag("{"), cut(FormatArg::parse), tag("}")),
             Self::Arg,
         )(input)
     }
 
-    pub(crate) fn parse(input: &'a str) -> IResult<&str, Self> {
+    pub fn parse(input: &'a str) -> IResult<&str, Self> {
         alt((Self::parse_lit, Self::parse_arg))(input)
     }
 }
 
 #[derive(Debug, Clone)]
-pub(crate) struct Format<'a> {
-    pub(crate) pieces: Vec<Piece<'a>>,
+pub struct Format<'a> {
+    pub pieces: Vec<Piece<'a>>,
 }
 
 impl<'a> Format<'a> {
-    pub(crate) fn parse(input: &'a str) -> IResult<&str, Self> {
+    pub fn parse(input: &'a str) -> IResult<&str, Self> {
         all_consuming(map(many0(Piece::parse), |pieces| Self { pieces }))(input)
     }
 }

@@ -1,0 +1,9 @@
+[package]
+name = "stylish-core"
+version = "0.1.0"
+authors = ["Wim Looman <crates.stylish@nemo157.com>"]
+edition = "2018"
+
+[dependencies]
+stack_dst = "0.6.0"
+stylish-macros = { version = "0.1.0", path = "../macros" }

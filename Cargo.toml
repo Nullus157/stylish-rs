@@ -7,6 +7,8 @@ edition = "2018"
 [workspace]
 
 [dependencies]
-askama_escape = "0.3.0"
-stack_dst = "0.6.0"
-stylish-macros = { path = "macros" }
+stylish-macros = { version = "0.1.0", path = "macros" }
+stylish-core = { version = "0.1.0", path = "core" }
+stylish-html = { version = "0.1.0", path = "html" }
+stylish-ansi = { version = "0.1.0", path = "ansi" }
+stylish-plain = { version = "0.1.0", path = "plain" }
