@@ -134,31 +134,31 @@ impl<'a> ToTokens for Scoped<'a, (FormatTrait, TokenStream)> {
         let export = &self.export;
         match self.as_ref() {
             (FormatTrait::Display, arg) => {
-                quote!(#export::FormatTrait::Display(#arg))
+                quote!(#export::FormatTrait::Display(#export::StdFmt::new(move |f| #export::fmt::Display::fmt(#arg, f))))
             }
             (FormatTrait::Debug, arg) => {
-                quote!(#export::FormatTrait::Debug(#arg))
+                quote!(#export::FormatTrait::Debug(#export::StdFmt::new(move |f| #export::fmt::Debug::fmt(#arg, f))))
             }
             (FormatTrait::Octal, arg) => {
-                quote!(#export::FormatTrait::Octal(#arg))
+                quote!(#export::FormatTrait::Octal(#export::StdFmt::new(move |f| #export::fmt::Octal::fmt(#arg, f))))
             }
             (FormatTrait::LowerHex, arg) => {
-                quote!(#export::FormatTrait::LowerHex(#arg))
+                quote!(#export::FormatTrait::LowerHex(#export::StdFmt::new(move |f| #export::fmt::LowerHex::fmt(#arg, f))))
             }
             (FormatTrait::UpperHex, arg) => {
-                quote!(#export::FormatTrait::UpperHex(#arg))
+                quote!(#export::FormatTrait::UpperHex(#export::StdFmt::new(move |f| #export::fmt::UpperHex::fmt(#arg, f))))
             }
-            (FormatTrait::Pointer, _arg) => {
-                panic!("Not possible to support std::fmt::Pointer for reasons")
+            (FormatTrait::Pointer, arg) => {
+                quote!(#export::FormatTrait::Pointer(#export::StdFmt::new(move |f| #export::fmt::Pointer::fmt(#arg, f))))
             }
             (FormatTrait::Binary, arg) => {
-                quote!(#export::FormatTrait::Binary(#arg))
+                quote!(#export::FormatTrait::Binary(#export::StdFmt::new(move |f| #export::fmt::Binary::fmt(#arg, f))))
             }
             (FormatTrait::LowerExp, arg) => {
-                quote!(#export::FormatTrait::LowerExp(#arg))
+                quote!(#export::FormatTrait::LowerExp(#export::StdFmt::new(move |f| #export::fmt::LowerExp::fmt(#arg, f))))
             }
             (FormatTrait::UpperExp, arg) => {
-                quote!(#export::FormatTrait::UpperExp(#arg))
+                quote!(#export::FormatTrait::UpperExp(#export::StdFmt::new(move |f| #export::fmt::UpperExp::fmt(#arg, f))))
             }
             (FormatTrait::Stylish, arg) => {
                 quote!(#export::FormatTrait::Stylish(#arg))

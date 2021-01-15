@@ -21,11 +21,11 @@ pub use core::fmt::{Error, Result};
 #[doc(hidden)]
 pub mod __export {
     pub use crate::{
-        arguments::{Argument, Arguments, FormatTrait},
+        arguments::{Argument, Arguments, FormatTrait, StdFmt},
         formatter::{Align, DebugHex, FormatterArgs, Sign},
         Display,
     };
-    pub use core::option::Option;
+    pub use core::{fmt, option::Option};
     pub use stylish_macros::{format_args, format_args_nl};
 }
 
