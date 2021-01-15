@@ -25,3 +25,20 @@ impl<W: Write + ?Sized> Write for &mut W {
         (&mut **self).write_fmt(args)
     }
 }
+
+#[macro_export]
+macro_rules! write {
+    ($dst:expr, $($arg:tt)*) => {
+        $dst.write_fmt(&$crate::format_args!($($arg)*))
+    };
+}
+
+#[macro_export]
+macro_rules! writeln {
+    ($dst:expr $(,)?) => {
+        $crate::write!($dst, "\n")
+    };
+    ($dst:expr, $($arg:tt)*) => {
+        $dst.write_fmt($crate::__export::stylish_macros::format_args_nl!(crate=$crate, $($arg)*))
+    };
+}

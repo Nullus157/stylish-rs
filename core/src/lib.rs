@@ -5,17 +5,21 @@ mod std_compat;
 
 mod arguments;
 mod display;
+mod format;
 mod formatter;
 mod string;
 mod style;
+mod to_string;
 mod write;
 
 pub use self::{
     arguments::Arguments,
     display::Display,
+    format::format,
     formatter::Formatter,
     string::String,
     style::{Color, Intensity, Restyle, Style},
+    to_string::ToStylishString,
     write::Write,
 };
 pub use core::fmt::{Error, Result};
@@ -28,29 +32,5 @@ pub mod __export {
         Display,
     };
     pub use core::{fmt, option::Option};
-    pub use stylish_macros::{format_args, format_args_nl};
-}
-
-#[macro_export]
-macro_rules! format_args {
-    ($($arg:tt)*) => {
-        $crate::__export::format_args!(crate=$crate, $($arg)*)
-    };
-}
-
-#[macro_export]
-macro_rules! write {
-    ($dst:expr, $($arg:tt)*) => {
-        $dst.write_fmt(&$crate::format_args!($($arg)*))
-    };
-}
-
-#[macro_export]
-macro_rules! writeln {
-    ($dst:expr $(,)?) => {
-        $crate::write!($dst, "\n")
-    };
-    ($dst:expr, $($arg:tt)*) => {
-        $dst.write_fmt($crate::__export::format_args_nl!(crate=$crate, $($arg)*))
-    };
+    pub use stylish_macros;
 }

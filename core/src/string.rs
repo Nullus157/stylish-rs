@@ -1,8 +1,15 @@
 use crate::{Display, Formatter, Result, Style, Write};
 
+#[derive(Default, Debug, Clone)]
 pub struct String {
     string: std::string::String,
     styles: Vec<(usize, Style)>,
+}
+
+impl String {
+    pub fn new() -> Self {
+        Self::default()
+    }
 }
 
 impl Write for String {
