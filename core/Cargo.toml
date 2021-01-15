@@ -4,6 +4,11 @@ version = "0.1.0"
 authors = ["Wim Looman <crates.stylish@nemo157.com>"]
 edition = "2018"
 
+[features]
+default = ["std"]
+std = ["alloc"]
+alloc = []
+
 [dependencies]
 stack_dst.default-features = false
 stack_dst.version = "0.6.0"

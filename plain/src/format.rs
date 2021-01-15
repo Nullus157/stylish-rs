@@ -1,4 +1,5 @@
 use crate::Plain;
+use alloc::string::String;
 use stylish_core::{Arguments, Write};
 
 #[macro_export]

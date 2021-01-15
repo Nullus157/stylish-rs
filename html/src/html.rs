@@ -3,12 +3,12 @@ use askama_escape::{escape, Html as AskamaHtml};
 use stylish_core::{Result, Style, Write};
 
 #[derive(Clone, Debug, Default)]
-pub struct Html<T: std::fmt::Write> {
+pub struct Html<T: core::fmt::Write> {
     inner: Option<T>,
     current: Option<Style>,
 }
 
-impl<T: std::fmt::Write> Html<T> {
+impl<T: core::fmt::Write> Html<T> {
     pub fn new(inner: T) -> Self {
         Self {
             inner: Some(inner),
@@ -24,7 +24,7 @@ impl<T: std::fmt::Write> Html<T> {
     }
 }
 
-impl<T: std::fmt::Write> Write for Html<T> {
+impl<T: core::fmt::Write> Write for Html<T> {
     fn write_str(&mut self, s: &str, style: Style) -> Result {
         if Some(style) != self.current {
             if self.current.is_some() {
@@ -43,7 +43,7 @@ impl<T: std::fmt::Write> Write for Html<T> {
     }
 }
 
-impl<T: std::fmt::Write> Drop for Html<T> {
+impl<T: core::fmt::Write> Drop for Html<T> {
     fn drop(&mut self) {
         if self.current.is_some() {
             panic!("Dropped Html without finishing it");

@@ -1,16 +1,21 @@
+#![no_std]
+
 pub use stylish_core::{
-    format_args, io, write, writeln, Arguments, Color, Display, Formatter, Intensity, Style, Write,
+    format_args, write, writeln, Arguments, Color, Display, Formatter, Intensity, Style, Write,
 };
 
-pub fn ansi<T: std::fmt::Write>(inner: T) -> ansi::Ansi<T> {
+#[cfg(feature = "std")]
+pub use stylish_core::io;
+
+pub fn ansi<T: core::fmt::Write>(inner: T) -> ansi::Ansi<T> {
     ansi::Ansi::new(inner)
 }
 
-pub fn html<T: std::fmt::Write>(inner: T) -> html::Html<T> {
+pub fn html<T: core::fmt::Write>(inner: T) -> html::Html<T> {
     html::Html::new(inner)
 }
 
-pub fn plain<T: std::fmt::Write>(inner: T) -> plain::Plain<T> {
+pub fn plain<T: core::fmt::Write>(inner: T) -> plain::Plain<T> {
     plain::Plain::new(inner)
 }
 

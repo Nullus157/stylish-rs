@@ -1,11 +1,11 @@
 use crate::{formatter::FormatterArgs, Display, Formatter, Restyle, Result};
 
-type StdFmtFn<'a> = dyn Fn(&mut std::fmt::Formatter<'_>) -> std::fmt::Result + 'a;
+type StdFmtFn<'a> = dyn Fn(&mut core::fmt::Formatter<'_>) -> Result + 'a;
 
 pub struct StdFmt<'a>(stack_dst::ValueA<StdFmtFn<'a>, [usize; 3]>);
 
 impl<'a> StdFmt<'a> {
-    pub fn new(f: impl Fn(&mut std::fmt::Formatter<'_>) -> std::fmt::Result + 'a) -> StdFmt<'a> {
+    pub fn new(f: impl Fn(&mut core::fmt::Formatter<'_>) -> Result + 'a) -> StdFmt<'a> {
         StdFmt(
             stack_dst::ValueA::new_stable(f, |p| p as _)
                 .map_err(|_| ())
@@ -14,14 +14,14 @@ impl<'a> StdFmt<'a> {
     }
 }
 
-impl std::fmt::Display for StdFmt<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl core::fmt::Display for StdFmt<'_> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> Result {
         (self.0)(f)
     }
 }
 
-impl std::fmt::Debug for StdFmt<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl core::fmt::Debug for StdFmt<'_> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> Result {
         (self.0)(f)
     }
 }

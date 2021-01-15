@@ -4,6 +4,12 @@ version = "0.1.0"
 authors = ["Wim Looman <crates.stylish@nemo157.com>"]
 edition = "2018"
 
+[features]
+default = ["std"]
+std = ["alloc", "stylish-core/std"]
+alloc = ["stylish-core/alloc"]
+
 [dependencies]
+stylish-core.default-features = false
 stylish-core.path = "../core"
 stylish-core.version = "0.1.0"

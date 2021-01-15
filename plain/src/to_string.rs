@@ -1,4 +1,5 @@
 use crate::format;
+use alloc::string::String;
 use stylish_core::Display;
 
 pub trait ToPlainString {

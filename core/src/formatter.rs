@@ -1,4 +1,4 @@
-use crate::{arguments::Argument, Arguments, Display, Restyle, Style, Write};
+use crate::{arguments::Argument, Arguments, Display, Restyle, Result, Style, Write};
 
 #[derive(Clone, Copy)]
 pub enum Align {
@@ -75,17 +75,17 @@ impl<'a> Formatter<'a> {
         }
     }
 
-    pub fn write_str(&mut self, s: &str) -> std::fmt::Result {
+    pub fn write_str(&mut self, s: &str) -> Result {
         self.write.write_str(s, self.style)?;
         Ok(())
     }
 
-    pub fn write_char(&mut self, c: char) -> std::fmt::Result {
+    pub fn write_char(&mut self, c: char) -> Result {
         self.write_str(c.encode_utf8(&mut [0; 4]))?;
         Ok(())
     }
 
-    pub fn write_fmt(&mut self, args: Arguments<'_>) -> std::fmt::Result {
+    pub fn write_fmt(&mut self, args: Arguments<'_>) -> Result {
         for piece in args.pieces {
             match piece {
                 Argument::Lit(lit) => self.write_str(lit)?,
@@ -99,17 +99,17 @@ impl<'a> Formatter<'a> {
 }
 
 impl<'a> Write for Formatter<'a> {
-    fn write_str(&mut self, s: &str, style: Style) -> std::fmt::Result {
+    fn write_str(&mut self, s: &str, style: Style) -> Result {
         self.with(style).write_str(s)
     }
 
-    fn write_fmt(&mut self, args: Arguments<'_>) -> std::fmt::Result {
+    fn write_fmt(&mut self, args: Arguments<'_>) -> Result {
         self.write_fmt(args)
     }
 }
 
-impl<'a> std::fmt::Write for Formatter<'a> {
-    fn write_str(&mut self, s: &str) -> std::fmt::Result {
+impl<'a> core::fmt::Write for Formatter<'a> {
+    fn write_str(&mut self, s: &str) -> Result {
         self.write_str(s)
     }
 }

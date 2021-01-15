@@ -6,14 +6,34 @@ edition = "2018"
 
 [workspace]
 
+[features]
+default = ["std"]
+std = [
+    "alloc",
+    "stylish-ansi/std",
+    "stylish-core/std",
+    "stylish-html/std",
+    "stylish-plain/std",
+]
+alloc = [
+    "stylish-ansi/alloc",
+    "stylish-core/alloc",
+    "stylish-html/alloc",
+    "stylish-plain/alloc",
+]
+
 [dependencies]
+stylish-ansi.default-features = false
 stylish-ansi.path = "ansi"
 stylish-ansi.version = "0.1.0"
+stylish-core.default-features = false
 stylish-core.path = "core"
 stylish-core.version = "0.1.0"
+stylish-html.default-features = false
 stylish-html.path = "html"
 stylish-html.version = "0.1.0"
 stylish-macros.path = "macros"
 stylish-macros.version = "0.1.0"
+stylish-plain.default-features = false
 stylish-plain.path = "plain"
 stylish-plain.version = "0.1.0"

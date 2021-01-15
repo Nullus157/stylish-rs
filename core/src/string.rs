@@ -2,8 +2,8 @@ use crate::{Display, Formatter, Result, Style, Write};
 
 #[derive(Default, Debug, Clone)]
 pub struct String {
-    string: std::string::String,
-    styles: Vec<(usize, Style)>,
+    string: alloc::string::String,
+    styles: alloc::vec::Vec<(usize, Style)>,
 }
 
 impl String {

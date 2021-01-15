@@ -1,4 +1,5 @@
 use crate::Html;
+use alloc::string::String;
 use stylish_core::{Arguments, Write};
 
 #[macro_export]

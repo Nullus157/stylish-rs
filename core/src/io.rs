@@ -1,6 +1,8 @@
 use crate::{Arguments, Style};
 
-pub use std::io::{Error, ErrorKind, Result};
+pub use std::io::{Error, ErrorKind};
+
+pub type Result<T = (), E = Error> = std::result::Result<T, E>;
 
 struct ErrorTrap<W: Write> {
     inner: W,

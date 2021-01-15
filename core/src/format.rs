@@ -1,13 +1,6 @@
 use crate::{Arguments, String, Write};
 
 #[macro_export]
-macro_rules! format_args {
-    ($($arg:tt)*) => {
-        $crate::__export::stylish_macros::format_args!(crate=$crate, $($arg)*)
-    };
-}
-
-#[macro_export]
 macro_rules! format {
     ($($arg:tt)*) => {{
         let res = $crate::format($crate::format_args!($($arg)*));

@@ -1,10 +1,10 @@
 macro_rules! std_write {
     (@str $f:ident $val:ident [] { $({ $($field:ident : $pat:pat,)* } => (($($s:literal,)*), $(($($arg:tt)*),)*);)* }) => {{
-        use std::fmt::Write;
+        use core::fmt::Write;
         match $f.format {
             $(
                 crate::formatter::FormatterArgs { $($field : $pat,)* } => {
-                    std::write!(crate::std_compat::StdProxy($f), concat!("{:", $($s,)* "}"), *$val, $($($arg)*,)*)
+                    core::write!(crate::std_compat::StdProxy($f), concat!("{:", $($s,)* "}"), *$val, $($($arg)*,)*)
                 }
             )*
         }
@@ -94,8 +94,8 @@ macro_rules! std_write {
 
 pub struct StdProxy<'a, 'b>(pub &'a mut crate::formatter::Formatter<'b>);
 
-impl<'a, 'b> std::fmt::Write for StdProxy<'a, 'b> {
-    fn write_str(&mut self, s: &str) -> std::fmt::Result {
+impl<'a, 'b> core::fmt::Write for StdProxy<'a, 'b> {
+    fn write_str(&mut self, s: &str) -> crate::Result {
         self.0.write_str(s)
     }
 }
