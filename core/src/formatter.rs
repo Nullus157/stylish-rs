@@ -100,7 +100,6 @@ macro_rules! std_write {
     };
 }
 
-#[doc(hidden)]
 #[derive(Clone, Copy)]
 pub enum Align {
     Left,
@@ -108,21 +107,18 @@ pub enum Align {
     Right,
 }
 
-#[doc(hidden)]
 #[derive(Clone, Copy)]
 pub enum Sign {
     Plus,
     Minus,
 }
 
-#[doc(hidden)]
 #[derive(Clone, Copy)]
 pub enum DebugHex {
     Lower,
     Upper,
 }
 
-#[doc(hidden)]
 #[derive(Clone, Copy)]
 pub struct FormatterArgs<'a> {
     pub align: Option<Align>,
@@ -157,8 +153,7 @@ pub struct Formatter<'a> {
 }
 
 impl<'a> Formatter<'a> {
-    #[doc(hidden)]
-    pub fn new(write: &'a mut (dyn Write + 'a)) -> Self {
+    pub(crate) fn new(write: &'a mut (dyn Write + 'a)) -> Self {
         Self {
             style: Style::default(),
             format: FormatterArgs::default(),
@@ -166,7 +161,15 @@ impl<'a> Formatter<'a> {
         }
     }
 
-    fn with<'b>(&'b mut self, format: &FormatterArgs<'b>) -> Formatter<'b> {
+    pub fn with(&mut self, restyle: impl Apply) -> Formatter<'_> {
+        Formatter {
+            write: &mut *self.write,
+            format: self.format,
+            style: self.style.with(restyle),
+        }
+    }
+
+    fn with_args<'b>(&'b mut self, format: &FormatterArgs<'b>) -> Formatter<'b> {
         Formatter {
             write: &mut *self.write,
             format: *format,
@@ -232,14 +235,30 @@ impl<'a> Formatter<'a> {
         std_write!(self, UpperExp, val)
     }
 
-    pub fn write_fmt(&mut self, args: &Arguments<'_>) -> std::fmt::Result {
+    pub fn write_fmt(&mut self, args: Arguments<'_>) -> std::fmt::Result {
         for piece in args.pieces {
             match piece {
                 Argument::Lit(lit) => self.write_str(lit)?,
-                Argument::Arg(format, fmt) => fmt(&mut self.with(format))?,
+                Argument::Arg(format, fmt) => fmt(&mut self.with_args(format))?,
             }
         }
         Ok(())
+    }
+}
+
+impl<'a> Write for Formatter<'a> {
+    fn write_str(&mut self, s: &str, style: Style) -> std::fmt::Result {
+        self.with(style).write_str(s)
+    }
+
+    fn write_fmt(&mut self, args: Arguments<'_>) -> std::fmt::Result {
+        self.write_fmt(args)
+    }
+}
+
+impl<'a> std::fmt::Write for Formatter<'a> {
+    fn write_str(&mut self, s: &str) -> std::fmt::Result {
+        self.write_str(s)
     }
 }
 

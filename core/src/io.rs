@@ -1,6 +1,6 @@
-use crate::Style;
+use crate::{Arguments, Style};
 
-pub use std::io::{Error, Result};
+pub use std::io::{Error, ErrorKind, Result};
 
 struct ErrorTrap<W: Write> {
     inner: W,
@@ -15,13 +15,13 @@ impl<W: Write> ErrorTrap<W> {
     fn error(&mut self) -> Error {
         self.error
             .take()
-            .unwrap_or_else(|| Error::new(std::io::ErrorKind::Other, "formatter error"))
+            .unwrap_or_else(|| Error::new(ErrorKind::Other, "formatter error"))
     }
 }
 
 impl<W: Write> crate::Write for ErrorTrap<W> {
     fn write_str(&mut self, s: &str, style: Style) -> crate::Result {
-        match self.inner.write_str(s, style) {
+        match self.inner.write_all(s.as_bytes(), style) {
             Ok(()) => Ok(()),
             Err(err) => {
                 self.error = Some(err);
@@ -32,31 +32,73 @@ impl<W: Write> crate::Write for ErrorTrap<W> {
 }
 
 pub trait Write {
-    fn write_str(&mut self, s: &str, style: Style) -> Result<()>;
+    fn write(&mut self, s: &[u8], style: Style) -> Result<usize>;
 
-    fn write_fmt(&mut self, args: &crate::Arguments<'_>) -> Result<()> {
+    fn flush(&mut self) -> Result<()>;
+
+    fn write_all(&mut self, mut buf: &[u8], style: Style) -> Result<()> {
+        while !buf.is_empty() {
+            match self.write(buf, style) {
+                Ok(0) => {
+                    return Err(Error::new(
+                        ErrorKind::WriteZero,
+                        "failed to write whole buffer",
+                    ));
+                }
+                Ok(n) => buf = &buf[n..],
+                Err(ref e) if e.kind() == ErrorKind::Interrupted => {}
+                Err(e) => return Err(e),
+            }
+        }
+        Ok(())
+    }
+
+    fn write_fmt(&mut self, args: Arguments<'_>) -> Result<()> {
         let mut trap = ErrorTrap::new(self);
 
         crate::Write::write_fmt(&mut trap, args).map_err(|crate::Error| trap.error())
     }
+
+    fn by_ref(&mut self) -> &mut Self
+    where
+        Self: Sized,
+    {
+        self
+    }
 }
 
 impl<W: Write + ?Sized> Write for &mut W {
-    fn write_str(&mut self, s: &str, style: Style) -> Result<()> {
-        (&mut **self).write_str(s, style)
+    fn write(&mut self, s: &[u8], style: Style) -> Result<usize> {
+        (&mut **self).write(s, style)
     }
 
-    fn write_fmt(&mut self, args: &crate::Arguments<'_>) -> Result<()> {
+    fn flush(&mut self) -> Result<()> {
+        (&mut **self).flush()
+    }
+
+    fn write_all(&mut self, s: &[u8], style: Style) -> Result<()> {
+        (&mut **self).write_all(s, style)
+    }
+
+    fn write_fmt(&mut self, args: Arguments<'_>) -> Result<()> {
         (&mut **self).write_fmt(args)
     }
 }
 
 impl<P: core::ops::DerefMut<Target: Write + ?Sized>> Write for P {
-    default fn write_str(&mut self, s: &str, style: Style) -> Result<()> {
-        (&mut **self).write_str(s, style)
+    default fn write(&mut self, s: &[u8], style: Style) -> Result<usize> {
+        (&mut **self).write(s, style)
     }
 
-    default fn write_fmt(&mut self, args: &crate::Arguments<'_>) -> Result<()> {
+    default fn flush(&mut self) -> Result<()> {
+        (&mut **self).flush()
+    }
+
+    default fn write_all(&mut self, s: &[u8], style: Style) -> Result<()> {
+        (&mut **self).write_all(s, style)
+    }
+
+    default fn write_fmt(&mut self, args: Arguments<'_>) -> Result<()> {
         (&mut **self).write_fmt(args)
     }
 }

@@ -18,7 +18,7 @@ macro_rules! format {
 pub fn format(args: stylish_core::Arguments<'_>) -> String {
     use stylish_core::Write;
     let mut string = String::new();
-    Plain::new(&mut string).write_fmt(&args).unwrap();
+    Plain::new(&mut string).write_fmt(args).unwrap();
     string
 }
 
@@ -39,14 +39,20 @@ impl<T> Plain<T> {
 
 impl<T: std::fmt::Write> stylish_core::Write for Plain<T> {
     fn write_str(&mut self, s: &str, _style: Style) -> std::fmt::Result {
-        self.inner.write_str(s)?;
-        Ok(())
+        self.inner.write_str(s)
     }
 }
 
 impl<T: std::io::Write> stylish_core::io::Write for Plain<T> {
-    fn write_str(&mut self, s: &str, _style: Style) -> std::io::Result<()> {
-        self.inner.write_all(s.as_bytes())?;
-        Ok(())
+    fn write(&mut self, s: &[u8], _style: Style) -> std::io::Result<usize> {
+        self.inner.write(s)
+    }
+
+    fn flush(&mut self) -> std::io::Result<()> {
+        self.inner.flush()
+    }
+
+    fn write_all(&mut self, s: &[u8], _style: Style) -> std::io::Result<()> {
+        self.inner.write_all(s)
     }
 }

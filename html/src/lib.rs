@@ -17,8 +17,8 @@ macro_rules! format {
 pub fn format(args: stylish_core::Arguments<'_>) -> String {
     use stylish_core::Write;
     let mut html = Html::new(String::new());
-    html.write_fmt(&args).unwrap();
-    html.finish_fmt().unwrap()
+    html.write_fmt(args).unwrap();
+    html.finish().unwrap()
 }
 
 fn color(color: Color) -> &'static str {
@@ -44,12 +44,12 @@ fn intensity(intensity: Intensity) -> &'static str {
 }
 
 #[derive(Clone, Debug, Default)]
-pub struct Html<T> {
+pub struct Html<T: std::fmt::Write> {
     inner: Option<T>,
     current: Option<Style>,
 }
 
-impl<T> Drop for Html<T> {
+impl<T: std::fmt::Write> Drop for Html<T> {
     fn drop(&mut self) {
         if self.current.is_some() {
             panic!("Dropped stylish::Html without finishing it");
@@ -57,26 +57,15 @@ impl<T> Drop for Html<T> {
     }
 }
 
-impl<T> Html<T> {
+impl<T: std::fmt::Write> Html<T> {
     pub fn new(inner: T) -> Self {
         Self {
             inner: Some(inner),
             current: None,
         }
     }
-}
 
-impl<T: std::fmt::Write> Html<T> {
-    pub fn finish_fmt(mut self) -> Result<T, std::fmt::Error> {
-        if self.current.is_some() {
-            write!(self.inner.as_mut().unwrap(), "</span>")?;
-        }
-        Ok(self.inner.take().unwrap())
-    }
-}
-
-impl<T: std::io::Write> Html<T> {
-    pub fn finish_io(mut self) -> std::io::Result<T> {
+    pub fn finish(mut self) -> Result<T, std::fmt::Error> {
         if self.current.is_some() {
             write!(self.inner.as_mut().unwrap(), "</span>")?;
         }
@@ -86,25 +75,6 @@ impl<T: std::io::Write> Html<T> {
 
 impl<T: std::fmt::Write> stylish_core::Write for Html<T> {
     fn write_str(&mut self, s: &str, style: Style) -> std::fmt::Result {
-        if Some(style) != self.current {
-            if self.current.is_some() {
-                write!(self.inner.as_mut().unwrap(), "</span>")?;
-            }
-            write!(
-                self.inner.as_mut().unwrap(),
-                r#"<span style="color: {}; font-weight: {}">"#,
-                color(style.color),
-                intensity(style.intensity),
-            )?;
-            self.current = Some(style);
-        }
-        write!(self.inner.as_mut().unwrap(), "{}", escape(s, AskamaHtml))?;
-        Ok(())
-    }
-}
-
-impl<T: std::io::Write> stylish_core::io::Write for Html<T> {
-    fn write_str(&mut self, s: &str, style: Style) -> std::io::Result<()> {
         if Some(style) != self.current {
             if self.current.is_some() {
                 write!(self.inner.as_mut().unwrap(), "</span>")?;
