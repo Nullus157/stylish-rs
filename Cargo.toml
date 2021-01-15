@@ -7,8 +7,13 @@ edition = "2018"
 [workspace]
 
 [dependencies]
-stylish-macros = { version = "0.1.0", path = "macros" }
-stylish-core = { version = "0.1.0", path = "core" }
-stylish-html = { version = "0.1.0", path = "html" }
-stylish-ansi = { version = "0.1.0", path = "ansi" }
-stylish-plain = { version = "0.1.0", path = "plain" }
+stylish-ansi.path = "ansi"
+stylish-ansi.version = "0.1.0"
+stylish-core.path = "core"
+stylish-core.version = "0.1.0"
+stylish-html.path = "html"
+stylish-html.version = "0.1.0"
+stylish-macros.path = "macros"
+stylish-macros.version = "0.1.0"
+stylish-plain.path = "plain"
+stylish-plain.version = "0.1.0"
