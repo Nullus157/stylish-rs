@@ -6,6 +6,7 @@ mod std_compat;
 mod arguments;
 mod display;
 mod formatter;
+mod string;
 mod style;
 mod write;
 
@@ -13,6 +14,7 @@ pub use self::{
     arguments::Arguments,
     display::Display,
     formatter::Formatter,
+    string::String,
     style::{Color, Intensity, Restyle, Style},
     write::Write,
 };
