@@ -129,36 +129,39 @@ impl<'a, 'b: 'a> ToTokens for Scoped<'a, FormatterArgs<'b>> {
     }
 }
 
-impl<'a> ToTokens for Scoped<'a, FormatTrait> {
+impl<'a> ToTokens for Scoped<'a, (FormatTrait, TokenStream)> {
     fn to_tokens(&self, tokens: &mut TokenStream) {
         let export = &self.export;
         match self.as_ref() {
-            FormatTrait::Display => {
-                quote!(#export::Display)
+            (FormatTrait::Display, arg) => {
+                quote!(#export::FormatTrait::Display(#arg))
             }
-            FormatTrait::Debug => {
-                quote!(#export::Debug)
+            (FormatTrait::Debug, arg) => {
+                quote!(#export::FormatTrait::Debug(#arg))
             }
-            FormatTrait::Octal => {
-                quote!(#export::Octal)
+            (FormatTrait::Octal, arg) => {
+                quote!(#export::FormatTrait::Octal(#arg))
             }
-            FormatTrait::LowerHex => {
-                quote!(#export::LowerHex)
+            (FormatTrait::LowerHex, arg) => {
+                quote!(#export::FormatTrait::LowerHex(#arg))
             }
-            FormatTrait::UpperHex => {
-                quote!(#export::UpperHex)
+            (FormatTrait::UpperHex, arg) => {
+                quote!(#export::FormatTrait::UpperHex(#arg))
             }
-            FormatTrait::Pointer => {
-                quote!(#export::Pointer)
+            (FormatTrait::Pointer, arg) => {
+                quote!(#export::FormatTrait::Pointer(#arg))
             }
-            FormatTrait::Binary => {
-                quote!(#export::Binary)
+            (FormatTrait::Binary, arg) => {
+                quote!(#export::FormatTrait::Binary(#arg))
             }
-            FormatTrait::LowerExp => {
-                quote!(#export::LowerExp)
+            (FormatTrait::LowerExp, arg) => {
+                quote!(#export::FormatTrait::LowerExp(#arg))
             }
-            FormatTrait::UpperExp => {
-                quote!(#export::UpperExp)
+            (FormatTrait::UpperExp, arg) => {
+                quote!(#export::FormatTrait::UpperExp(#arg))
+            }
+            (FormatTrait::Stylish, arg) => {
+                quote!(#export::FormatTrait::Stylish(#arg))
             }
         }
         .to_tokens(tokens)

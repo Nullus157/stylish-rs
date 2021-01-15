@@ -51,7 +51,7 @@ fn error() {
     use stylish::io::Write;
     let mut s = Vec::<u8>::new();
     let mut writer = stylish::plain::Plain::new(&mut s);
-    assert!(stylish::writeln!(writer, "{}", Foo).is_err());
+    assert!(stylish::writeln!(writer, "{:s}", Foo).is_err());
 }
 
 #[test]
@@ -64,5 +64,5 @@ fn large() {
         }
     }
 
-    assert_eq!(stylish::plain::format!("{}", Foo([0; 24])), "foo");
+    assert_eq!(stylish::plain::format!("{:s}", Foo([0; 24])), "foo");
 }

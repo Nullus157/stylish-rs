@@ -1,21 +1,19 @@
-#![allow(incomplete_features)]
-#![feature(specialization)]
-#![feature(crate_visibility_modifier)]
-#![feature(associated_type_bounds)]
-
 pub mod io;
 
+#[macro_use]
+mod std_compat;
+
 mod arguments;
+mod display;
 mod formatter;
 mod style;
-mod traits;
 mod write;
 
 pub use self::{
     arguments::Arguments,
+    display::Display,
     formatter::Formatter,
     style::{Color, Intensity, Restyle, Style},
-    traits::{Binary, Debug, Display, LowerExp, LowerHex, Octal, Pointer, UpperExp, UpperHex},
     write::Write,
 };
 pub use core::fmt::{Error, Result};
@@ -23,9 +21,9 @@ pub use core::fmt::{Error, Result};
 #[doc(hidden)]
 pub mod __export {
     pub use crate::{
-        arguments::{arg, Argument},
+        arguments::{Argument, Arguments, FormatTrait},
         formatter::{Align, DebugHex, FormatterArgs, Sign},
-        Arguments, Binary, Debug, Display, LowerExp, LowerHex, Octal, Pointer, UpperExp, UpperHex,
+        Display,
     };
     pub use core::option::Option;
     pub use stylish_macros::{format_args, format_args_nl};

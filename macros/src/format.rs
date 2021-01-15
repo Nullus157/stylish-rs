@@ -78,6 +78,7 @@ pub enum FormatTrait {
     Binary,
     LowerExp,
     UpperExp,
+    Stylish,
 }
 
 impl Default for FormatTrait {
@@ -137,6 +138,7 @@ impl<'a> FormatSpec<'a> {
             value((None, FormatTrait::Binary), tag("b")),
             value((None, FormatTrait::LowerExp), tag("e")),
             value((None, FormatTrait::UpperExp), tag("E")),
+            value((None, FormatTrait::Stylish), tag("s")),
         )))(input)?;
         let debug_hex = debug_hex_and_format_trait.and_then(|(debug_hex, _)| debug_hex);
         let format_trait = debug_hex_and_format_trait.map(|(_, format_trait)| format_trait);

@@ -126,7 +126,6 @@ fn format_args_impl(
             }) => {
                 let formatter_args = Scoped::new(&export, &formatter_args);
                 let restyle = Scoped::new(&export, &restyle);
-                let format_trait = Scoped::new(&export, &format_trait);
                 let arg = match arg {
                     None => {
                         let index = next_arg_iter.next().expect("missing argument");
@@ -156,7 +155,13 @@ fn format_args_impl(
                         }
                     }
                 };
-                quote!(#export::arg(#formatter_args, #restyle, move |f| #format_trait::fmt(#arg, f)))
+                let arg = (format_trait, arg);
+                let arg = Scoped::new(&export, &arg);
+                quote!(#export::Argument::Arg {
+                    args: #formatter_args,
+                    restyle: #restyle,
+                    arg: #arg,
+                })
             }
         })
         .collect();

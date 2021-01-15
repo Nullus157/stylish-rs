@@ -84,21 +84,3 @@ impl<W: Write + ?Sized> Write for &mut W {
         (&mut **self).write_fmt(args)
     }
 }
-
-impl<P: core::ops::DerefMut<Target: Write + ?Sized>> Write for P {
-    default fn write(&mut self, s: &[u8], style: Style) -> Result<usize> {
-        (&mut **self).write(s, style)
-    }
-
-    default fn flush(&mut self) -> Result<()> {
-        (&mut **self).flush()
-    }
-
-    default fn write_all(&mut self, s: &[u8], style: Style) -> Result<()> {
-        (&mut **self).write_all(s, style)
-    }
-
-    default fn write_fmt(&mut self, args: Arguments<'_>) -> Result<()> {
-        (&mut **self).write_fmt(args)
-    }
-}

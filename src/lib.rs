@@ -1,6 +1,5 @@
 pub use stylish_core::{
-    format_args, io, write, writeln, Arguments, Binary, Color, Debug, Display, Formatter,
-    Intensity, LowerExp, LowerHex, Octal, Pointer, Style, UpperExp, UpperHex, Write,
+    format_args, io, write, writeln, Arguments, Color, Display, Formatter, Intensity, Style, Write,
 };
 
 #[doc(inline)]

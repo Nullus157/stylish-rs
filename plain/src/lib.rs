@@ -1,5 +1,3 @@
-#![feature(decl_macro, rustc_attrs)]
-
 use stylish_core::Style;
 
 #[doc(hidden)]
