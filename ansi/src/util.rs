@@ -1,6 +1,6 @@
 use stylish_core::{Color, Intensity};
 
-pub(crate) fn color(color: Color) -> u8 {
+pub(crate) fn foreground(color: Color) -> u8 {
     match color {
         Color::Black => 30,
         Color::Red => 31,
@@ -11,13 +11,30 @@ pub(crate) fn color(color: Color) -> u8 {
         Color::Cyan => 36,
         Color::White => 37,
         Color::Default => 39,
+        _ => 39,
+    }
+}
+
+pub(crate) fn background(color: Color) -> u8 {
+    match color {
+        Color::Black => 40,
+        Color::Red => 41,
+        Color::Green => 42,
+        Color::Yellow => 43,
+        Color::Blue => 44,
+        Color::Magenta => 45,
+        Color::Cyan => 46,
+        Color::White => 47,
+        Color::Default => 49,
+        _ => 49,
     }
 }
 
 pub(crate) fn intensity(intensity: Intensity) -> u8 {
     match intensity {
-        Intensity::Normal => 22,
         Intensity::Bold => 1,
         Intensity::Faint => 2,
+        Intensity::Normal => 22,
+        _ => 22,
     }
 }

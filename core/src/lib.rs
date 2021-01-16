@@ -28,7 +28,7 @@ pub use self::{
     arguments::Arguments,
     display::Display,
     formatter::Formatter,
-    style::{Color, Intensity, Restyle, Style},
+    style::{Background, Color, Foreground, Intensity, Restyle, Style},
     write::Write,
 };
 #[cfg(feature = "alloc")]
@@ -42,7 +42,7 @@ pub mod __export {
     pub use crate::{
         arguments::{Argument, Arguments, FormatTrait, StdFmt},
         formatter::{Align, DebugHex, FormatterArgs, Sign},
-        style::{Color, Intensity},
+        style::{Background, Color, Foreground, Intensity},
         Display,
     };
     pub use core::{fmt, option::Option};

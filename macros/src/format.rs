@@ -4,7 +4,7 @@ use nom::{
     character::complete::{alpha1, alphanumeric1, anychar, digit1, none_of},
     combinator::{all_consuming, cut, map, map_res, opt, recognize, value},
     multi::{many0, many1, separated_list0},
-    sequence::{delimited, pair, preceded, separated_pair, terminated},
+    sequence::{delimited, pair, preceded, terminated},
     IResult,
 };
 use std::str::FromStr;
@@ -18,13 +18,16 @@ fn identifier(input: &str) -> IResult<&str, &str> {
 
 #[derive(Debug, Default, Clone)]
 pub struct Restyle<'a> {
-    pub styles: Vec<(&'a str, &'a str)>,
+    pub styles: Vec<(&'a str, Option<&'a str>)>,
 }
 
 impl<'a> Restyle<'a> {
     pub fn parse(input: &'a str) -> IResult<&str, Self> {
         map(
-            separated_list0(tag(","), separated_pair(identifier, tag("="), identifier)),
+            separated_list0(
+                tag(","),
+                pair(identifier, opt(preceded(tag("="), identifier))),
+            ),
             |styles| Restyle { styles },
         )(input)
     }

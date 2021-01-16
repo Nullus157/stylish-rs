@@ -48,11 +48,16 @@ impl<'a, 'b: 'a> ToTokens for Scoped<'a, Restyle<'b>> {
         let mut style = quote!(());
         for &(key, value) in styles {
             style = match (key, value) {
-                ("color", "blue") => quote!((#export::Color::Blue, #style)),
-                ("color", color) => panic!("Unknown color {}", color),
-                ("intensity", "bold") => quote!((#export::Intensity::Bold, #style)),
-                ("intensity", intensity) => panic!("Unknown intensity {}", intensity),
-                (key, _) => panic!("Unknown key {}", key),
+                ("fg", Some("blue")) => quote!((#export::Foreground(#export::Color::Blue), #style)),
+                ("fg", Some(color)) => panic!("Unknown color {}", color),
+                ("fg", None) => panic!("fg must have a color"),
+                ("bg", Some("blue")) => quote!((#export::Background(#export::Color::Blue), #style)),
+                ("bg", Some(color)) => panic!("Unknown color {}", color),
+                ("bg", None) => panic!("bg must have a color"),
+                ("bold", None) => quote!((#export::Intensity::Bold, #style)),
+                ("bold", Some(value)) => panic!("bold cannot have a value {}", value),
+                (key, None) => panic!("Unknown key {} (without value)", key),
+                (key, Some(value)) => panic!("Unknown key {} (with value {})", key, value),
             }
         }
         (quote! { &#style }).to_tokens(tokens)

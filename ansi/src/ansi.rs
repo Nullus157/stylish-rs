@@ -29,8 +29,9 @@ impl<T: core::fmt::Write> Write for Ansi<T> {
         if Some(style) != self.current {
             write!(
                 self.inner.as_mut().unwrap(),
-                "[{};{}m",
-                util::color(style.color),
+                "[{};{};{}m",
+                util::foreground(style.foreground),
+                util::background(style.background),
                 util::intensity(style.intensity),
             )?;
             self.current = Some(style);

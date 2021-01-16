@@ -1,30 +1,39 @@
 #[allow(dead_code)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
+#[non_exhaustive]
 pub enum Color {
-    Black = 30,
-    Red = 31,
-    Green = 32,
-    Yellow = 33,
-    Blue = 34,
-    Magenta = 35,
-    Cyan = 36,
-    White = 37,
-    Default = 39,
+    Black,
+    Red,
+    Green,
+    Yellow,
+    Blue,
+    Magenta,
+    Cyan,
+    White,
+    Default,
 }
 
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
+#[non_exhaustive]
 pub enum Intensity {
-    Normal = 22,
-    Bold = 1,
-    Faint = 2,
+    Normal,
+    Bold,
+    Faint,
 }
 
 #[derive(Copy, Clone, Debug, Default, Eq, PartialEq)]
 #[non_exhaustive]
 pub struct Style {
-    pub color: Color,
+    pub foreground: Color,
+    pub background: Color,
     pub intensity: Intensity,
 }
+
+#[derive(Copy, Clone, Debug, Default, Eq, PartialEq)]
+pub struct Foreground(pub Color);
+
+#[derive(Copy, Clone, Debug, Default, Eq, PartialEq)]
+pub struct Background(pub Color);
 
 pub trait Restyle {
     fn apply(&self, style: Style) -> Style;
@@ -60,10 +69,21 @@ impl Restyle for Style {
     }
 }
 
-impl Restyle for Color {
+impl Restyle for Foreground {
     fn apply(&self, style: Style) -> Style {
+        let &Foreground(foreground) = self;
         Style {
-            color: *self,
+            foreground,
+            ..style
+        }
+    }
+}
+
+impl Restyle for Background {
+    fn apply(&self, style: Style) -> Style {
+        let &Background(background) = self;
+        Style {
+            background,
             ..style
         }
     }

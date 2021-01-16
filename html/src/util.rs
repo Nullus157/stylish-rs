@@ -11,13 +11,15 @@ pub(crate) fn color(color: Color) -> &'static str {
         Color::Cyan => "cyan",
         Color::White => "white",
         Color::Default => "inherit",
+        _ => "inherit",
     }
 }
 
 pub(crate) fn intensity(intensity: Intensity) -> &'static str {
     match intensity {
-        Intensity::Normal => "inherit",
         Intensity::Bold => "bolder",
         Intensity::Faint => "lighter",
+        Intensity::Normal => "inherit",
+        _ => "inherit",
     }
 }

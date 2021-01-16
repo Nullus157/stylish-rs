@@ -33,8 +33,9 @@ impl<T: core::fmt::Write> Write for Html<T> {
             }
             write!(
                 self.inner.as_mut().unwrap(),
-                r#"<span style="color: {}; font-weight: {}">"#,
-                util::color(style.color),
+                r#"<span style="color: {}; background-color: {}; font-weight: {}">"#,
+                util::color(style.foreground),
+                util::color(style.background),
                 util::intensity(style.intensity),
             )?;
             self.current = Some(style);
