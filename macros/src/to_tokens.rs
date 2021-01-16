@@ -1,4 +1,6 @@
-use crate::format::{Align, Count, DebugHex, FormatTrait, FormatterArgs, Restyle, Sign};
+use crate::format::{
+    Align, Color, Count, DebugHex, FormatTrait, FormatterArgs, Intensity, Restyle, Restyles, Sign,
+};
 use proc_macro2::TokenStream;
 use quote::{quote, ToTokens};
 
@@ -41,24 +43,65 @@ impl<'a, T> Scoped<'a, T> {
     }
 }
 
-impl<'a, 'b: 'a> ToTokens for Scoped<'a, Restyle<'b>> {
+impl<'a> ToTokens for Scoped<'a, Color> {
     fn to_tokens(&self, tokens: &mut TokenStream) {
         let export = &self.export;
-        let Restyle { styles } = self.as_ref();
-        let mut style = quote!(());
-        for &(key, value) in styles {
-            style = match (key, value) {
-                ("fg", Some("blue")) => quote!((#export::Foreground(#export::Color::Blue), #style)),
-                ("fg", Some(color)) => panic!("Unknown color {}", color),
-                ("fg", None) => panic!("fg must have a color"),
-                ("bg", Some("blue")) => quote!((#export::Background(#export::Color::Blue), #style)),
-                ("bg", Some(color)) => panic!("Unknown color {}", color),
-                ("bg", None) => panic!("bg must have a color"),
-                ("bold", None) => quote!((#export::Intensity::Bold, #style)),
-                ("bold", Some(value)) => panic!("bold cannot have a value {}", value),
-                (key, None) => panic!("Unknown key {} (without value)", key),
-                (key, Some(value)) => panic!("Unknown key {} (with value {})", key, value),
+        match self.as_ref() {
+            Color::Black => quote!(#export::Color::Black),
+            Color::Red => quote!(#export::Color::Red),
+            Color::Green => quote!(#export::Color::Green),
+            Color::Yellow => quote!(#export::Color::Yellow),
+            Color::Blue => quote!(#export::Color::Blue),
+            Color::Magenta => quote!(#export::Color::Magenta),
+            Color::Cyan => quote!(#export::Color::Cyan),
+            Color::White => quote!(#export::Color::White),
+            Color::Default => quote!(#export::Color::Default),
+        }
+        .to_tokens(tokens)
+    }
+}
+
+impl<'a> ToTokens for Scoped<'a, Intensity> {
+    fn to_tokens(&self, tokens: &mut TokenStream) {
+        let export = &self.export;
+        match self.as_ref() {
+            Intensity::Normal => quote!(#export::Intensity::Normal),
+            Intensity::Bold => quote!(#export::Intensity::Bold),
+            Intensity::Faint => quote!(#export::Intensity::Faint),
+        }
+        .to_tokens(tokens)
+    }
+}
+
+impl<'a> ToTokens for Scoped<'a, Restyle> {
+    fn to_tokens(&self, tokens: &mut TokenStream) {
+        let export = &self.export;
+        match self.as_ref() {
+            Restyle::Foreground(color) => {
+                let color = self.scope(color);
+                quote!(#export::Foreground(#color))
             }
+            Restyle::Background(color) => {
+                let color = self.scope(color);
+                quote!(#export::Background(#color))
+            }
+            Restyle::Intensity(intensity) => {
+                let intensity = self.scope(intensity);
+                quote!(#intensity)
+            }
+        }
+        .to_tokens(tokens)
+    }
+}
+
+impl<'a> ToTokens for Scoped<'a, Restyles> {
+    fn to_tokens(&self, tokens: &mut TokenStream) {
+        let export = &self.export;
+        let Restyles { restyles } = self.as_ref();
+        let mut style = quote!(());
+        for restyle in restyles {
+            let restyle = self.scope(restyle);
+            style = quote!((#restyle, #style));
         }
         (quote! { &#style }).to_tokens(tokens)
     }

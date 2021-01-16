@@ -16,20 +16,87 @@ fn identifier(input: &str) -> IResult<&str, &str> {
     ))(input)
 }
 
-#[derive(Debug, Default, Clone)]
-pub struct Restyle<'a> {
-    pub styles: Vec<(&'a str, Option<&'a str>)>,
+#[derive(Debug, Clone)]
+pub enum Color {
+    Black,
+    Red,
+    Green,
+    Yellow,
+    Blue,
+    Magenta,
+    Cyan,
+    White,
+    Default,
 }
 
-impl<'a> Restyle<'a> {
-    pub fn parse(input: &'a str) -> IResult<&str, Self> {
-        map(
-            separated_list0(
-                tag(","),
-                pair(identifier, opt(preceded(tag("="), identifier))),
+impl Color {
+    pub fn parse(input: &str) -> IResult<&str, Self> {
+        alt((
+            value(Color::Black, tag("black")),
+            value(Color::Red, tag("red")),
+            value(Color::Green, tag("green")),
+            value(Color::Yellow, tag("yellow")),
+            value(Color::Blue, tag("blue")),
+            value(Color::Magenta, tag("magenta")),
+            value(Color::Cyan, tag("cyan")),
+            value(Color::White, tag("white")),
+            value(Color::Default, tag("default")),
+        ))(input)
+    }
+}
+
+#[derive(Debug, Clone)]
+pub enum Intensity {
+    Normal,
+    Bold,
+    Faint,
+}
+
+impl Intensity {
+    pub fn parse(input: &str) -> IResult<&str, Self> {
+        alt((
+            value(Intensity::Normal, tag("normal")),
+            value(Intensity::Bold, tag("bold")),
+            value(Intensity::Faint, tag("faint")),
+        ))(input)
+    }
+}
+
+#[derive(Debug, Clone)]
+pub enum Restyle {
+    Foreground(Color),
+    Background(Color),
+    Intensity(Intensity),
+}
+
+impl Restyle {
+    pub fn parse(input: &str) -> IResult<&str, Self> {
+        alt((
+            map(
+                preceded(tag("fg"), cut(preceded(tag("="), Color::parse))),
+                Restyle::Foreground,
             ),
-            |styles| Restyle { styles },
-        )(input)
+            map(
+                preceded(tag("bg"), cut(preceded(tag("="), Color::parse))),
+                Restyle::Background,
+            ),
+            map(Intensity::parse, Restyle::Intensity),
+        ))(input)
+    }
+}
+
+#[derive(Debug, Default, Clone)]
+pub struct Restyles {
+    // TODO: This should only allow each variant once, but there's no sort of optional-permutation
+    // helper in nom
+    pub restyles: Vec<Restyle>,
+}
+
+impl Restyles {
+    pub fn parse(input: &str) -> IResult<&str, Self> {
+        map(separated_list0(tag(","), cut(Restyle::parse)), |restyles| {
+            Restyles { restyles }
+        })(input)
     }
 }
 
@@ -117,7 +184,7 @@ impl<'a> Count<'a> {
 #[derive(Debug, Default, Clone)]
 pub struct FormatSpec<'a> {
     pub formatter_args: FormatterArgs<'a>,
-    pub restyle: Restyle<'a>,
+    pub restyles: Restyles,
     pub format_trait: FormatTrait,
 }
 
@@ -138,7 +205,7 @@ impl<'a> FormatSpec<'a> {
         let (input, zero) = opt(value(true, tag("0")))(input)?;
         let (input, width) = opt(Count::parse)(input)?;
         let (input, precision) = opt(preceded(tag("."), Count::parse))(input)?;
-        let (input, restyle) = opt(delimited(tag("("), cut(Restyle::parse), tag(")")))(input)?;
+        let (input, restyles) = opt(delimited(tag("("), cut(Restyles::parse), tag(")")))(input)?;
         let (input, debug_hex_and_format_trait) = opt(alt((
             value((None, FormatTrait::Debug), tag("?")),
             value((Some(DebugHex::Lower), FormatTrait::Debug), tag("x?")),
@@ -166,7 +233,7 @@ impl<'a> FormatSpec<'a> {
                     precision,
                     debug_hex,
                 },
-                restyle: restyle.unwrap_or_default(),
+                restyles: restyles.unwrap_or_default(),
                 format_trait: format_trait.unwrap_or_default(),
             },
         ))
