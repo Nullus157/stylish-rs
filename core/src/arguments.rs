@@ -2,14 +2,14 @@ use crate::{formatter::FormatterArgs, Display, Formatter, Restyle, Result};
 
 type StdFmtFn<'a> = dyn Fn(&mut core::fmt::Formatter<'_>) -> Result + 'a;
 
-pub struct StdFmt<'a>(stack_dst::ValueA<StdFmtFn<'a>, [usize; 3]>);
+pub struct StdFmt<'a>(stack_dst::ValueA<StdFmtFn<'a>, [usize; 4]>);
 
 impl<'a> StdFmt<'a> {
     pub fn new(f: impl Fn(&mut core::fmt::Formatter<'_>) -> Result + 'a) -> StdFmt<'a> {
         StdFmt(
             stack_dst::ValueA::new_stable(f, |p| p as _)
                 .map_err(|_| ())
-                .unwrap(),
+                .expect("StdFmt was more than 4 words, this is a bug in stylish-core"),
         )
     }
 }
