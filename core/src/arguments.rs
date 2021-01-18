@@ -44,6 +44,7 @@ pub enum Argument<'a> {
 
     Arg {
         args: FormatterArgs<'a>,
+        // TODO: This could be a `StyleDiff` and remove the `&dyn Restyle` indirection
         restyle: &'a dyn Restyle,
         arg: FormatTrait<'a>,
     },

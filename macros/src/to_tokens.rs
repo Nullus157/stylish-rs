@@ -96,7 +96,6 @@ impl<'a> ToTokens for Scoped<'a, Restyle> {
 
 impl<'a> ToTokens for Scoped<'a, Restyles> {
     fn to_tokens(&self, tokens: &mut TokenStream) {
-        let export = &self.export;
         let Restyles { restyles } = self.as_ref();
         let mut style = quote!(());
         for restyle in restyles {

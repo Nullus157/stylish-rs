@@ -3,48 +3,46 @@ use stylish_core::{Result, Style, Write};
 
 #[derive(Clone, Debug, Default)]
 pub struct Ansi<T: core::fmt::Write> {
-    inner: Option<T>,
+    inner: T,
     current: Option<Style>,
 }
 
 impl<T: core::fmt::Write> Ansi<T> {
     pub fn new(inner: T) -> Self {
         Self {
-            inner: Some(inner),
+            inner,
             current: None,
         }
     }
 
     pub fn finish(mut self) -> Result<T> {
         if self.current.is_some() {
-            write!(self.inner.as_mut().unwrap(), "[0m")?;
-            self.current = None;
+            self.inner.write_str("\x1b[0m")?;
         }
-        Ok(self.inner.take().unwrap())
+        Ok(self.inner)
     }
 }
 
 impl<T: core::fmt::Write> Write for Ansi<T> {
     fn write_str(&mut self, s: &str, style: Style) -> Result {
-        if Some(style) != self.current {
-            write!(
-                self.inner.as_mut().unwrap(),
-                "[{};{};{}m",
-                util::foreground(style.foreground),
-                util::background(style.background),
-                util::intensity(style.intensity),
-            )?;
-            self.current = Some(style);
+        let diff = style.diff_from(self.current.unwrap_or_default());
+        let segments = [
+            diff.foreground.map(util::foreground),
+            diff.background.map(util::background),
+            diff.intensity.map(util::intensity),
+        ];
+        let mut segments = segments.iter().filter_map(|&s| s);
+        if let Some(segment) = segments.next() {
+            self.inner.write_str("\x1b[")?;
+            self.inner.write_str(segment)?;
+            for segment in segments {
+                self.inner.write_str(";")?;
+                self.inner.write_str(segment)?;
+            }
+            self.inner.write_str("m")?;
         }
-        write!(self.inner.as_mut().unwrap(), "{}", s)?;
+        self.current = Some(style);
+        write!(self.inner, "{}", s)?;
         Ok(())
-    }
-}
-
-impl<T: core::fmt::Write> Drop for Ansi<T> {
-    fn drop(&mut self) {
-        if self.current.is_some() {
-            panic!("Dropped Ansi without finishing it");
-        }
     }
 }

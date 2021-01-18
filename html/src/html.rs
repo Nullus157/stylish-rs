@@ -4,51 +4,49 @@ use stylish_core::{Result, Style, Write};
 
 #[derive(Clone, Debug, Default)]
 pub struct Html<T: core::fmt::Write> {
-    inner: Option<T>,
+    inner: T,
     current: Option<Style>,
 }
 
 impl<T: core::fmt::Write> Html<T> {
     pub fn new(inner: T) -> Self {
         Self {
-            inner: Some(inner),
+            inner,
             current: None,
         }
     }
 
     pub fn finish(mut self) -> Result<T> {
         if self.current.is_some() {
-            write!(self.inner.as_mut().unwrap(), "</span>")?;
-            self.current = None;
+            self.inner.write_str("</span>")?;
         }
-        Ok(self.inner.take().unwrap())
+        Ok(self.inner)
     }
 }
 
 impl<T: core::fmt::Write> Write for Html<T> {
     fn write_str(&mut self, s: &str, style: Style) -> Result {
-        if Some(style) != self.current {
+        let diff = style.diff_from(self.current.unwrap_or_default());
+        let segments = [
+            diff.foreground.map(util::foreground),
+            diff.background.map(util::background),
+            diff.intensity.map(util::intensity),
+        ];
+        let mut segments = segments.iter().filter_map(|&s| s);
+        if let Some(segment) = segments.next() {
             if self.current.is_some() {
-                write!(self.inner.as_mut().unwrap(), "</span>")?;
+                self.inner.write_str("</span>")?;
             }
-            write!(
-                self.inner.as_mut().unwrap(),
-                r#"<span style="color: {}; background-color: {}; font-weight: {}">"#,
-                util::color(style.foreground),
-                util::color(style.background),
-                util::intensity(style.intensity),
-            )?;
-            self.current = Some(style);
+            self.inner.write_str("<span style=")?;
+            self.inner.write_str(segment)?;
+            for segment in segments {
+                self.inner.write_str(";")?;
+                self.inner.write_str(segment)?;
+            }
+            self.inner.write_str(">")?;
         }
-        write!(self.inner.as_mut().unwrap(), "{}", escape(s, AskamaHtml))?;
+        self.current = Some(style);
+        write!(self.inner, "{}", escape(s, AskamaHtml))?;
         Ok(())
-    }
-}
-
-impl<T: core::fmt::Write> Drop for Html<T> {
-    fn drop(&mut self) {
-        if self.current.is_some() {
-            panic!("Dropped Html without finishing it");
-        }
     }
 }

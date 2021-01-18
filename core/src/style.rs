@@ -30,6 +30,14 @@ pub struct Style {
 }
 
 #[derive(Copy, Clone, Debug, Default, Eq, PartialEq)]
+#[non_exhaustive]
+pub struct StyleDiff {
+    pub foreground: Option<Color>,
+    pub background: Option<Color>,
+    pub intensity: Option<Intensity>,
+}
+
+#[derive(Copy, Clone, Debug, Default, Eq, PartialEq)]
 pub struct Foreground(pub Color);
 
 #[derive(Copy, Clone, Debug, Default, Eq, PartialEq)]
@@ -55,6 +63,22 @@ impl Style {
     pub fn with(self, adj: impl Restyle) -> Self {
         adj.apply(self)
     }
+
+    pub fn diff_from(self, original: Style) -> StyleDiff {
+        fn diff<T: PartialEq>(original: T, new: T) -> Option<T> {
+            if original == new {
+                None
+            } else {
+                Some(new)
+            }
+        }
+
+        StyleDiff {
+            foreground: diff(original.foreground, self.foreground),
+            background: diff(original.background, self.background),
+            intensity: diff(original.intensity, self.intensity),
+        }
+    }
 }
 
 impl<T: Restyle + ?Sized> Restyle for &T {
@@ -63,9 +87,26 @@ impl<T: Restyle + ?Sized> Restyle for &T {
     }
 }
 
-impl Restyle for Style {
+impl<T: Restyle> Restyle for Option<T> {
     fn apply(&self, style: Style) -> Style {
-        style
+        self.as_ref().map_or(style, |s| s.apply(style))
+    }
+}
+
+impl Restyle for StyleDiff {
+    fn apply(&self, style: Style) -> Style {
+        (
+            self.foreground.map(Foreground),
+            self.background.map(Background),
+            self.intensity,
+        )
+            .apply(style)
+    }
+}
+
+impl Restyle for Style {
+    fn apply(&self, _style: Style) -> Style {
+        *self
     }
 }
 
@@ -107,5 +148,11 @@ impl Restyle for () {
 impl<T: Restyle, U: Restyle> Restyle for (T, U) {
     fn apply(&self, style: Style) -> Style {
         style.with(&self.0).with(&self.1)
+    }
+}
+
+impl<T: Restyle, U: Restyle, V: Restyle> Restyle for (T, U, V) {
+    fn apply(&self, style: Style) -> Style {
+        style.with(&self.0).with(&self.1).with(&self.2)
     }
 }

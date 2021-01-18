@@ -69,46 +69,40 @@ fn large() {
 
 #[test]
 fn blue() {
-    assert_eq!(stylish::ansi::format!("{:(fg=blue)}", 2), "[34;49;22m2[0m");
+    assert_eq!(stylish::ansi::format!("{:(fg=blue)}", 2), "[34m2[0m");
     assert_eq!(
         stylish::html::format!("{:(fg=blue)}", 2),
-        r#"<span style="color: blue; background-color: inherit; font-weight: inherit">2</span>"#
+        r#"<span style=color:blue>2</span>"#
     );
     assert_eq!(stylish::plain::format!("{:(fg=blue)}", 2), "2");
 }
 
 #[test]
 fn bold() {
-    assert_eq!(stylish::ansi::format!("{:(bold)}", 2), "[39;49;1m2[0m");
+    assert_eq!(stylish::ansi::format!("{:(bold)}", 2), "[1m2[0m");
     assert_eq!(
         stylish::html::format!("{:(bold)}", 2),
-        r#"<span style="color: inherit; background-color: inherit; font-weight: bolder">2</span>"#
+        r#"<span style=font-weight:bolder>2</span>"#
     );
     assert_eq!(stylish::plain::format!("{:(bold)}", 2), "2");
 }
 
 #[test]
 fn blue_bold() {
-    assert_eq!(
-        stylish::ansi::format!("{:(fg=blue,bold)}", 2),
-        "[34;49;1m2[0m"
-    );
+    assert_eq!(stylish::ansi::format!("{:(fg=blue,bold)}", 2), "[34;1m2[0m");
     assert_eq!(
         stylish::html::format!("{:(fg=blue,bold)}", 2),
-        r#"<span style="color: blue; background-color: inherit; font-weight: bolder">2</span>"#
+        r#"<span style=color:blue;font-weight:bolder>2</span>"#
     );
     assert_eq!(stylish::plain::format!("{:(fg=blue,bold)}", 2), "2");
 }
 
 #[test]
 fn bold_blue() {
-    assert_eq!(
-        stylish::ansi::format!("{:(bold,fg=blue)}", 2),
-        "[34;49;1m2[0m"
-    );
+    assert_eq!(stylish::ansi::format!("{:(bold,fg=blue)}", 2), "[34;1m2[0m");
     assert_eq!(
         stylish::html::format!("{:(bold,fg=blue)}", 2),
-        r#"<span style="color: blue; background-color: inherit; font-weight: bolder">2</span>"#
+        r#"<span style=color:blue;font-weight:bolder>2</span>"#
     );
     assert_eq!(stylish::plain::format!("{:(bold,fg=blue)}", 2), "2");
 }
