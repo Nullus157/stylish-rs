@@ -47,11 +47,17 @@ pub mod __export {
     };
     pub use core::{fmt, option::Option};
     pub use stylish_macros;
+    pub use with_builtin_macros::with_builtin;
 }
 
 #[macro_export]
 macro_rules! format_args {
-    ($($arg:tt)*) => {
-        $crate::__export::stylish_macros::format_args!(crate=$crate, $($arg)*)
+    ($fmt:literal $(, $($arg:tt)*)?) => {
+        $crate::__export::stylish_macros::format_args!(crate=$crate, $fmt $(, $($arg)*)?)
+    };
+    ($fmt:expr $(, $($arg:tt)*)?) => {
+        $crate::__export::with_builtin!(let $fmt_lit = $fmt in {
+            $crate::__export::stylish_macros::format_args!(crate=$crate, $fmt_lit $(, $($arg)*)?)
+        })
     };
 }

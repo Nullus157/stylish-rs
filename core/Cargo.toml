@@ -10,6 +10,7 @@ std = ["alloc"]
 alloc = []
 
 [dependencies]
+with_builtin_macros.version = "0.0.3"
 stack_dst.default-features = false
 stack_dst.version = "0.6.0"
 stylish-macros.path = "../macros"
