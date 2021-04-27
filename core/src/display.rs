@@ -4,6 +4,8 @@ use crate::{Formatter, Result};
 ///
 /// `Display` is similar to [`core::fmt::Display`], but allows attaching additional style
 /// attributes to the output.
+///
+#[doc = crate::__export::docs::display_example!()]
 pub trait Display {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result;
 }

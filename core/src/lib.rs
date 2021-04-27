@@ -1,4 +1,7 @@
 #![no_std]
+#![feature(extended_key_value_attributes)]
+
+#![doc = crate::__export::docs::krate!()]
 
 #[cfg(feature = "alloc")]
 extern crate alloc;
@@ -9,11 +12,21 @@ extern crate std;
 #[cfg(feature = "std")]
 pub mod io;
 
+#[cfg(doc)]
+extern crate self as stylish;
+
+#[cfg(all(doc, not(feature = "std")))]
+use core::fmt as doc_fmt;
+
+#[cfg(all(doc, feature = "std"))]
+use std::fmt as doc_fmt;
+
 #[macro_use]
 mod std_compat;
 
 mod arguments;
 mod display;
+mod docs;
 #[cfg(feature = "alloc")]
 mod format;
 mod formatter;
@@ -45,6 +58,10 @@ pub mod __export {
         style::{Background, Color, Foreground, Intensity},
         Display,
     };
+    pub mod docs {
+        pub use crate::__docs_display_example as display_example;
+        pub use crate::__docs_crate as krate;
+    }
     pub use core::{fmt, option::Option};
     pub use stylish_macros;
     pub use with_builtin_macros::with_builtin;
