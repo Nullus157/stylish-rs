@@ -1,6 +1,5 @@
 #![no_std]
 #![feature(extended_key_value_attributes)]
-
 #![doc = stylish_core::__export::docs::krate!()]
 
 #[cfg(feature = "std")]
@@ -17,7 +16,7 @@ use std::fmt as doc_fmt;
 
 pub use stylish_core::{
     format_args, write, writeln, Arguments, Background, Color, Display, Error, Foreground,
-    Formatter, Intensity, Result, Style, Write,
+    Formatter, Intensity, Restyle, Result, Style, StyleDiff, ToStylishString, Write,
 };
 
 #[cfg(feature = "alloc")]

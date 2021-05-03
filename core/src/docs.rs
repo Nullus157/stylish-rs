@@ -1,4 +1,5 @@
-#[doc(hidden)] #[macro_export]
+#[doc(hidden)]
+#[macro_export]
 macro_rules! __docs_display_example { () => { r#####"
 <details><summary>
 <div class="example-wrap">
@@ -42,7 +43,8 @@ assert_eq!(formatted, "Hello <span style=color:red>Ferris</span> and <span style
 </details>
 "##### } }
 
-#[doc(hidden)] #[macro_export]
+#[doc(hidden)]
+#[macro_export]
 macro_rules! __docs_crate { () => { concat!(r#####"
 Yet another crate implementing colorized output.
 

@@ -161,5 +161,8 @@ fn bold_then_bold_blue_then_blue() {
 #[test]
 fn builtin_macros() {
     assert_eq!(stylish::plain::format!(concat!("a", "b")), "ab");
-    assert_eq!(stylish::plain::format!(concat!(stringify!("a"), "b")), r#""a"b"#);
+    assert_eq!(
+        stylish::plain::format!(concat!(stringify!("a"), "b")),
+        r#""a"b"#
+    );
 }

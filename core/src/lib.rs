@@ -1,6 +1,5 @@
 #![no_std]
 #![feature(extended_key_value_attributes)]
-
 #![doc = crate::__export::docs::krate!()]
 
 #[cfg(feature = "alloc")]
@@ -41,7 +40,7 @@ pub use self::{
     arguments::Arguments,
     display::Display,
     formatter::Formatter,
-    style::{Background, Color, Foreground, Intensity, Restyle, Style},
+    style::{Background, Color, Foreground, Intensity, Restyle, Style, StyleDiff},
     write::Write,
 };
 #[cfg(feature = "alloc")]
@@ -55,12 +54,11 @@ pub mod __export {
     pub use crate::{
         arguments::{Argument, Arguments, FormatTrait, StdFmt},
         formatter::{Align, DebugHex, FormatterArgs, Sign},
-        style::{Background, Color, Foreground, Intensity},
-        Display,
+        Background, Color, Display, Foreground, Intensity,
     };
     pub mod docs {
-        pub use crate::__docs_display_example as display_example;
         pub use crate::__docs_crate as krate;
+        pub use crate::__docs_display_example as display_example;
     }
     pub use core::{fmt, option::Option};
     pub use stylish_macros;

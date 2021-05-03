@@ -98,17 +98,17 @@ impl<'a> Formatter<'a> {
     /// Writes some formatted data into this instance, overriding the current style as appropriate.
     /// ```rust
     /// struct Name(&'static str);
-    /// 
+    ///
     /// impl stylish::Display for Name {
     ///     fn fmt(&self, f: &mut stylish::Formatter<'_>) -> stylish::Result {
     ///         match self.0 {
-    ///             "Ferris" => f.write_fmt(format_args!("{:(fg=red)}", self.0)),
-    ///             "Gorris" => f.write_fmt(format_args!("{:(fg=cyan)}", self.0)),
-    ///             _ => f.write_fmt(format_args!("{}", self.0)),
+    ///             "Ferris" => f.write_fmt(stylish::format_args!("{:(fg=red)}", self.0)),
+    ///             "Gorris" => f.write_fmt(stylish::format_args!("{:(fg=cyan)}", self.0)),
+    ///             _ => f.write_fmt(stylish::format_args!("{}", self.0)),
     ///         }
     ///     }
     /// }
-    /// 
+    ///
     /// let formatted = stylish::html::format!("Hello {:s} and {:s}", Name("Ferris"), Name("Gorris"));
     /// assert_eq!(formatted, "Hello <span style=color:red>Ferris</span> and <span style=color:cyan>Gorris</span>");
     /// ```

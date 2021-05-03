@@ -15,3 +15,7 @@ stack_dst.default-features = false
 stack_dst.version = "0.6.0"
 stylish-macros.path = "../macros"
 stylish-macros.version = "=0.1.0"
+
+[dev-dependencies]
+stylish.path = ".."
+stylish.version = "0.1.0"
