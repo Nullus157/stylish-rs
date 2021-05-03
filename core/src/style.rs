@@ -1,3 +1,5 @@
+/// A color that can be used with [`Foreground`] to modify [`Style::foreground`] or [`Background`]
+/// to modify [`Style::background`].
 #[allow(dead_code)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
 #[non_exhaustive]
@@ -13,6 +15,7 @@ pub enum Color {
     Default,
 }
 
+/// An intensity to render text with, to emphasise or de-emphasise it as needed.
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
 #[non_exhaustive]
 pub enum Intensity {
@@ -21,6 +24,7 @@ pub enum Intensity {
     Faint,
 }
 
+/// A style to render text with, setting the foreground and background colors, along with intensity.
 #[derive(Copy, Clone, Debug, Default, Eq, PartialEq)]
 #[non_exhaustive]
 pub struct Style {
@@ -29,6 +33,10 @@ pub struct Style {
     pub intensity: Intensity,
 }
 
+/// A diff between two styles.
+///
+/// Most useful for some implementors of [`stylish::Write`] to detect changes between two parts, or
+/// for applying multiple changes to a style at once.
 #[derive(Copy, Clone, Debug, Default, Eq, PartialEq)]
 #[non_exhaustive]
 pub struct StyleDiff {
@@ -37,12 +45,52 @@ pub struct StyleDiff {
     pub intensity: Option<Intensity>,
 }
 
+/// A [`Restyle`] implementor for setting [`Style::foreground`].
+///
+/// ```rust
+/// use stylish::{Style, Foreground, Color};
+///
+/// let mut expected = Style::default();
+/// expected.foreground = Color::Magenta;
+///
+/// assert_eq!(Style::default().with(Foreground(Color::Magenta)), expected);
+/// ```
 #[derive(Copy, Clone, Debug, Default, Eq, PartialEq)]
 pub struct Foreground(pub Color);
 
+/// A [`Restyle`] implementor for setting [`Style::background`].
+///
+/// ```rust
+/// use stylish::{Style, Color, Background};
+///
+/// let mut expected = Style::default();
+/// expected.background = Color::Magenta;
+///
+/// assert_eq!(Style::default().with(Background(Color::Magenta)), expected);
+/// ```
 #[derive(Copy, Clone, Debug, Default, Eq, PartialEq)]
 pub struct Background(pub Color);
 
+/// A trait for modifications to [`Style`], allowing an ergonomic API with [`Style::with`] and
+/// [`Formatter::with`].
+///
+/// ```rust
+/// use stylish::{Style, Foreground, Restyle, Intensity, Color};
+///
+/// struct OhNo;
+///
+/// impl Restyle for OhNo {
+///     fn apply(&self, style: Style) -> Style {
+///         style.with(Foreground(Color::Red)).with(Intensity::Bold)
+///     }
+/// }
+///
+/// let mut expected = Style::default();
+/// expected.foreground = Color::Red;
+/// expected.intensity = Intensity::Bold;
+///
+/// assert_eq!(Style::default().with(OhNo), expected);
+/// ```
 pub trait Restyle {
     fn apply(&self, style: Style) -> Style;
 }
@@ -60,10 +108,40 @@ impl Default for Intensity {
 }
 
 impl Style {
+    /// Apply a modification to this style, returning the result.
+    ///
+    /// ```rust
+    /// use stylish::{Style, Intensity};
+    ///
+    /// let mut expected = Style::default();
+    /// expected.intensity = Intensity::Faint;
+    ///
+    /// assert_eq!(Style::default().with(Intensity::Faint), expected);
+    /// ```
     pub fn with(self, adj: impl Restyle) -> Self {
         adj.apply(self)
     }
 
+    /// Find the changes from the `original` style that would result in this style.
+    ///
+    /// This can be useful for writers like `ansi` that are stateful, finding the minimal state
+    /// that must be changed between the current output style and the new style.
+    ///
+    /// ```rust
+    /// use stylish::{Style, StyleDiff, Foreground, Color};
+    ///
+    /// let original = Style::default();
+    /// let updated = original.with(Foreground(Color::Cyan));
+    ///
+    /// assert!(matches!(
+    ///     updated.diff_from(original),
+    ///     StyleDiff {
+    ///         foreground: Some(Color::Cyan),
+    ///         background: None,
+    ///         intensity: None,
+    ///         ..
+    ///     }));
+    /// ```
     pub fn diff_from(self, original: Style) -> StyleDiff {
         fn diff<T: PartialEq>(original: T, new: T) -> Option<T> {
             if original == new {
