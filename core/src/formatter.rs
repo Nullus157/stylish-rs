@@ -44,6 +44,12 @@ impl Default for FormatterArgs<'static> {
     }
 }
 
+/// A configured output stream.
+///
+/// A `Formatter` wraps a target output stream with a set of configuration options for formatting
+/// of data written to the stream. There is (currently) no public constructors for `Formatter`, an
+/// instance is created and passed to implementations of [`stylish::Display`] when they are used in
+/// the [`stylish`] macros.
 pub struct Formatter<'a> {
     style: Style,
     pub(crate) format: FormatterArgs<'a>,
@@ -59,6 +65,12 @@ impl<'a> Formatter<'a> {
         }
     }
 
+    // TODO: All the rest of the std::fmt::Formatter methods
+
+    /// Create a sub-`Formatter` with some styles changed. This may be useful in implementations of
+    /// [`stylish::Display`] to dynamically configure how some parts are formatted.
+    ///
+    #[doc = crate::__export::docs::display_example!()]
     pub fn with(&mut self, restyle: impl Restyle) -> Formatter<'_> {
         Formatter {
             write: &mut *self.write,
@@ -75,16 +87,31 @@ impl<'a> Formatter<'a> {
         }
     }
 
+    /// Writes some data to the underlying output stream, using the current style.
+    ///
+    #[doc = crate::__export::docs::display_example!()]
     pub fn write_str(&mut self, s: &str) -> Result {
         self.write.write_str(s, self.style)?;
         Ok(())
     }
 
-    pub fn write_char(&mut self, c: char) -> Result {
-        self.write_str(c.encode_utf8(&mut [0; 4]))?;
-        Ok(())
-    }
-
+    /// Writes some formatted data into this instance, overriding the current style as appropriate.
+    /// ```rust
+    /// struct Name(&'static str);
+    /// 
+    /// impl stylish::Display for Name {
+    ///     fn fmt(&self, f: &mut stylish::Formatter<'_>) -> stylish::Result {
+    ///         match self.0 {
+    ///             "Ferris" => f.write_fmt(format_args!("{:(fg=red)}", self.0)),
+    ///             "Gorris" => f.write_fmt(format_args!("{:(fg=cyan)}", self.0)),
+    ///             _ => f.write_fmt(format_args!("{}", self.0)),
+    ///         }
+    ///     }
+    /// }
+    /// 
+    /// let formatted = stylish::html::format!("Hello {:s} and {:s}", Name("Ferris"), Name("Gorris"));
+    /// assert_eq!(formatted, "Hello <span style=color:red>Ferris</span> and <span style=color:cyan>Gorris</span>");
+    /// ```
     pub fn write_fmt(&mut self, args: Arguments<'_>) -> Result {
         for piece in args.pieces {
             match piece {
