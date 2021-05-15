@@ -70,7 +70,23 @@ impl<'a> Formatter<'a> {
     /// Create a sub-`Formatter` with some styles changed. This may be useful in implementations of
     /// [`stylish::Display`] to dynamically configure how some parts are formatted.
     ///
-    #[doc = crate::__export::docs::display_example!()]
+    /// ```rust
+    /// struct Name(&'static str);
+    /// 
+    /// impl stylish::Display for Name {
+    ///     fn fmt(&self, f: &mut stylish::Formatter<'_>) -> stylish::Result {
+    ///         let color = match self.0 {
+    ///             "Ferris" => stylish::Color::Red,
+    ///             "Gorris" => stylish::Color::Cyan,
+    ///             _ => stylish::Color::Default,
+    ///         };
+    ///         f.with(stylish::Foreground(color)).write_str(self.0)
+    ///     }
+    /// }
+    /// 
+    /// let formatted = stylish::html::format!("Hello {:s} and {:s}", Name("Ferris"), Name("Gorris"));
+    /// assert_eq!(formatted, "Hello <span style=color:red>Ferris</span> and <span style=color:cyan>Gorris</span>");
+    /// ```
     pub fn with(&mut self, restyle: impl Restyle) -> Formatter<'_> {
         Formatter {
             write: &mut *self.write,
@@ -89,7 +105,23 @@ impl<'a> Formatter<'a> {
 
     /// Writes some data to the underlying output stream, using the current style.
     ///
-    #[doc = crate::__export::docs::display_example!()]
+    /// ```rust
+    /// struct Name(&'static str);
+    /// 
+    /// impl stylish::Display for Name {
+    ///     fn fmt(&self, f: &mut stylish::Formatter<'_>) -> stylish::Result {
+    ///         let color = match self.0 {
+    ///             "Ferris" => stylish::Color::Red,
+    ///             "Gorris" => stylish::Color::Cyan,
+    ///             _ => stylish::Color::Default,
+    ///         };
+    ///         f.with(stylish::Foreground(color)).write_str(self.0)
+    ///     }
+    /// }
+    /// 
+    /// let formatted = stylish::html::format!("Hello {:s} and {:s}", Name("Ferris"), Name("Gorris"));
+    /// assert_eq!(formatted, "Hello <span style=color:red>Ferris</span> and <span style=color:cyan>Gorris</span>");
+    /// ```
     pub fn write_str(&mut self, s: &str) -> Result {
         self.write.write_str(s, self.style)?;
         Ok(())

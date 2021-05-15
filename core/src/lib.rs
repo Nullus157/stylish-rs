@@ -1,6 +1,11 @@
 #![no_std]
-#![feature(extended_key_value_attributes)]
-#![doc = crate::__export::docs::krate!()]
+
+//! The semver-stable subset of [`stylish`].
+//!
+//! See the main documentation in [`stylish`], there is no reason to depend on this crate directly.
+
+#[cfg(doc)]
+extern crate self as stylish;
 
 #[cfg(feature = "alloc")]
 extern crate alloc;
@@ -11,21 +16,11 @@ extern crate std;
 #[cfg(feature = "std")]
 pub mod io;
 
-#[cfg(doc)]
-extern crate self as stylish;
-
-#[cfg(all(doc, not(feature = "std")))]
-use core::fmt as doc_fmt;
-
-#[cfg(all(doc, feature = "std"))]
-use std::fmt as doc_fmt;
-
 #[macro_use]
 mod std_compat;
 
 mod arguments;
 mod display;
-mod docs;
 #[cfg(feature = "alloc")]
 mod format;
 mod formatter;
@@ -56,10 +51,6 @@ pub mod __export {
         formatter::{Align, DebugHex, FormatterArgs, Sign},
         Background, Color, Display, Foreground, Intensity,
     };
-    pub mod docs {
-        pub use crate::__docs_crate as krate;
-        pub use crate::__docs_display_example as display_example;
-    }
     pub use core::{fmt, option::Option};
     pub use stylish_macros;
     pub use with_builtin_macros::with_builtin;

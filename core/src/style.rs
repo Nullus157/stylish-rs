@@ -72,7 +72,7 @@ pub struct Foreground(pub Color);
 pub struct Background(pub Color);
 
 /// A trait for modifications to [`Style`], allowing an ergonomic API with [`Style::with`] and
-/// [`Formatter::with`].
+/// [`stylish::Formatter::with`].
 ///
 /// ```rust
 /// use stylish::{Style, Foreground, Restyle, Intensity, Color};
