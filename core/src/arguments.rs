@@ -2,6 +2,7 @@ use crate::{formatter::FormatterArgs, Display, Formatter, Restyle, Result};
 
 type StdFmtFn<'a> = dyn Fn(&mut core::fmt::Formatter<'_>) -> Result + 'a;
 
+// pub for macros
 pub struct StdFmt<'a>(stack_dst::ValueA<StdFmtFn<'a>, [usize; 4]>);
 
 impl<'a> StdFmt<'a> {
@@ -26,6 +27,7 @@ impl core::fmt::Debug for StdFmt<'_> {
     }
 }
 
+// pub for macros
 pub enum FormatTrait<'a> {
     Display(StdFmt<'a>),
     Debug(StdFmt<'a>),
@@ -39,6 +41,7 @@ pub enum FormatTrait<'a> {
     Stylish(&'a dyn Display),
 }
 
+// pub for macros
 pub enum Argument<'a> {
     Lit(&'a str),
 
@@ -50,7 +53,20 @@ pub enum Argument<'a> {
     },
 }
 
+/// A precompiled version of a format string and its by-reference arguments.
+/// 
+/// Currently this can only be constructed via [`stylish::format_args!`], but it may be possible to
+/// dynamically construct this at runtime in the future.
+///
+/// ```rust
+/// let args = stylish::format_args!("{:(bg=red)} Will Robinson", "Danger");
+/// assert_eq!(
+///     stylish::html::format!("{:s}", args),
+///     "<span style=background-color:red>Danger</span> Will Robinson",
+/// );
+/// ```
 pub struct Arguments<'a> {
+    // pub for macros
     #[doc(hidden)]
     pub pieces: &'a [Argument<'a>],
 }
@@ -69,5 +85,19 @@ impl Display for FormatTrait<'_> {
             Self::UpperExp(arg) => std_write!(f, Display, arg),
             Self::Stylish(arg) => arg.fmt(f),
         }
+    }
+}
+
+impl Display for Arguments<'_> {
+    fn fmt(&self, f: &mut Formatter<'_>) -> Result {
+        for piece in self.pieces {
+            match piece {
+                Argument::Lit(lit) => f.write_str(lit)?,
+                Argument::Arg { args, restyle, arg } => {
+                    arg.fmt(&mut f.with(restyle).with_args(args))?
+                }
+            }
+        }
+        Ok(())
     }
 }

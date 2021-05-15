@@ -1,5 +1,41 @@
 use crate::{Display, Formatter, Result, Style, Write};
 
+/// An attributed version of [`alloc::string::String`] which has a specific [`Style`] associated
+/// with each character.
+/// 
+/// The main interfaces to create an instance of this are [`stylish::format!`] and [`impl Write for
+/// String`](#impl-Write), and to inspect the content [`impl Display for String`](#impl-Display).
+///
+/// You can create an instance via [`stylish::format!`]:
+/// 
+/// ```rust
+/// let _: stylish::String = stylish::format!("Hello {:(fg=green)}!", "World");
+/// ```
+///
+/// You can append extra data via [`stylish::write!`]:
+///
+/// ```rust
+/// use stylish::Write;
+///
+/// let mut s = stylish::String::new();
+/// stylish::write!(s, "{:(fg=magenta)}", "fuchsia");
+/// ```
+///
+/// To use the attributed data you must then write this string to a sink using the `{:s}`
+/// trait-selector.
+///
+/// ```rust
+/// use stylish::Write;
+///
+/// let mut s = stylish::format!("Hello {:(fg=green)}!", "World");
+/// stylish::write!(s, " Is it {:(fg=magenta)} or?", "fuchsia");
+///
+/// assert_eq!(
+///     stylish::html::format!("{:s}", s),
+///     "Hello <span style=color:green>World</span>! \
+///     Is it <span style=color:magenta>fuchsia</span> or?",
+/// );
+/// ```
 #[derive(Default, Debug, Clone)]
 pub struct String {
     string: alloc::string::String,
@@ -7,6 +43,11 @@ pub struct String {
 }
 
 impl String {
+    /// Create an empty [`String`].
+    ///
+    /// ```rust
+    /// assert_eq!(stylish::html::format!("{:s}", stylish::String::new()), "");
+    /// ```
     pub fn new() -> Self {
         Self::default()
     }

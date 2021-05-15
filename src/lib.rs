@@ -113,7 +113,7 @@ use core::fmt as doc_fmt;
 use std::fmt as doc_fmt;
 
 pub use stylish_core::{
-    format_args, write, writeln, Arguments, Background, Color, Display, Error, Foreground,
+    format, format_args, write, writeln, Arguments, Background, Color, Display, Error, Foreground,
     Formatter, Intensity, Restyle, Result, Style, StyleDiff, ToStylishString, Write,
 };
 
@@ -131,7 +131,7 @@ pub fn html<T: core::fmt::Write>(inner: T) -> html::Html<T> {
     html::Html::new(inner)
 }
 
-pub fn plain<T: core::fmt::Write>(inner: T) -> plain::Plain<T> {
+pub fn plain<T>(inner: T) -> plain::Plain<T> {
     plain::Plain::new(inner)
 }
 

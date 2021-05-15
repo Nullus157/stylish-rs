@@ -92,7 +92,7 @@ macro_rules! std_write {
     };
 }
 
-pub struct StdProxy<'a, 'b>(pub &'a mut crate::formatter::Formatter<'b>);
+pub(crate) struct StdProxy<'a, 'b>(pub(crate) &'a mut crate::formatter::Formatter<'b>);
 
 impl<'a, 'b> core::fmt::Write for StdProxy<'a, 'b> {
     fn write_str(&mut self, s: &str) -> crate::Result {

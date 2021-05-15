@@ -1,4 +1,4 @@
-use crate::{arguments::Argument, Arguments, Display, Restyle, Result, Style, Write};
+use crate::{Arguments, Display, Restyle, Result, Style, Write};
 
 #[derive(Clone, Copy)]
 pub enum Align {
@@ -95,7 +95,7 @@ impl<'a> Formatter<'a> {
         }
     }
 
-    fn with_args<'b>(&'b mut self, format: &FormatterArgs<'b>) -> Formatter<'b> {
+    pub(crate) fn with_args<'b>(&'b mut self, format: &FormatterArgs<'b>) -> Formatter<'b> {
         Formatter {
             write: &mut *self.write,
             format: *format,
@@ -145,14 +145,7 @@ impl<'a> Formatter<'a> {
     /// assert_eq!(formatted, "Hello <span style=color:red>Ferris</span> and <span style=color:cyan>Gorris</span>");
     /// ```
     pub fn write_fmt(&mut self, args: Arguments<'_>) -> Result {
-        for piece in args.pieces {
-            match piece {
-                Argument::Lit(lit) => self.write_str(lit)?,
-                Argument::Arg { args, restyle, arg } => {
-                    arg.fmt(&mut self.with(restyle).with_args(args))?
-                }
-            }
-        }
+        args.fmt(self)?;
         Ok(())
     }
 }

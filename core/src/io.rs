@@ -1,8 +1,8 @@
+//! Traits and associated types for writing [`stylish`] attributed data to fallible IO sinks.
+
 use crate::{Arguments, Style};
 
-pub use std::io::{Error, ErrorKind};
-
-pub type Result<T = (), E = Error> = std::result::Result<T, E>;
+pub use std::io::{Error, ErrorKind, Result};
 
 struct ErrorTrap<W: Write> {
     inner: W,
@@ -33,6 +33,32 @@ impl<W: Write> crate::Write for ErrorTrap<W> {
     }
 }
 
+/// A trait for objects which are byte-oriented sinks and can handle attributed data.
+///
+/// Writers are defined by two required methods, `write` and `flush`:
+/// 
+/// * The `write` method will attempt to write some data into the object, returning how many bytes
+///   were successfully written.
+///     
+/// * The `flush` method is useful for adaptors and explicit buffers themselves for ensuring that
+///   all buffered data has been pushed out to the ‘true sink’.
+///         
+/// ```rust
+/// use stylish::{io::Write, Foreground, Color, Style};
+///
+/// let data = b"some bytes";
+/// let style = Style::default().with(Foreground(Color::Blue));
+///     
+/// let mut pos = 0;
+/// let mut output = stylish::plain(std::io::stdout());
+///
+/// while pos < data.len() {
+///     let bytes_written = output.write(&data[pos..], style)?;
+///     pos += bytes_written;
+/// }
+///
+/// output.flush()?;
+/// # Ok::<(), std::io::Error>(())
 pub trait Write {
     fn write(&mut self, s: &[u8], style: Style) -> Result<usize>;
 
