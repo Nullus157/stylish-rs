@@ -1,5 +1,6 @@
 use crate::{Arguments, Display, Restyle, Result, Style, Write};
 
+#[doc(hidden)] // workaround https://github.com/rust-lang/rust/issues/85522
 #[derive(Clone, Copy)]
 pub enum Align {
     Left,
@@ -7,18 +8,21 @@ pub enum Align {
     Right,
 }
 
+#[doc(hidden)] // workaround https://github.com/rust-lang/rust/issues/85522
 #[derive(Clone, Copy)]
 pub enum Sign {
     Plus,
     Minus,
 }
 
+#[doc(hidden)] // workaround https://github.com/rust-lang/rust/issues/85522
 #[derive(Clone, Copy)]
 pub enum DebugHex {
     Lower,
     Upper,
 }
 
+#[doc(hidden)] // workaround https://github.com/rust-lang/rust/issues/85522
 #[derive(Clone, Copy)]
 pub struct FormatterArgs<'a> {
     pub align: Option<Align>,

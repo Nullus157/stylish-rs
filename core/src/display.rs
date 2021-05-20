@@ -26,6 +26,28 @@ use crate::{Formatter, Result};
 /// );
 /// ```
 pub trait Display {
+    /// Formats the value using the given formatter.
+    ///
+    /// ```rust
+    /// struct Name(&'static str);
+    ///
+    /// impl stylish::Display for Name {
+    ///     fn fmt(&self, f: &mut stylish::Formatter<'_>) -> stylish::Result {
+    ///         let color = match self.0 {
+    ///             "Ferris" => stylish::Color::Red,
+    ///             "Gorris" => stylish::Color::Cyan,
+    ///             _ => stylish::Color::Default,
+    ///         };
+    ///         f.with(stylish::Foreground(color)).write_str(self.0)
+    ///     }
+    /// }
+    ///
+    /// let formatted = stylish::html::format!("Hello {:s} and {:s}", Name("Ferris"), Name("Gorris"));
+    /// assert_eq!(
+    ///     formatted,
+    ///     "Hello <span style=color:red>Ferris</span> and <span style=color:cyan>Gorris</span>",
+    /// );
+    /// ```
     fn fmt(&self, f: &mut Formatter<'_>) -> Result;
 }
 

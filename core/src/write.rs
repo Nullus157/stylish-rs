@@ -96,6 +96,29 @@ impl<W: Write + ?Sized> Write for &mut W {
     }
 }
 
+/// Writes attributed and formatted data into a buffer.
+/// 
+/// This macro accepts a 'writer', a format string, and a list of arguments. Arguments will be
+/// formatted according to the specified format string and the result will be passed to the writer.
+/// The writer may be any value with a `write_fmt` method of the right signature; generally this comes from an
+/// implementation of either the [`stylish::Write`] or the [`stylish::io::Write`] trait. The macro returns whatever the
+/// `write_fmt` method returns; commonly a [`core::fmt::Result`], or a [`std::io::Result`].
+/// 
+/// See [`stylish`] for more information on the format string syntax.
+///
+/// # Examples
+/// 
+/// ```rust
+/// use stylish::Write;
+/// 
+/// let mut w = stylish::html(String::new());
+///
+/// stylish::write!(&mut w, "test")?;
+/// stylish::write!(&mut w, "formatted {:(fg=yellow)}", "arguments")?;
+/// 
+/// assert_eq!(w.finish()?, "testformatted <span style=color:yellow>arguments</span>");
+/// # Ok::<(), std::fmt::Error>(())
+/// ```
 #[macro_export]
 macro_rules! write {
     ($dst:expr, $($arg:tt)*) => {
@@ -103,6 +126,28 @@ macro_rules! write {
     };
 }
 
+
+/// Write attributed and formatted data into a buffer, with a newline appended.
+/// 
+/// On all platforms, the newline is the LINE FEED character (`\n`/`U+000A`) alone (no additional
+/// CARRIAGE RETURN (`\r`/`U+000D`).
+/// 
+/// For more information, see [`stylish::write!`]. For information on the format string syntax, see
+/// [`stylish`].
+/// 
+/// # Examples
+/// 
+/// ```rust
+/// use stylish::Write;
+/// 
+/// let mut w = stylish::html(String::new());
+///
+/// stylish::writeln!(&mut w)?;
+/// stylish::writeln!(&mut w, "test")?;
+/// stylish::writeln!(&mut w, "formatted {:(fg=yellow)}", "arguments")?;
+/// 
+/// assert_eq!(w.finish()?, "\ntest\nformatted <span style=color:yellow>arguments</span>\n");
+/// # Ok::<(), std::fmt::Error>(())
 #[macro_export]
 macro_rules! writeln {
     ($dst:expr $(,)?) => {

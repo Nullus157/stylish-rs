@@ -1,6 +1,6 @@
 use crate::util;
-use core::fmt;
 use askama_escape::{escape, Html as AskamaHtml};
+use core::fmt;
 use stylish_core::{Style, Write};
 
 #[derive(Clone, Debug, Default)]

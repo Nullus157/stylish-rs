@@ -4,14 +4,23 @@
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
 #[non_exhaustive]
 pub enum Color {
+    /// Black
     Black,
+    /// Red
     Red,
+    /// Green
     Green,
+    /// Yellow
     Yellow,
+    /// Blue
     Blue,
+    /// Magenta
     Magenta,
+    /// Cyan
     Cyan,
+    /// White
     White,
+    /// Default color
     Default,
 }
 
@@ -19,8 +28,11 @@ pub enum Color {
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
 #[non_exhaustive]
 pub enum Intensity {
+    /// The normal intensity
     Normal,
+    /// A bolder intensity to emphasise content
     Bold,
+    /// A fainter intensity to de-emphasise content
     Faint,
 }
 
@@ -28,8 +40,11 @@ pub enum Intensity {
 #[derive(Copy, Clone, Debug, Default, Eq, PartialEq)]
 #[non_exhaustive]
 pub struct Style {
+    /// The text foreground color
     pub foreground: Color,
+    /// The text background color
     pub background: Color,
+    /// The text intensity
     pub intensity: Intensity,
 }
 
@@ -40,8 +55,11 @@ pub struct Style {
 #[derive(Copy, Clone, Debug, Default, Eq, PartialEq)]
 #[non_exhaustive]
 pub struct StyleDiff {
+    /// The change in the text foreground color
     pub foreground: Option<Color>,
+    /// The change in the text background color
     pub background: Option<Color>,
+    /// The change in the text intensity
     pub intensity: Option<Intensity>,
 }
 
@@ -92,6 +110,8 @@ pub struct Background(pub Color);
 /// assert_eq!(Style::default().with(OhNo), expected);
 /// ```
 pub trait Restyle {
+    /// Apply the restyling this instance represents to an existing style, returning the updated
+    /// style.
     fn apply(&self, style: Style) -> Style;
 }
 

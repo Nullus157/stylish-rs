@@ -2,10 +2,11 @@ use crate::{formatter::FormatterArgs, Display, Formatter, Restyle, Result};
 
 type StdFmtFn<'a> = dyn Fn(&mut core::fmt::Formatter<'_>) -> Result + 'a;
 
-// pub for macros
+#[doc(hidden)] // workaround https://github.com/rust-lang/rust/issues/85522
 pub struct StdFmt<'a>(stack_dst::ValueA<StdFmtFn<'a>, [usize; 4]>);
 
 impl<'a> StdFmt<'a> {
+    #[doc(hidden)] // workaround https://github.com/rust-lang/rust/issues/85526
     pub fn new(f: impl Fn(&mut core::fmt::Formatter<'_>) -> Result + 'a) -> StdFmt<'a> {
         StdFmt(
             stack_dst::ValueA::new_stable(f, |p| p as _)
@@ -27,7 +28,7 @@ impl core::fmt::Debug for StdFmt<'_> {
     }
 }
 
-// pub for macros
+#[doc(hidden)] // workaround https://github.com/rust-lang/rust/issues/85522
 pub enum FormatTrait<'a> {
     Display(StdFmt<'a>),
     Debug(StdFmt<'a>),
@@ -41,7 +42,7 @@ pub enum FormatTrait<'a> {
     Stylish(&'a dyn Display),
 }
 
-// pub for macros
+#[doc(hidden)] // workaround https://github.com/rust-lang/rust/issues/85522
 pub enum Argument<'a> {
     Lit(&'a str),
 
@@ -66,8 +67,7 @@ pub enum Argument<'a> {
 /// );
 /// ```
 pub struct Arguments<'a> {
-    // pub for macros
-    #[doc(hidden)]
+    #[doc(hidden)] // pub for macros
     pub pieces: &'a [Argument<'a>],
 }
 

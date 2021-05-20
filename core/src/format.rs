@@ -22,7 +22,33 @@ macro_rules! format {
     }};
 }
 
-// pub for macros
+/// The `format` function takes a [`stylish::Arguments`] struct and returns the resulting
+/// attributed and formatted [`stylish::String`].
+///
+/// The [`stylish::Arguments`] instance can be created with the [`stylish::format_args!`] macro.
+///
+/// # Examples
+///
+/// Basic usage:
+///
+/// ```rust
+/// let s = stylish::format(stylish::format_args!("Hello, {:(fg=green)}!", "world"));
+/// assert_eq!(
+///     stylish::html::format!("{:s}", s),
+///     "Hello, <span style=color:green>world</span>!"
+/// );
+/// ```
+///
+///
+/// Please note that using [`stylish::format!`] might be preferable. Example:
+///
+/// ```rust
+/// let s = stylish::format!("Hello, {:(fg=green)}!", "world");
+/// assert_eq!(
+///     stylish::html::format!("{:s}", s),
+///     "Hello, <span style=color:green>world</span>!"
+/// );
+/// ```
 pub fn format(args: Arguments<'_>) -> String {
     let mut output = String::new();
     output
