@@ -1,6 +1,7 @@
 use crate::util;
+use core::fmt;
 use askama_escape::{escape, Html as AskamaHtml};
-use stylish_core::{Result, Style, Write};
+use stylish_core::{Style, Write};
 
 #[derive(Clone, Debug, Default)]
 pub struct Html<T: core::fmt::Write> {
@@ -16,7 +17,7 @@ impl<T: core::fmt::Write> Html<T> {
         }
     }
 
-    pub fn finish(mut self) -> Result<T> {
+    pub fn finish(mut self) -> Result<T, fmt::Error> {
         if self.current != Style::default() {
             self.inner.write_str("</span>")?;
         }
@@ -24,8 +25,8 @@ impl<T: core::fmt::Write> Html<T> {
     }
 }
 
-impl<T: core::fmt::Write> Write for Html<T> {
-    fn write_str(&mut self, s: &str, style: Style) -> Result {
+impl<T: fmt::Write> Write for Html<T> {
+    fn write_str(&mut self, s: &str, style: Style) -> fmt::Result {
         if style == Style::default() {
             if self.current != Style::default() {
                 self.inner.write_str("</span>")?;

@@ -40,9 +40,7 @@ pub use self::{
 };
 #[cfg(feature = "alloc")]
 pub use self::{format::format, string::String, to_string::ToStylishString};
-pub use core::fmt::Error;
-
-pub type Result<T = (), E = Error> = core::result::Result<T, E>;
+pub use core::fmt::{Error, Result};
 
 #[doc(hidden)]
 pub mod __export {
