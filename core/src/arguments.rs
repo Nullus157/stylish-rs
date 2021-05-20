@@ -54,7 +54,7 @@ pub enum Argument<'a> {
 }
 
 /// A precompiled version of a format string and its by-reference arguments.
-/// 
+///
 /// Currently this can only be constructed via [`stylish::format_args!`], but it may be possible to
 /// dynamically construct this at runtime in the future.
 ///

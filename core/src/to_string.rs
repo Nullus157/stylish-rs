@@ -16,7 +16,7 @@ pub trait ToStylishString {
     ///         f.with(stylish::Foreground(stylish::Color::Red)).write_str(self.0)
     ///     }
     /// }
-    /// 
+    ///
     /// use stylish::ToStylishString;
     ///
     /// let s: stylish::String = Warning("FIRE").to_stylish_string();

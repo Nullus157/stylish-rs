@@ -2,8 +2,8 @@ use crate::{Arguments, Formatter, Result, Style};
 
 /// A trait for writing or formatting into attributed Unicode-accepting buffers or streams.
 ///
-/// 
-/// 
+///
+///
 /// This trait only accepts UTF-8–encoded data and is not [flushable](stylish::io::Write::flush).
 /// If you only want to accept Unicode and you don’t need flushing, you should implement this
 /// trait; otherwise you should implement [`stylish::io::Write`].
@@ -32,7 +32,7 @@ pub trait Write {
 
     /// Writes a [`char`] with a particular [`Style`] into this writer, returning whether the write
     /// succeeded.
-    /// 
+    ///
     /// A single [`char`] may be encoded as more than one byte. This method can only succeed if the
     /// entire byte sequence was successfully written, and this method will not return until all
     /// data has been written or an error occurs.
@@ -57,7 +57,7 @@ pub trait Write {
     }
 
     /// Glue for usage of the [`stylish::write!`] macro with implementors of this trait.
-    /// 
+    ///
     /// This method should generally not be invoked manually, but rather through the
     /// [`stylish::write!`] macro itself.
     ///

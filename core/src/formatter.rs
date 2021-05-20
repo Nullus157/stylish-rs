@@ -72,7 +72,7 @@ impl<'a> Formatter<'a> {
     ///
     /// ```rust
     /// struct Name(&'static str);
-    /// 
+    ///
     /// impl stylish::Display for Name {
     ///     fn fmt(&self, f: &mut stylish::Formatter<'_>) -> stylish::Result {
     ///         let color = match self.0 {
@@ -83,7 +83,7 @@ impl<'a> Formatter<'a> {
     ///         f.with(stylish::Foreground(color)).write_str(self.0)
     ///     }
     /// }
-    /// 
+    ///
     /// let formatted = stylish::html::format!("Hello {:s} and {:s}", Name("Ferris"), Name("Gorris"));
     /// assert_eq!(formatted, "Hello <span style=color:red>Ferris</span> and <span style=color:cyan>Gorris</span>");
     /// ```
@@ -107,7 +107,7 @@ impl<'a> Formatter<'a> {
     ///
     /// ```rust
     /// struct Name(&'static str);
-    /// 
+    ///
     /// impl stylish::Display for Name {
     ///     fn fmt(&self, f: &mut stylish::Formatter<'_>) -> stylish::Result {
     ///         let color = match self.0 {
@@ -118,7 +118,7 @@ impl<'a> Formatter<'a> {
     ///         f.with(stylish::Foreground(color)).write_str(self.0)
     ///     }
     /// }
-    /// 
+    ///
     /// let formatted = stylish::html::format!("Hello {:s} and {:s}", Name("Ferris"), Name("Gorris"));
     /// assert_eq!(formatted, "Hello <span style=color:red>Ferris</span> and <span style=color:cyan>Gorris</span>");
     /// ```
