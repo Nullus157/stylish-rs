@@ -85,7 +85,10 @@ impl<'a> Formatter<'a> {
     /// }
     ///
     /// let formatted = stylish::html::format!("Hello {:s} and {:s}", Name("Ferris"), Name("Gorris"));
-    /// assert_eq!(formatted, "Hello <span style=color:red>Ferris</span> and <span style=color:cyan>Gorris</span>");
+    /// assert_eq!(
+    ///     formatted,
+    ///     "Hello <span style=color:red>Ferris</span> and <span style=color:cyan>Gorris</span>"
+    /// );
     /// ```
     pub fn with(&mut self, restyle: impl Restyle) -> Formatter<'_> {
         Formatter {
@@ -120,7 +123,10 @@ impl<'a> Formatter<'a> {
     /// }
     ///
     /// let formatted = stylish::html::format!("Hello {:s} and {:s}", Name("Ferris"), Name("Gorris"));
-    /// assert_eq!(formatted, "Hello <span style=color:red>Ferris</span> and <span style=color:cyan>Gorris</span>");
+    /// assert_eq!(
+    ///     formatted,
+    ///     "Hello <span style=color:red>Ferris</span> and <span style=color:cyan>Gorris</span>"
+    /// );
     /// ```
     pub fn write_str(&mut self, s: &str) -> Result {
         self.write.write_str(s, self.style)?;
@@ -142,7 +148,10 @@ impl<'a> Formatter<'a> {
     /// }
     ///
     /// let formatted = stylish::html::format!("Hello {:s} and {:s}", Name("Ferris"), Name("Gorris"));
-    /// assert_eq!(formatted, "Hello <span style=color:red>Ferris</span> and <span style=color:cyan>Gorris</span>");
+    /// assert_eq!(
+    ///     formatted,
+    ///     "Hello <span style=color:red>Ferris</span> and <span style=color:cyan>Gorris</span>"
+    /// );
     /// ```
     pub fn write_fmt(&mut self, args: Arguments<'_>) -> Result {
         args.fmt(self)?;

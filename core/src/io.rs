@@ -91,7 +91,7 @@ pub trait Write {
     /// be retried if there is nothing else to do.
     ///
     /// ```rust
-    /// use stylish::{io::Write, Foreground, Color, Style};
+    /// use stylish::{io::Write, Color, Foreground, Style};
     ///
     /// let mut output = stylish::plain(std::io::stdout());
     ///
@@ -115,7 +115,7 @@ pub trait Write {
     /// reached.
     ///
     /// ```rust
-    /// use stylish::{io::Write, Foreground, Color, Style};
+    /// use stylish::{io::Write, Color, Foreground, Style};
     ///
     /// let mut output = stylish::plain(std::io::stdout());
     ///
@@ -149,7 +149,7 @@ pub trait Write {
     /// # Examples
     ///
     /// ```rust
-    /// use stylish::{io::Write, Foreground, Color, Style};
+    /// use stylish::{io::Write, Color, Foreground, Style};
     ///
     /// let mut output = stylish::plain(std::io::stdout());
     ///
@@ -193,7 +193,7 @@ pub trait Write {
     /// # Examples
     ///
     /// ```rust
-    /// use stylish::{io::Write, Foreground, Color, Style};
+    /// use stylish::{io::Write, Color, Foreground, Style};
     ///
     /// let mut output = stylish::plain(std::io::stdout());
     ///
@@ -213,7 +213,7 @@ pub trait Write {
     /// # Examples
     ///
     /// ```rust
-    /// use stylish::{io::Write, Style, Foreground, Color};
+    /// use stylish::{io::Write, Color, Foreground, Style};
     ///
     /// let mut output = stylish::plain(std::io::stdout());
     ///

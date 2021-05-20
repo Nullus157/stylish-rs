@@ -20,7 +20,10 @@ use crate::{Formatter, Result};
 /// }
 ///
 /// let formatted = stylish::html::format!("Hello {:s} and {:s}", Name("Ferris"), Name("Gorris"));
-/// assert_eq!(formatted, "Hello <span style=color:red>Ferris</span> and <span style=color:cyan>Gorris</span>");
+/// assert_eq!(
+///     formatted,
+///     "Hello <span style=color:red>Ferris</span> and <span style=color:cyan>Gorris</span>",
+/// );
 /// ```
 pub trait Display {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result;

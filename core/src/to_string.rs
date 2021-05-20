@@ -13,7 +13,8 @@ pub trait ToStylishString {
     ///
     /// impl stylish::Display for Warning {
     ///     fn fmt(&self, f: &mut stylish::Formatter<'_>) -> stylish::Result {
-    ///         f.with(stylish::Foreground(stylish::Color::Red)).write_str(self.0)
+    ///         f.with(stylish::Foreground(stylish::Color::Red))
+    ///             .write_str(self.0)
     ///     }
     /// }
     ///

@@ -48,7 +48,7 @@ pub struct StyleDiff {
 /// A [`Restyle`] implementor for setting [`Style::foreground`].
 ///
 /// ```rust
-/// use stylish::{Style, Foreground, Color};
+/// use stylish::{Color, Foreground, Style};
 ///
 /// let mut expected = Style::default();
 /// expected.foreground = Color::Magenta;
@@ -61,7 +61,7 @@ pub struct Foreground(pub Color);
 /// A [`Restyle`] implementor for setting [`Style::background`].
 ///
 /// ```rust
-/// use stylish::{Style, Color, Background};
+/// use stylish::{Background, Color, Style};
 ///
 /// let mut expected = Style::default();
 /// expected.background = Color::Magenta;
@@ -75,7 +75,7 @@ pub struct Background(pub Color);
 /// [`stylish::Formatter::with`].
 ///
 /// ```rust
-/// use stylish::{Style, Foreground, Restyle, Intensity, Color};
+/// use stylish::{Color, Foreground, Intensity, Restyle, Style};
 ///
 /// struct OhNo;
 ///
@@ -111,7 +111,7 @@ impl Style {
     /// Apply a modification to this style, returning the result.
     ///
     /// ```rust
-    /// use stylish::{Style, Intensity};
+    /// use stylish::{Intensity, Style};
     ///
     /// let mut expected = Style::default();
     /// expected.intensity = Intensity::Faint;
@@ -128,7 +128,7 @@ impl Style {
     /// that must be changed between the current output style and the new style.
     ///
     /// ```rust
-    /// use stylish::{Style, StyleDiff, Foreground, Color};
+    /// use stylish::{Color, Foreground, Style, StyleDiff};
     ///
     /// let original = Style::default();
     /// let updated = original.with(Foreground(Color::Cyan));
@@ -140,7 +140,8 @@ impl Style {
     ///         background: None,
     ///         intensity: None,
     ///         ..
-    ///     }));
+    ///     }
+    /// ));
     /// ```
     pub fn diff_from(self, original: Style) -> StyleDiff {
         fn diff<T: PartialEq>(original: T, new: T) -> Option<T> {

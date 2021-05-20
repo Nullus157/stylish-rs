@@ -15,7 +15,7 @@ pub trait Write {
     /// method will not return until all data has been written or an error occurs.
     ///
     /// ```rust
-    /// use stylish::{Write, Foreground, Color, Style};
+    /// use stylish::{Color, Foreground, Style, Write};
     ///
     /// let mut s = String::new();
     /// {
@@ -38,7 +38,7 @@ pub trait Write {
     /// data has been written or an error occurs.
     ///
     /// ```rust
-    /// use stylish::{Write, Foreground, Color, Style};
+    /// use stylish::{Color, Foreground, Style, Write};
     ///
     /// let mut s = String::new();
     /// {
@@ -49,7 +49,10 @@ pub trait Write {
     ///     output.finish()?;
     /// }
     ///
-    /// assert_eq!(s, "<span style=color:yellow>⚠</span> <span style=color:red>⛔</span>");
+    /// assert_eq!(
+    ///     s,
+    ///     "<span style=color:yellow>⚠</span> <span style=color:red>⛔</span>"
+    /// );
     /// # Ok::<(), std::fmt::Error>(())
     /// ```
     fn write_char(&mut self, c: char, style: Style) -> Result {
@@ -62,7 +65,7 @@ pub trait Write {
     /// [`stylish::write!`] macro itself.
     ///
     /// ```rust
-    /// use stylish::{Write, Foreground, Color, Style};
+    /// use stylish::{Color, Foreground, Style, Write};
     ///
     /// let mut s = String::new();
     /// {
