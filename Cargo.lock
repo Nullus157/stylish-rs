@@ -124,6 +124,7 @@ dependencies = [
 name = "stylish-plain"
 version = "0.1.0"
 dependencies = [
+ "stylish",
  "stylish-core",
 ]
 

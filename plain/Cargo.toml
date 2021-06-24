@@ -13,3 +13,7 @@ alloc = ["stylish-core/alloc"]
 stylish-core.default-features = false
 stylish-core.path = "../core"
 stylish-core.version = "0.1.0"
+
+[dev-dependencies]
+stylish.path = ".."
+stylish.version = "0.1.0"

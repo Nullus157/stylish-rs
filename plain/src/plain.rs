@@ -2,16 +2,27 @@
 use stylish_core::io;
 use stylish_core::{Result, Style, Write};
 
+/// An adaptor to allow writing [`stylish`] attributed data to an output stream
+/// by discarding style attributes.
+///
+/// ```rust
+/// use stylish::Write;
+/// let mut writer = stylish::plain::Plain::new(String::new());
+/// stylish::write!(writer, "Hello {:(fg=red)}", "Ferris");
+/// assert_eq!(writer.into_inner(), "Hello Ferris");
+/// ```
 #[derive(Clone, Debug, Default)]
 pub struct Plain<T> {
     inner: T,
 }
 
 impl<T> Plain<T> {
+    /// Wrap the given output stream in this adaptor.
     pub fn new(inner: T) -> Self {
         Self { inner }
     }
 
+    /// Get back the wrapped output stream.
     pub fn into_inner(self) -> T {
         self.inner
     }

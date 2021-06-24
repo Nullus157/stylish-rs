@@ -2,6 +2,14 @@ use crate::Plain;
 use alloc::string::String;
 use stylish_core::{Arguments, Write};
 
+/// Create a [`String`] by discarding styling attributes.
+///
+/// ```rust
+/// assert_eq!(
+///     stylish::plain::format!("Hello {:(fg=red)}", "Ferris"),
+///     "Hello Ferris",
+/// );
+/// ```
 #[macro_export]
 macro_rules! format {
     ($($arg:tt)*) => {{
@@ -10,6 +18,15 @@ macro_rules! format {
     }}
 }
 
+/// Render the given attributed [`Arguments`] into a [`String`] by discarding
+/// the style attributes.
+///
+/// ```rust
+/// assert_eq!(
+///     stylish::plain::format(stylish::format_args!("Hello {:(fg=red)}", "Ferris")),
+///     "Hello Ferris",
+/// );
+/// ```
 pub fn format(args: Arguments<'_>) -> String {
     let mut output = Plain::new(String::new());
     output

@@ -153,7 +153,7 @@ pub fn ansi<T: core::fmt::Write>(inner: T) -> ansi::Ansi<T> {
 /// stylish::write!(writer, "Hello {:(fg=red)}", "Ferris");
 /// assert_eq!(
 ///     writer.finish()?,
-///     "Hello <span style=color:red>Ferris</span>"
+///     "Hello <span style=color:red>Ferris</span>",
 /// );
 /// # Ok::<(), core::fmt::Error>(())
 /// ```
@@ -161,6 +161,15 @@ pub fn html<T: core::fmt::Write>(inner: T) -> html::Html<T> {
     html::Html::new(inner)
 }
 
+/// An alias for [`stylish::plain::Plain::new`] for more succinct code.
+///
+/// ```rust
+/// use stylish::Write;
+/// let mut writer = stylish::plain(String::new());
+/// stylish::write!(writer, "Hello {:(fg=red)}", "Ferris");
+/// assert_eq!(writer.into_inner(), "Hello Ferris");
+/// # Ok::<(), core::fmt::Error>(())
+/// ```
 pub fn plain<T>(inner: T) -> plain::Plain<T> {
     plain::Plain::new(inner)
 }
