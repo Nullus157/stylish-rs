@@ -1,5 +1,5 @@
-/// A color that can be used with [`Foreground`] to modify [`Style::foreground`] or [`Background`]
-/// to modify [`Style::background`].
+/// A color that can be used with [`Foreground`] to modify [`Style::foreground`]
+/// or [`Background`] to modify [`Style::background`].
 #[allow(dead_code)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
 #[non_exhaustive]
@@ -36,7 +36,8 @@ pub enum Intensity {
     Faint,
 }
 
-/// A style to render text with, setting the foreground and background colors, along with intensity.
+/// A style to render text with, setting the foreground and background colors,
+/// along with intensity.
 #[derive(Copy, Clone, Debug, Default, Eq, PartialEq)]
 #[non_exhaustive]
 pub struct Style {
@@ -50,8 +51,8 @@ pub struct Style {
 
 /// A diff between two styles.
 ///
-/// Most useful for some implementors of [`stylish::Write`] to detect changes between two parts, or
-/// for applying multiple changes to a style at once.
+/// Most useful for some implementors of [`stylish::Write`] to detect changes
+/// between two parts, or for applying multiple changes to a style at once.
 #[derive(Copy, Clone, Debug, Default, Eq, PartialEq)]
 #[non_exhaustive]
 pub struct StyleDiff {
@@ -89,8 +90,8 @@ pub struct Foreground(pub Color);
 #[derive(Copy, Clone, Debug, Default, Eq, PartialEq)]
 pub struct Background(pub Color);
 
-/// A trait for modifications to [`Style`], allowing an ergonomic API with [`Style::with`] and
-/// [`stylish::Formatter::with`].
+/// A trait for modifications to [`Style`], allowing an ergonomic API with
+/// [`Style::with`] and [`stylish::Formatter::with`].
 ///
 /// ```rust
 /// use stylish::{Color, Foreground, Intensity, Restyle, Style};
@@ -110,8 +111,8 @@ pub struct Background(pub Color);
 /// assert_eq!(Style::default().with(OhNo), expected);
 /// ```
 pub trait Restyle {
-    /// Apply the restyling this instance represents to an existing style, returning the updated
-    /// style.
+    /// Apply the restyling this instance represents to an existing style,
+    /// returning the updated style.
     fn apply(&self, style: Style) -> Style;
 }
 
@@ -142,10 +143,12 @@ impl Style {
         adj.apply(self)
     }
 
-    /// Find the changes from the `original` style that would result in this style.
+    /// Find the changes from the `original` style that would result in this
+    /// style.
     ///
-    /// This can be useful for writers like `ansi` that are stateful, finding the minimal state
-    /// that must be changed between the current output style and the new style.
+    /// This can be useful for writers like `ansi` that are stateful, finding
+    /// the minimal state that must be changed between the current output
+    /// style and the new style.
     ///
     /// ```rust
     /// use stylish::{Color, Foreground, Style, StyleDiff};

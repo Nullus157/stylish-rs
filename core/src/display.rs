@@ -1,9 +1,10 @@
 use crate::{Formatter, Result};
 
-/// Format trait for the [`stylish` format, `{:s}`](stylish#implementing-a-style-for-a-type).
+/// Format trait for the [`stylish` format,
+/// `{:s}`](stylish#implementing-a-style-for-a-type).
 ///
-/// `Display` is similar to [`core::fmt::Display`], but allows attaching additional style
-/// attributes to the output.
+/// `Display` is similar to [`core::fmt::Display`], but allows attaching
+/// additional style attributes to the output.
 ///
 /// ```rust
 /// struct Name(&'static str);

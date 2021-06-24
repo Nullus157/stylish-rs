@@ -50,9 +50,10 @@ impl Default for FormatterArgs<'static> {
 
 /// A configured output stream.
 ///
-/// A `Formatter` wraps a target output stream with a set of configuration options for formatting
-/// of data written to the stream. There is (currently) no public constructors for `Formatter`, an
-/// instance is created and passed to implementations of [`stylish::Display`] when they are used in
+/// A `Formatter` wraps a target output stream with a set of configuration
+/// options for formatting of data written to the stream. There is (currently)
+/// no public constructors for `Formatter`, an instance is created and passed to
+/// implementations of [`stylish::Display`] when they are used in
 /// the [`stylish`] macros.
 pub struct Formatter<'a> {
     style: Style,
@@ -71,8 +72,9 @@ impl<'a> Formatter<'a> {
 
     // TODO: All the rest of the std::fmt::Formatter methods
 
-    /// Create a sub-`Formatter` with some styles changed. This may be useful in implementations of
-    /// [`stylish::Display`] to dynamically configure how some parts are formatted.
+    /// Create a sub-`Formatter` with some styles changed. This may be useful in
+    /// implementations of [`stylish::Display`] to dynamically configure how
+    /// some parts are formatted.
     ///
     /// ```rust
     /// struct Name(&'static str);
@@ -110,7 +112,8 @@ impl<'a> Formatter<'a> {
         }
     }
 
-    /// Writes some data to the underlying output stream, using the current style.
+    /// Writes some data to the underlying output stream, using the current
+    /// style.
     ///
     /// ```rust
     /// struct Name(&'static str);
@@ -137,8 +140,8 @@ impl<'a> Formatter<'a> {
         Ok(())
     }
 
-    /// Writes some formatted data into this instance, overriding the current style as appropriate.
-    /// ```rust
+    /// Writes some formatted data into this instance, overriding the current
+    /// style as appropriate. ```rust
     /// struct Name(&'static str);
     ///
     /// impl stylish::Display for Name {

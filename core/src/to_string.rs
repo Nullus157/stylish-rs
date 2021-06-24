@@ -2,9 +2,10 @@ use crate::{format, Display, String};
 
 /// A trait for converting a value to a [`stylish::String`].
 ///
-/// This trait is automatically implemented for any type which implements the [`stylish::Display`]
-/// trait. As such, `ToString` shouldn’t be implemented directly: [`stylish::Display`] should be
-/// implemented instead, and you get the `ToString` implementation for free.
+/// This trait is automatically implemented for any type which implements the
+/// [`stylish::Display`] trait. As such, `ToString` shouldn’t be implemented
+/// directly: [`stylish::Display`] should be implemented instead, and you get
+/// the `ToString` implementation for free.
 pub trait ToStylishString {
     /// Converts the given value to a [`stylish::String`].
     ///

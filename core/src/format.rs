@@ -2,9 +2,9 @@ use crate::{Arguments, String, Write};
 
 /// Create a [`stylish::String`] using interpolation of runtime elements.
 ///
-/// The first argument `format!` receives is a format string literal, the rest are parameters
-/// interpolated based on the format string. See the main [`stylish`] docs for more info on how the
-/// interpolation is controlled.
+/// The first argument `format!` receives is a format string literal, the rest
+/// are parameters interpolated based on the format string. See the main
+/// [`stylish`] docs for more info on how the interpolation is controlled.
 ///
 /// ```rust
 /// let s: stylish::String = stylish::format!("Hello {:(fg=green)}!", "World");
@@ -22,10 +22,11 @@ macro_rules! format {
     }};
 }
 
-/// The `format` function takes a [`stylish::Arguments`] struct and returns the resulting
-/// attributed and formatted [`stylish::String`].
+/// The `format` function takes a [`stylish::Arguments`] struct and returns the
+/// resulting attributed and formatted [`stylish::String`].
 ///
-/// The [`stylish::Arguments`] instance can be created with the [`stylish::format_args!`] macro.
+/// The [`stylish::Arguments`] instance can be created with the
+/// [`stylish::format_args!`] macro.
 ///
 /// # Examples
 ///

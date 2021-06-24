@@ -2,7 +2,8 @@
 
 //! The semver-stable subset of [`stylish`].
 //!
-//! See the main documentation in [`stylish`], there is no reason to depend on this crate directly.
+//! See the main documentation in [`stylish`], there is no reason to depend on
+//! this crate directly.
 
 #![warn(missing_docs)]
 
@@ -58,15 +59,17 @@ pub mod __export {
 
 /// Constructs parameters for the other string-formatting macros.
 ///
-/// This macro functions by taking a formatting string literal containing `{}` for each additional
-/// argument passed. `format_args!` prepares the additional parameters to ensure the output can be
-/// interpreted as a string and canonicalizes the arguments into a single type. Any value that
-/// implements the [`stylish::Display`] trait or any of the [`std::fmt`] formatting traits can be
-/// passed to `format_args!` with the appropriate trait selector.
+/// This macro functions by taking a formatting string literal containing `{}`
+/// for each additional argument passed. `format_args!` prepares the additional
+/// parameters to ensure the output can be interpreted as a string and
+/// canonicalizes the arguments into a single type. Any value that implements
+/// the [`stylish::Display`] trait or any of the [`std::fmt`] formatting traits
+/// can be passed to `format_args!` with the appropriate trait selector.
 ///
-/// This macro produces a value of type [`stylish::Arguments`]. This value can be passed to the
-/// macros within [`stylish`] for performing useful redirection. All other formatting macros
-/// ([`stylish::format!`], [`stylish::write!`], etc) are proxied through this one. `format_args!`,
+/// This macro produces a value of type [`stylish::Arguments`]. This value can
+/// be passed to the macros within [`stylish`] for performing useful
+/// redirection. All other formatting macros ([`stylish::format!`],
+/// [`stylish::write!`], etc) are proxied through this one. `format_args!`,
 /// unlike some of its derived macros, avoids heap allocations.
 ///
 /// For more information, see the documentation in [`stylish`].

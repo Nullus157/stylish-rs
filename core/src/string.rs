@@ -1,10 +1,11 @@
 use crate::{Display, Formatter, Result, Style, Write};
 
-/// An attributed version of [`alloc::string::String`] which has a specific [`Style`] associated
-/// with each character.
+/// An attributed version of [`alloc::string::String`] which has a specific
+/// [`Style`] associated with each character.
 ///
-/// The main interfaces to create an instance of this are [`stylish::format!`] and [`impl Write for
-/// String`](#impl-Write), and to inspect the content [`impl Display for String`](#impl-Display).
+/// The main interfaces to create an instance of this are [`stylish::format!`]
+/// and [`impl Write for String`](#impl-Write), and to inspect the content
+/// [`impl Display for String`](#impl-Display).
 ///
 /// You can create an instance via [`stylish::format!`]:
 ///
@@ -21,8 +22,8 @@ use crate::{Display, Formatter, Result, Style, Write};
 /// stylish::write!(s, "{:(fg=magenta)}", "fuchsia");
 /// ```
 ///
-/// To use the attributed data you must then write this string to a sink using the `{:s}`
-/// trait-selector.
+/// To use the attributed data you must then write this string to a sink using
+/// the `{:s}` trait-selector.
 ///
 /// ```rust
 /// use stylish::Write;
