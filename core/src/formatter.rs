@@ -141,7 +141,9 @@ impl<'a> Formatter<'a> {
     }
 
     /// Writes some formatted data into this instance, overriding the current
-    /// style as appropriate. ```rust
+    /// style as appropriate.
+    ///
+    /// ```rust
     /// struct Name(&'static str);
     ///
     /// impl stylish::Display for Name {

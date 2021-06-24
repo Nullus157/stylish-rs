@@ -146,6 +146,17 @@ pub fn ansi<T: core::fmt::Write>(inner: T) -> ansi::Ansi<T> {
     ansi::Ansi::new(inner)
 }
 
+/// An alias for [`stylish::html::Html::new`] for more succinct code.
+///
+/// ```rust
+/// let mut writer = stylish::html(String::new());
+/// stylish::write!(writer, "Hello {:(fg=red)}", "Ferris");
+/// assert_eq!(
+///     writer.finish()?,
+///     "Hello <span style=color:red>Ferris</span>"
+/// );
+/// # Ok::<(), core::fmt::Error>(())
+/// ```
 pub fn html<T: core::fmt::Write>(inner: T) -> html::Html<T> {
     html::Html::new(inner)
 }

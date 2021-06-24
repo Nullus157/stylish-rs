@@ -1,7 +1,16 @@
 use crate::Html;
 use alloc::string::String;
-use stylish_core::{Arguments, Write};
+use stylish_core::Arguments;
 
+/// Create a [`String`] with inline ANSI escape codes styling its formatted
+/// data.
+///
+/// ```rust
+/// assert_eq!(
+///     stylish::html::format!("Hello {:(fg=red)}", "Ferris"),
+///     "Hello <span style=color:red>Ferris</span>",
+/// );
+/// ```
 #[macro_export]
 macro_rules! format {
     ($($arg:tt)*) => {{
@@ -10,6 +19,15 @@ macro_rules! format {
     }}
 }
 
+/// Render the given attributed [`Arguments`] into a [`String`] by converting
+/// the attributes into HTML elements.
+///
+/// ```rust
+/// assert_eq!(
+///     stylish::html::format(stylish::format_args!("Hello {:(fg=red)}", "Ferris")),
+///     "Hello <span style=color:red>Ferris</span>",
+/// );
+/// ```
 pub fn format(args: Arguments<'_>) -> String {
     let mut html = Html::new(String::new());
     html.write_fmt(args)

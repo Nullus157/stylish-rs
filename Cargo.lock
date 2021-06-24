@@ -106,6 +106,7 @@ name = "stylish-html"
 version = "0.1.0"
 dependencies = [
  "askama_escape",
+ "stylish",
  "stylish-core",
 ]
 
