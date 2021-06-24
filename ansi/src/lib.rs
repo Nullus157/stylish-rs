@@ -1,4 +1,8 @@
 #![no_std]
+//! [`stylish`] helpers for writing styles as ANSI escape codes.
+
+#[cfg(doc)]
+extern crate self as stylish;
 
 #[cfg(feature = "alloc")]
 extern crate alloc;

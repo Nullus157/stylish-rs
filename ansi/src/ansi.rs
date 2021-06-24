@@ -2,6 +2,15 @@ use crate::util;
 use core::fmt;
 use stylish_core::{Style, Write};
 
+/// An adaptor to allow writing [`stylish`] attributed data to an output stream
+/// by turning attributes into inline ANSI escape codes.
+///
+/// ```rust
+/// let mut writer = stylish::ansi::Ansi::new(String::new());
+/// stylish::write!(writer, "Hello {:(fg=red)}", "Ferris");
+/// assert_eq!(writer.finish()?, "Hello \x1b[31mFerris\x1b[0m");
+/// # Ok::<(), core::fmt::Error>(())
+/// ```
 #[derive(Clone, Debug, Default)]
 pub struct Ansi<T: core::fmt::Write> {
     inner: T,
@@ -9,6 +18,7 @@ pub struct Ansi<T: core::fmt::Write> {
 }
 
 impl<T: core::fmt::Write> Ansi<T> {
+    /// Wrap the given output stream in this adaptor.
     pub fn new(inner: T) -> Self {
         Self {
             inner,
@@ -16,6 +26,16 @@ impl<T: core::fmt::Write> Ansi<T> {
         }
     }
 
+    /// Inherent delegation to
+    /// [`stylish::Write::write_fmt`](stylish_core::Write::write_fmt) to not
+    /// require a trait import.
+    pub fn write_fmt(&mut self, args: stylish_core::Arguments<'_>) -> fmt::Result {
+        stylish_core::Write::write_fmt(self, args)
+    }
+
+    /// Ensure the output stream is reset back to the default style and return
+    /// it, if you don't call this the stream will be left in whatever style
+    /// the last output data was.
     pub fn finish(mut self) -> Result<T, fmt::Error> {
         if self.current != Style::default() {
             self.inner.write_str("\x1b[0m")?;

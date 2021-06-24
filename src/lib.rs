@@ -123,6 +123,17 @@ pub use stylish_core::String;
 #[cfg(feature = "std")]
 pub use stylish_core::io;
 
+/// An alias for [`stylish::ansi::Ansi::new`] for more succinct code.
+///
+/// ```rust
+/// let mut writer = stylish::ansi(String::new());
+/// stylish::write!(writer, "Hello {:(fg=red)}", "Ferris");
+/// assert_eq!(
+///     writer.finish()?,
+///     "Hello \x1b[31mFerris\x1b[0m",
+/// );
+/// # Ok::<(), core::fmt::Error>(())
+/// ```
 pub fn ansi<T: core::fmt::Write>(inner: T) -> ansi::Ansi<T> {
     ansi::Ansi::new(inner)
 }
