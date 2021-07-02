@@ -1,6 +1,8 @@
 #![no_std]
 //! [`stylish`] helpers for discarding styles.
 
+#![allow(uncommon_codepoints)]
+
 #[cfg(doc)]
 extern crate self as stylish;
 
@@ -21,6 +23,6 @@ pub use self::plain::Plain;
 pub use self::{format::format, to_string::ToPlainString};
 
 #[doc(hidden)]
-pub mod __export {
+pub mod 𓀄 {
     pub use stylish_core::format_args;
 }

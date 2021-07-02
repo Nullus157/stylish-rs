@@ -14,7 +14,7 @@ use stylish_core::Arguments;
 #[macro_export]
 macro_rules! format {
     ($($arg:tt)*) => {{
-        let res = $crate::format($crate::__export::format_args!($($arg)*));
+        let res = $crate::format($crate::𓀄::format_args!($($arg)*));
         res
     }}
 }

@@ -5,6 +5,7 @@
 //! See the main documentation in [`stylish`], there is no reason to depend on
 //! this crate directly.
 
+#![allow(uncommon_codepoints)]
 #![warn(missing_docs)]
 
 #[cfg(doc)]
@@ -46,7 +47,7 @@ pub use self::{format::format, string::String, to_string::ToStylishString};
 pub use core::fmt::{Error, Result};
 
 #[doc(hidden)]
-pub mod __export {
+pub mod 𓀄 {
     pub use crate::{
         arguments::{Argument, Arguments, FormatTrait, StdFmt},
         formatter::{Align, DebugHex, FormatterArgs, Sign},
@@ -83,11 +84,11 @@ pub mod __export {
 #[macro_export]
 macro_rules! format_args {
     ($fmt:literal $(, $($arg:tt)*)?) => {
-        $crate::__export::stylish_macros::format_args!(crate=$crate, $fmt $(, $($arg)*)?)
+        $crate::𓀄::stylish_macros::format_args!(crate=$crate, $fmt $(, $($arg)*)?)
     };
     ($fmt:expr $(, $($arg:tt)*)?) => {
-        $crate::__export::with_builtin!(let $fmt_lit = $fmt in {
-            $crate::__export::stylish_macros::format_args!(crate=$crate, $fmt_lit $(, $($arg)*)?)
+        $crate::𓀄::with_builtin!(let $fmt_lit = $fmt in {
+            $crate::𓀄::stylish_macros::format_args!(crate=$crate, $fmt_lit $(, $($arg)*)?)
         })
     };
 }

@@ -1,6 +1,8 @@
 #![no_std]
 //! [`stylish`] helpers for writing styles as HTML elements.
 
+#![allow(uncommon_codepoints)]
+
 #[cfg(doc)]
 extern crate self as stylish;
 
@@ -15,7 +17,7 @@ mod to_string;
 mod util;
 
 #[doc(hidden)]
-pub mod __export {
+pub mod 𓀄 {
     pub use stylish_core::format_args;
 }
 

@@ -1,3 +1,5 @@
+#![allow(uncommon_codepoints)]
+
 use self::{
     format::{Format, FormatArg, FormatArgRef, FormatSpec, Piece},
     to_tokens::Scoped,
@@ -79,7 +81,7 @@ fn format_args_impl(
     }: ArgsInput,
 ) -> impl ToTokens {
     let krate = krate.expect("base crate not specified (are you using stylish-macros directly instead of through stylish-core?)");
-    let export: syn::Path = syn::parse_quote!(#krate::__export);
+    let export: syn::Path = syn::parse_quote!(#krate::𓀄);
 
     let span = format.span();
     let format_string = &format;
