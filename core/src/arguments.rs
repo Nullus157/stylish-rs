@@ -3,7 +3,7 @@ use crate::{formatter::FormatterArgs, Display, Formatter, Restyle, Result};
 type StdFmtFn<'a> = dyn Fn(&mut core::fmt::Formatter<'_>) -> Result + 'a;
 
 #[doc(hidden)] // workaround https://github.com/rust-lang/rust/issues/85522
-pub struct StdFmt<'a>(stack_dst::ValueA<StdFmtFn<'a>, [usize; 4]>);
+pub struct StdFmt<'a>(stack_dst::ValueA<StdFmtFn<'a>, [usize; 3]>);
 
 impl<'a> StdFmt<'a> {
     #[doc(hidden)] // workaround https://github.com/rust-lang/rust/issues/85526
@@ -11,7 +11,7 @@ impl<'a> StdFmt<'a> {
         StdFmt(
             stack_dst::ValueA::new_stable(f, |p| p as _)
                 .map_err(|_| ())
-                .expect("StdFmt was more than 4 words, this is a bug in stylish-core"),
+                .expect("StdFmt was more than 3 words, this is a bug in stylish-core"),
         )
     }
 }

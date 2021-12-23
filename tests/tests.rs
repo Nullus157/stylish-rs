@@ -39,6 +39,12 @@ fn six() {
 }
 
 #[test]
+fn dyn_display() {
+    let x: &dyn std::fmt::Display = &1;
+    assert_eq!(stylish::plain::format!("{}", *x), "1");
+}
+
+#[test]
 fn error() {
     struct Foo;
 

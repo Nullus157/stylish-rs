@@ -181,39 +181,33 @@ impl<'a, 'b: 'a> ToTokens for Scoped<'a, FormatterArgs<'b>> {
     }
 }
 
+impl<'a> ToTokens for FormatTrait {
+    fn to_tokens(&self, tokens: &mut TokenStream) {
+        match self {
+            FormatTrait::Display => quote!(Display),
+            FormatTrait::Debug => quote!(Debug),
+            FormatTrait::Octal => quote!(Octal),
+            FormatTrait::LowerHex => quote!(LowerHex),
+            FormatTrait::UpperHex => quote!(UpperHex),
+            FormatTrait::Pointer => quote!(Pointer),
+            FormatTrait::Binary => quote!(Binary),
+            FormatTrait::LowerExp => quote!(LowerExp),
+            FormatTrait::UpperExp => quote!(UpperExp),
+            FormatTrait::Stylish => quote!(Stylish),
+        }
+        .to_tokens(tokens)
+    }
+}
+
 impl<'a> ToTokens for Scoped<'a, (FormatTrait, TokenStream)> {
     fn to_tokens(&self, tokens: &mut TokenStream) {
         let export = &self.export;
         match self.as_ref() {
-            (FormatTrait::Display, arg) => {
-                quote!(#export::FormatTrait::Display(#export::StdFmt::new(move |f| #export::fmt::Display::fmt(#arg, f))))
-            }
-            (FormatTrait::Debug, arg) => {
-                quote!(#export::FormatTrait::Debug(#export::StdFmt::new(move |f| #export::fmt::Debug::fmt(#arg, f))))
-            }
-            (FormatTrait::Octal, arg) => {
-                quote!(#export::FormatTrait::Octal(#export::StdFmt::new(move |f| #export::fmt::Octal::fmt(#arg, f))))
-            }
-            (FormatTrait::LowerHex, arg) => {
-                quote!(#export::FormatTrait::LowerHex(#export::StdFmt::new(move |f| #export::fmt::LowerHex::fmt(#arg, f))))
-            }
-            (FormatTrait::UpperHex, arg) => {
-                quote!(#export::FormatTrait::UpperHex(#export::StdFmt::new(move |f| #export::fmt::UpperHex::fmt(#arg, f))))
-            }
-            (FormatTrait::Pointer, arg) => {
-                quote!(#export::FormatTrait::Pointer(#export::StdFmt::new(move |f| #export::fmt::Pointer::fmt(#arg, f))))
-            }
-            (FormatTrait::Binary, arg) => {
-                quote!(#export::FormatTrait::Binary(#export::StdFmt::new(move |f| #export::fmt::Binary::fmt(#arg, f))))
-            }
-            (FormatTrait::LowerExp, arg) => {
-                quote!(#export::FormatTrait::LowerExp(#export::StdFmt::new(move |f| #export::fmt::LowerExp::fmt(#arg, f))))
-            }
-            (FormatTrait::UpperExp, arg) => {
-                quote!(#export::FormatTrait::UpperExp(#export::StdFmt::new(move |f| #export::fmt::UpperExp::fmt(#arg, f))))
-            }
             (FormatTrait::Stylish, arg) => {
                 quote!(#export::FormatTrait::Stylish(#arg))
+            }
+            (format_trait, arg) => {
+                quote!(#export::FormatTrait::#format_trait(match #arg { __stylish_arg => #export::StdFmt::new(move |f| #export::fmt::#format_trait::fmt(__stylish_arg, f)) }))
             }
         }
         .to_tokens(tokens)
