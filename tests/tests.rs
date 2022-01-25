@@ -4,6 +4,12 @@ fn one() {
 }
 
 #[test]
+fn let_() {
+    let x = stylish::format_args!("{}", 1);
+    assert_eq!(stylish::plain::format!("{:s}", x), "1");
+}
+
+#[test]
 fn two() {
     assert_eq!(stylish::plain::format!("{0}", 1), "1");
 }
