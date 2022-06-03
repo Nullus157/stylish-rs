@@ -31,7 +31,7 @@ mod formatter;
 #[cfg(feature = "alloc")]
 mod string;
 mod style;
-#[cfg(feature = "alloc")]
+#[cfg(all(feature = "alloc", feature = "macros"))]
 mod to_string;
 mod write;
 
@@ -43,9 +43,12 @@ pub use self::{
     write::Write,
 };
 #[cfg(feature = "alloc")]
-pub use self::{format::format, string::String, to_string::ToStylishString};
+pub use self::{format::format, string::String};
+#[cfg(all(feature = "alloc", feature = "macros"))]
+pub use self::to_string::ToStylishString;
 pub use core::fmt::{Error, Result};
 
+#[cfg(feature = "macros")]
 #[doc(hidden)]
 pub mod 𓀄 {
     pub use crate::{
@@ -58,6 +61,7 @@ pub mod 𓀄 {
     pub use with_builtin_macros::with_builtin;
 }
 
+#[cfg(feature = "macros")]
 /// Constructs parameters for the other string-formatting macros.
 ///
 /// This macro functions by taking a formatting string literal containing `{}`

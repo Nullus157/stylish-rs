@@ -15,13 +15,16 @@ extern crate std;
 #[cfg(feature = "alloc")]
 mod format;
 mod plain;
-#[cfg(feature = "alloc")]
+#[cfg(all(feature = "alloc", feature = "macros"))]
 mod to_string;
 
 pub use self::plain::Plain;
 #[cfg(feature = "alloc")]
-pub use self::{format::format, to_string::ToPlainString};
+pub use self::format::format;
+#[cfg(all(feature = "alloc", feature = "macros"))]
+pub use self::to_string::ToPlainString;
 
+#[cfg(feature = "macros")]
 #[doc(hidden)]
 pub mod 𓀄 {
     pub use stylish_core::format_args;

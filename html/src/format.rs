@@ -2,6 +2,7 @@ use crate::Html;
 use alloc::string::String;
 use stylish_core::Arguments;
 
+#[cfg(feature = "macros")]
 /// Create a [`String`] with inline ANSI escape codes styling its formatted
 /// data.
 ///

@@ -8,6 +8,7 @@ edition = "2018"
 default = ["std"]
 std = ["alloc", "stylish-core/std"]
 alloc = ["stylish-core/alloc"]
+macros = ["stylish-core/macros"]
 
 [dependencies]
 stylish-core.default-features = false

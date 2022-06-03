@@ -1,5 +1,6 @@
 use crate::{Arguments, String, Write};
 
+#[cfg(feature = "macros")]
 /// Create a [`stylish::String`] using interpolation of runtime elements.
 ///
 /// The first argument `format!` receives is a format string literal, the rest

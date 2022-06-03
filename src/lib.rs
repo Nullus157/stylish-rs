@@ -124,16 +124,21 @@ use core::fmt as doc_fmt;
 use std::fmt as doc_fmt;
 
 pub use stylish_core::{
-    format, format_args, write, writeln, Arguments, Background, Color, Display, Error, Foreground,
-    Formatter, Intensity, Restyle, Result, Style, StyleDiff, ToStylishString, Write,
+    Arguments, Background, Color, Display, Error, Foreground,
+    Formatter, Intensity, Restyle, Result, Style, StyleDiff, Write,
 };
+#[cfg(feature = "macros")]
+pub use stylish_core::{format_args, write, writeln};
 
 #[cfg(feature = "alloc")]
-pub use stylish_core::String;
+pub use stylish_core::{format, String};
+#[cfg(all(feature = "alloc", feature = "macros"))]
+pub use stylish_core::ToStylishString;
 
 #[cfg(feature = "std")]
 pub use stylish_core::io;
 
+#[cfg(feature = "ansi")]
 /// An alias for [`stylish::ansi::Ansi::new`] for more succinct code.
 ///
 /// ```rust
@@ -146,6 +151,7 @@ pub fn ansi<T: core::fmt::Write>(inner: T) -> ansi::Ansi<T> {
     ansi::Ansi::new(inner)
 }
 
+#[cfg(feature = "html")]
 /// An alias for [`stylish::html::Html::new`] for more succinct code.
 ///
 /// ```rust
@@ -161,6 +167,7 @@ pub fn html<T: core::fmt::Write>(inner: T) -> html::Html<T> {
     html::Html::new(inner)
 }
 
+#[cfg(feature = "plain")]
 /// An alias for [`stylish::plain::Plain::new`] for more succinct code.
 ///
 /// ```rust
@@ -174,9 +181,14 @@ pub fn plain<T>(inner: T) -> plain::Plain<T> {
     plain::Plain::new(inner)
 }
 
+#[cfg(feature = "ansi")]
 #[doc(inline)]
 pub use stylish_ansi as ansi;
+
+#[cfg(feature = "html")]
 #[doc(inline)]
 pub use stylish_html as html;
+
+#[cfg(feature = "plain")]
 #[doc(inline)]
 pub use stylish_plain as plain;

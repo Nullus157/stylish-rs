@@ -2,6 +2,7 @@ use crate::Plain;
 use alloc::string::String;
 use stylish_core::{Arguments, Write};
 
+#[cfg(feature = "macros")]
 /// Create a [`String`] by discarding styling attributes.
 ///
 /// ```rust
