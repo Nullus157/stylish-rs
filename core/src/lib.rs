@@ -35,6 +35,8 @@ mod style;
 mod to_string;
 mod write;
 
+#[cfg(all(feature = "alloc", feature = "macros"))]
+pub use self::to_string::ToStylishString;
 pub use self::{
     arguments::Arguments,
     display::Display,
@@ -44,8 +46,6 @@ pub use self::{
 };
 #[cfg(feature = "alloc")]
 pub use self::{format::format, string::String};
-#[cfg(all(feature = "alloc", feature = "macros"))]
-pub use self::to_string::ToStylishString;
 pub use core::fmt::{Error, Result};
 
 #[cfg(feature = "macros")]

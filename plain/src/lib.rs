@@ -18,9 +18,9 @@ mod plain;
 #[cfg(all(feature = "alloc", feature = "macros"))]
 mod to_string;
 
-pub use self::plain::Plain;
 #[cfg(feature = "alloc")]
 pub use self::format::format;
+pub use self::plain::Plain;
 #[cfg(all(feature = "alloc", feature = "macros"))]
 pub use self::to_string::ToPlainString;
 

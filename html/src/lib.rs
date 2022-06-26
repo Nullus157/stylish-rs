@@ -22,8 +22,8 @@ pub mod 𓀄 {
     pub use stylish_core::format_args;
 }
 
-pub use self::html::Html;
 #[cfg(feature = "alloc")]
 pub use self::format::format;
+pub use self::html::Html;
 #[cfg(all(feature = "alloc", feature = "macros"))]
 pub use self::to_string::ToHtmlString;
