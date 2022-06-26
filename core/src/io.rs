@@ -57,7 +57,7 @@ impl<W: Write> crate::Write for ErrorTrap<W> {
 /// let style = Style::default().with(Foreground(Color::Blue));
 ///     
 /// let mut pos = 0;
-/// let mut output = stylish::plain(std::io::stdout());
+/// let mut output = stylish::io::plain(std::io::stdout());
 ///
 /// while pos < data.len() {
 ///     let bytes_written = output.write(&data[pos..], style)?;
@@ -101,7 +101,7 @@ pub trait Write {
     /// ```rust
     /// use stylish::{io::Write, Color, Foreground, Style};
     ///
-    /// let mut output = stylish::plain(std::io::stdout());
+    /// let mut output = stylish::io::plain(std::io::stdout());
     ///
     /// // Writes some prefix of the byte string, not necessarily all of it.
     /// output.write(
@@ -125,7 +125,7 @@ pub trait Write {
     /// ```rust
     /// use stylish::{io::Write, Color, Foreground, Style};
     ///
-    /// let mut output = stylish::plain(std::io::stdout());
+    /// let mut output = stylish::io::plain(std::io::stdout());
     ///
     /// output.write_all(
     ///     b"some bytes",
@@ -161,7 +161,7 @@ pub trait Write {
     /// ```rust
     /// use stylish::{io::Write, Color, Foreground, Style};
     ///
-    /// let mut output = stylish::plain(std::io::stdout());
+    /// let mut output = stylish::io::plain(std::io::stdout());
     ///
     /// output.write_all(
     ///     b"some bytes",
@@ -208,7 +208,7 @@ pub trait Write {
     /// ```rust
     /// use stylish::{io::Write, Color, Foreground, Style};
     ///
-    /// let mut output = stylish::plain(std::io::stdout());
+    /// let mut output = stylish::io::plain(std::io::stdout());
     ///
     /// output.write_fmt(stylish::format_args!("{:(fg=red)}", '☎'))?;
     /// # Ok::<(), std::io::Error>(())
@@ -229,7 +229,7 @@ pub trait Write {
     /// ```rust
     /// use stylish::{io::Write, Color, Foreground, Style};
     ///
-    /// let mut output = stylish::plain(std::io::stdout());
+    /// let mut output = stylish::io::plain(std::io::stdout());
     ///
     /// let reference = output.by_ref();
     ///

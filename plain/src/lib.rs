@@ -14,6 +14,8 @@ extern crate std;
 
 #[cfg(feature = "alloc")]
 mod format;
+#[cfg(feature = "std")]
+pub mod io;
 mod plain;
 #[cfg(all(feature = "alloc", feature = "macros"))]
 mod to_string;

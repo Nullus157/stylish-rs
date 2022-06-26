@@ -136,10 +136,44 @@ pub use stylish_core::ToStylishString;
 pub use stylish_core::{format, String};
 
 #[cfg(feature = "std")]
-pub use stylish_core::io;
+pub mod io {
+    #[cfg(feature = "ansi")]
+    pub use stylish_ansi::io::Ansi;
+    pub use stylish_core::io::{Error, ErrorKind, Result, Write};
+
+    #[cfg(feature = "ansi")]
+    /// An alias for [`stylish::io::Ansi::new`] for more succinct code.
+    ///
+    /// ```rust
+    /// let mut writer = stylish::io::ansi(Vec::new());
+    /// stylish::write!(writer, "Hello {:(fg=red)}", "Ferris");
+    /// assert_eq!(writer.finish()?, b"Hello \x1b[31mFerris\x1b[0m");
+    /// # Ok::<(), std::io::Error>(())
+    /// ```
+    pub fn ansi<T: std::io::Write>(inner: T) -> Ansi<T> {
+        Ansi::new(inner)
+    }
+
+    #[cfg(feature = "ansi")]
+    pub use stylish_plain::io::Plain;
+
+    #[cfg(feature = "plain")]
+    /// An alias for [`stylish::io::Plain::new`] for more succinct code.
+    ///
+    /// ```rust
+    /// use stylish::Write;
+    /// let mut writer = stylish::io::plain(Vec::new());
+    /// stylish::write!(writer, "Hello {:(fg=red)}", "Ferris");
+    /// assert_eq!(writer.into_inner(), b"Hello Ferris");
+    /// # Ok::<(), std::io::Error>(())
+    /// ```
+    pub fn plain<T: std::io::Write>(inner: T) -> Plain<T> {
+        Plain::new(inner)
+    }
+}
 
 #[cfg(feature = "ansi")]
-/// An alias for [`stylish::ansi::Ansi::new`] for more succinct code.
+/// An alias for [`stylish::Ansi::new`] for more succinct code.
 ///
 /// ```rust
 /// let mut writer = stylish::ansi(String::new());
@@ -147,12 +181,12 @@ pub use stylish_core::io;
 /// assert_eq!(writer.finish()?, "Hello \x1b[31mFerris\x1b[0m");
 /// # Ok::<(), core::fmt::Error>(())
 /// ```
-pub fn ansi<T: core::fmt::Write>(inner: T) -> ansi::Ansi<T> {
-    ansi::Ansi::new(inner)
+pub fn ansi<T: core::fmt::Write>(inner: T) -> Ansi<T> {
+    Ansi::new(inner)
 }
 
 #[cfg(feature = "html")]
-/// An alias for [`stylish::html::Html::new`] for more succinct code.
+/// An alias for [`stylish::Html::new`] for more succinct code.
 ///
 /// ```rust
 /// let mut writer = stylish::html(String::new());
@@ -163,12 +197,12 @@ pub fn ansi<T: core::fmt::Write>(inner: T) -> ansi::Ansi<T> {
 /// );
 /// # Ok::<(), core::fmt::Error>(())
 /// ```
-pub fn html<T: core::fmt::Write>(inner: T) -> html::Html<T> {
-    html::Html::new(inner)
+pub fn html<T: core::fmt::Write>(inner: T) -> Html<T> {
+    Html::new(inner)
 }
 
 #[cfg(feature = "plain")]
-/// An alias for [`stylish::plain::Plain::new`] for more succinct code.
+/// An alias for [`stylish::Plain::new`] for more succinct code.
 ///
 /// ```rust
 /// use stylish::Write;
@@ -177,18 +211,33 @@ pub fn html<T: core::fmt::Write>(inner: T) -> html::Html<T> {
 /// assert_eq!(writer.into_inner(), "Hello Ferris");
 /// # Ok::<(), core::fmt::Error>(())
 /// ```
-pub fn plain<T>(inner: T) -> plain::Plain<T> {
-    plain::Plain::new(inner)
+pub fn plain<T: core::fmt::Write>(inner: T) -> Plain<T> {
+    Plain::new(inner)
 }
 
 #[cfg(feature = "ansi")]
-#[doc(inline)]
-pub use stylish_ansi as ansi;
+pub use stylish_ansi::Ansi;
+#[cfg(all(feature = "ansi", feature = "alloc", feature = "macros"))]
+pub use stylish_ansi::ToAnsiString;
+#[cfg(all(feature = "ansi", feature = "alloc"))]
+pub mod ansi {
+    pub use stylish_ansi::format;
+}
 
 #[cfg(feature = "html")]
-#[doc(inline)]
-pub use stylish_html as html;
+pub use stylish_html::Html;
+#[cfg(all(feature = "html", feature = "alloc", feature = "macros"))]
+pub use stylish_html::ToHtmlString;
+#[cfg(all(feature = "html", feature = "alloc"))]
+pub mod html {
+    pub use stylish_html::format;
+}
 
 #[cfg(feature = "plain")]
-#[doc(inline)]
-pub use stylish_plain as plain;
+pub use stylish_plain::Plain;
+#[cfg(all(feature = "plain", feature = "alloc", feature = "macros"))]
+pub use stylish_plain::ToPlainString;
+#[cfg(all(feature = "plain", feature = "alloc"))]
+pub mod plain {
+    pub use stylish_plain::format;
+}

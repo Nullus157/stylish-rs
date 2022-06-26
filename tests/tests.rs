@@ -68,9 +68,8 @@ mod tests {
             }
         }
 
-        use stylish::io::Write;
         let mut s = Vec::<u8>::new();
-        let mut writer = stylish::plain::Plain::new(&mut s);
+        let mut writer = stylish::io::Plain::new(&mut s);
         assert!(stylish::writeln!(writer, "{:s}", Foo).is_err());
     }
 

@@ -1,3 +1,5 @@
+#![allow(clippy::excessive_precision)]
+
 use stylish::plain::format;
 
 #[test]

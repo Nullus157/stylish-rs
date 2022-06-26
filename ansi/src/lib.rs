@@ -9,9 +9,14 @@ extern crate self as stylish;
 #[cfg(feature = "alloc")]
 extern crate alloc;
 
+#[cfg(feature = "std")]
+extern crate std;
+
 mod ansi;
 #[cfg(feature = "alloc")]
 mod format;
+#[cfg(feature = "std")]
+pub mod io;
 #[cfg(all(feature = "alloc", feature = "macros"))]
 mod to_string;
 mod util;

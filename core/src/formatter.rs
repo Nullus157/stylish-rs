@@ -23,7 +23,7 @@ pub enum DebugHex {
 }
 
 #[doc(hidden)] // workaround https://github.com/rust-lang/rust/issues/85522
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Default)]
 pub struct FormatterArgs<'a> {
     pub align: Option<Align>,
     pub sign: Option<Sign>,
@@ -32,20 +32,6 @@ pub struct FormatterArgs<'a> {
     pub width: Option<&'a usize>,
     pub precision: Option<&'a usize>,
     pub debug_hex: Option<DebugHex>,
-}
-
-impl Default for FormatterArgs<'static> {
-    fn default() -> Self {
-        Self {
-            align: None,
-            sign: None,
-            zero: false,
-            width: None,
-            precision: None,
-            alternate: false,
-            debug_hex: None,
-        }
-    }
 }
 
 /// A configured output stream.

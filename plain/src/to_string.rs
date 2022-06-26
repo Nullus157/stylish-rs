@@ -23,7 +23,7 @@ pub trait ToPlainString {
     ///     }
     /// }
     ///
-    /// use stylish::plain::ToPlainString;
+    /// use stylish::ToPlainString;
     ///
     /// assert_eq!(Warning("FIRE").to_plain_string(), "FIRE");
     /// ```

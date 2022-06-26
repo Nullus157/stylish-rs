@@ -23,7 +23,7 @@ pub trait ToHtmlString {
     ///     }
     /// }
     ///
-    /// use stylish::html::ToHtmlString;
+    /// use stylish::ToHtmlString;
     ///
     /// assert_eq!(
     ///     Warning("FIRE").to_html_string(),

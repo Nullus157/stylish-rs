@@ -7,7 +7,7 @@ use stylish_core::{Style, Write};
 /// by turning attributes into HTML elements.
 ///
 /// ```rust
-/// let mut writer = stylish::html::Html::new(String::new());
+/// let mut writer = stylish::Html::new(String::new());
 /// stylish::write!(writer, "Hello {:(fg=red)}", "Ferris");
 /// assert_eq!(
 ///     writer.finish()?,

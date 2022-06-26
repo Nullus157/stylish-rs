@@ -181,7 +181,7 @@ impl<'a, 'b: 'a> ToTokens for Scoped<'a, FormatterArgs<'b>> {
     }
 }
 
-impl<'a> ToTokens for FormatTrait {
+impl ToTokens for FormatTrait {
     fn to_tokens(&self, tokens: &mut TokenStream) {
         match self {
             FormatTrait::Display => quote!(Display),

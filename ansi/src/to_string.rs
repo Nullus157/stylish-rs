@@ -23,7 +23,7 @@ pub trait ToAnsiString {
     ///     }
     /// }
     ///
-    /// use stylish::ansi::ToAnsiString;
+    /// use stylish::ToAnsiString;
     ///
     /// assert_eq!(Warning("FIRE").to_ansi_string(), "\x1b[31mFIRE\x1b[0m");
     /// ```

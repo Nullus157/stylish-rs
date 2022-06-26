@@ -1,23 +1,25 @@
 use crate::util;
-use core::fmt;
-use stylish_core::{Style, Write};
+use stylish_core::{
+    io::{Result, Write},
+    Style,
+};
 
 /// An adaptor to allow writing [`stylish`] attributed data to an output stream
 /// by turning attributes into inline ANSI escape codes.
 ///
 /// ```rust
-/// let mut writer = stylish::Ansi::new(String::new());
+/// let mut writer = stylish::io::Ansi::new(Vec::new());
 /// stylish::write!(writer, "Hello {:(fg=red)}", "Ferris");
-/// assert_eq!(writer.finish()?, "Hello \x1b[31mFerris\x1b[0m");
-/// # Ok::<(), core::fmt::Error>(())
+/// assert_eq!(writer.finish()?, b"Hello \x1b[31mFerris\x1b[0m");
+/// # Ok::<(), std::io::Error>(())
 /// ```
 #[derive(Clone, Debug, Default)]
-pub struct Ansi<T: core::fmt::Write> {
+pub struct Ansi<T: std::io::Write> {
     inner: T,
     current: Style,
 }
 
-impl<T: core::fmt::Write> Ansi<T> {
+impl<T: std::io::Write> Ansi<T> {
     /// Wrap the given output stream in this adaptor.
     pub fn new(inner: T) -> Self {
         Self {
@@ -27,27 +29,29 @@ impl<T: core::fmt::Write> Ansi<T> {
     }
 
     /// Inherent delegation to
-    /// [`stylish::Write::write_fmt`](stylish_core::Write::write_fmt) to not
+    /// [`stylish::io::Write::write_fmt`](stylish_core::io::Write::write_fmt) to not
     /// require a trait import.
-    pub fn write_fmt(&mut self, args: stylish_core::Arguments<'_>) -> fmt::Result {
-        stylish_core::Write::write_fmt(self, args)
+    pub fn write_fmt(&mut self, args: stylish_core::Arguments<'_>) -> Result<()> {
+        stylish_core::io::Write::write_fmt(self, args)
     }
 
     /// Ensure the output stream is reset back to the default style and return
     /// it, if you don't call this the stream will be left in whatever style
     /// the last output data was.
-    pub fn finish(mut self) -> Result<T, fmt::Error> {
+    pub fn finish(mut self) -> std::io::Result<T> {
         if self.current != Style::default() {
-            self.inner.write_str("\x1b[0m")?;
+            self.inner.write_all(b"\x1b[0m")?;
         }
         Ok(self.inner)
     }
 }
 
-impl<T: fmt::Write> Write for Ansi<T> {
-    fn write_str(&mut self, s: &str, style: Style) -> fmt::Result {
+/// Does not guarantee a single write, if the style changes will repeatedly write to the underlying
+/// stream until the change is completed.
+impl<T: std::io::Write> Write for Ansi<T> {
+    fn write(&mut self, s: &[u8], style: Style) -> Result<usize> {
         if self.current != style && style == Style::default() {
-            self.inner.write_str("\x1b[0m")?;
+            self.inner.write_all(b"\x1b[0m")?;
         } else {
             let diff = style.diff_from(self.current);
             let segments = [
@@ -57,18 +61,21 @@ impl<T: fmt::Write> Write for Ansi<T> {
             ];
             let mut segments = segments.iter().filter_map(|&s| s);
             if let Some(segment) = segments.next() {
-                self.inner.write_str("\x1b[")?;
-                self.inner.write_str(segment)?;
+                self.inner.write_all(b"\x1b[")?;
+                self.inner.write_all(segment.as_bytes())?;
                 for segment in segments {
-                    self.inner.write_str(";")?;
-                    self.inner.write_str(segment)?;
+                    self.inner.write_all(b";")?;
+                    self.inner.write_all(segment.as_bytes())?;
                 }
-                self.inner.write_str("m")?;
+                self.inner.write_all(b"m")?;
             }
         }
         self.current = style;
 
-        write!(self.inner, "{}", s)?;
-        Ok(())
+        self.inner.write(s)
+    }
+
+    fn flush(&mut self) -> Result<()> {
+        self.inner.flush()
     }
 }
