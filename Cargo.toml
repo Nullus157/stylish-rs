@@ -31,6 +31,7 @@ macros = [
 ansi = ["dep:stylish-ansi"]
 html = ["dep:stylish-html"]
 plain = ["dep:stylish-plain"]
+_tests = []
 
 [dependencies]
 stylish-ansi.default-features = false

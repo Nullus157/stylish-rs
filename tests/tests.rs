@@ -1,180 +1,189 @@
 #[test]
-fn one() {
-    assert_eq!(stylish::plain::format!("{}", 1), "1");
+#[cfg(not(feature = "_tests"))]
+fn features() {
+    panic!("please test with --all-features");
 }
 
-#[test]
-fn let_() {
-    let x = stylish::format_args!("{}", 1);
-    assert_eq!(stylish::plain::format!("{:s}", x), "1");
-}
-
-#[test]
-fn two() {
-    assert_eq!(stylish::plain::format!("{0}", 1), "1");
-}
-
-#[test]
-fn three() {
-    let mut x = 5;
-    assert_eq!(
-        stylish::plain::format!("{}{0}", {
-            x += 1;
-            x
-        }),
-        "66"
-    );
-}
-
-#[test]
-fn four() {
-    assert_eq!(stylish::plain::format!("{x}", x = 1), "1")
-}
-
-#[test]
-fn five() {
-    let x = 1;
-    assert_eq!(stylish::plain::format!("{x}"), "1")
-}
-
-#[test]
-fn six() {
-    #[allow(unused_variables)]
-    let x = 1;
-    assert_eq!(stylish::plain::format!("{x}", x = 2), "2")
-}
-
-#[test]
-fn dyn_display() {
-    let x: &dyn std::fmt::Display = &1;
-    assert_eq!(stylish::plain::format!("{}", *x), "1");
-}
-
-#[test]
-fn error() {
-    struct Foo;
-
-    impl stylish::Display for Foo {
-        fn fmt(&self, _: &mut stylish::Formatter<'_>) -> std::fmt::Result {
-            Err(std::fmt::Error)
-        }
+#[cfg(feature = "_tests")]
+mod tests {
+    #[test]
+    fn one() {
+        assert_eq!(stylish::plain::format!("{}", 1), "1");
     }
 
-    use stylish::io::Write;
-    let mut s = Vec::<u8>::new();
-    let mut writer = stylish::plain::Plain::new(&mut s);
-    assert!(stylish::writeln!(writer, "{:s}", Foo).is_err());
-}
-
-#[test]
-fn large() {
-    struct Foo([usize; 24]);
-
-    impl stylish::Display for Foo {
-        fn fmt(&self, f: &mut stylish::Formatter<'_>) -> std::fmt::Result {
-            f.write_str("foo")
-        }
+    #[test]
+    fn let_() {
+        let x = stylish::format_args!("{}", 1);
+        assert_eq!(stylish::plain::format!("{:s}", x), "1");
     }
 
-    assert_eq!(stylish::plain::format!("{:s}", Foo([0; 24])), "foo");
-}
+    #[test]
+    fn two() {
+        assert_eq!(stylish::plain::format!("{0}", 1), "1");
+    }
 
-#[test]
-fn blue() {
-    assert_eq!(
-        stylish::ansi::format!("{:(fg=blue)}", 2),
-        "\x1b[34m2\x1b[0m"
-    );
-    assert_eq!(
-        stylish::html::format!("{:(fg=blue)}", 2),
-        "<span style=color:blue>2</span>"
-    );
-    assert_eq!(stylish::plain::format!("{:(fg=blue)}", 2), "2");
-}
+    #[test]
+    fn three() {
+        let mut x = 5;
+        assert_eq!(
+            stylish::plain::format!("{}{0}", {
+                x += 1;
+                x
+            }),
+            "66"
+        );
+    }
 
-#[test]
-fn bold() {
-    assert_eq!(stylish::ansi::format!("{:(bold)}", 2), "\x1b[1m2\x1b[0m");
-    assert_eq!(
-        stylish::html::format!("{:(bold)}", 2),
-        "<span style=font-weight:bolder>2</span>"
-    );
-    assert_eq!(stylish::plain::format!("{:(bold)}", 2), "2");
-}
+    #[test]
+    fn four() {
+        assert_eq!(stylish::plain::format!("{x}", x = 1), "1")
+    }
 
-#[test]
-fn blue_bold() {
-    assert_eq!(
-        stylish::ansi::format!("{:(fg=blue,bold)}", 2),
-        "\x1b[34;1m2\x1b[0m"
-    );
-    assert_eq!(
-        stylish::html::format!("{:(fg=blue,bold)}", 2),
-        "<span style=color:blue;font-weight:bolder>2</span>"
-    );
-    assert_eq!(stylish::plain::format!("{:(fg=blue,bold)}", 2), "2");
-}
+    #[test]
+    fn five() {
+        let x = 1;
+        assert_eq!(stylish::plain::format!("{x}"), "1")
+    }
 
-#[test]
-fn bold_blue() {
-    assert_eq!(
-        stylish::ansi::format!("{:(bold,fg=blue)}", 2),
-        "\x1b[34;1m2\x1b[0m"
-    );
-    assert_eq!(
-        stylish::html::format!("{:(bold,fg=blue)}", 2),
-        "<span style=color:blue;font-weight:bolder>2</span>"
-    );
-    assert_eq!(stylish::plain::format!("{:(bold,fg=blue)}", 2), "2");
-}
+    #[test]
+    fn six() {
+        #[allow(unused_variables)]
+        let x = 1;
+        assert_eq!(stylish::plain::format!("{x}", x = 2), "2")
+    }
 
-#[test]
-fn bold_then_blue() {
-    assert_eq!(
-        stylish::ansi::format!("plain {:(bold)} {:(fg=blue)}", "bold", "blue"),
-        "plain \x1b[1mbold\x1b[0m \x1b[34mblue\x1b[0m"
-    );
-    assert_eq!(
-        stylish::html::format!("plain {:(bold)} {:(fg=blue)}", "bold", "blue"),
-        "plain <span style=font-weight:bolder>bold</span> <span style=color:blue>blue</span>"
-    );
-    assert_eq!(
-        stylish::plain::format!("plain {:(bold)} {:(fg=blue)}", "bold", "blue"),
-        "plain bold blue"
-    );
-}
+    #[test]
+    fn dyn_display() {
+        let x: &dyn std::fmt::Display = &1;
+        assert_eq!(stylish::plain::format!("{}", *x), "1");
+    }
 
-#[test]
-fn bold_then_bold_blue_then_blue() {
-    assert_eq!(
-        stylish::ansi::format!(
-            "{:(bold)}{:(bold,fg=blue)}{:(fg=blue)}",
-            "bold",
-            "bold-blue",
-            "blue"
-        ),
-        "\x1b[1mbold\x1b[34mbold-blue\x1b[22mblue\x1b[0m"
-    );
-    assert_eq!(
-        stylish::html::format!("{:(bold)}{:(bold,fg=blue)}{:(fg=blue)}", "bold", "bold-blue", "blue"),
-        "<span style=font-weight:bolder>bold</span><span style=color:blue;font-weight:bolder>bold-blue</span><span style=color:blue>blue</span>"
-    );
-    assert_eq!(
-        stylish::plain::format!(
-            "{:(bold)}{:(bold,fg=blue)}{:(fg=blue)}",
-            "bold",
-            "bold-blue",
-            "blue"
-        ),
-        "boldbold-blueblue"
-    );
-}
+    #[test]
+    fn error() {
+        struct Foo;
 
-#[test]
-fn builtin_macros() {
-    assert_eq!(stylish::plain::format!(concat!("a", "b")), "ab");
-    assert_eq!(
-        stylish::plain::format!(concat!(stringify!("a"), "b")),
-        r#""a"b"#
-    );
+        impl stylish::Display for Foo {
+            fn fmt(&self, _: &mut stylish::Formatter<'_>) -> std::fmt::Result {
+                Err(std::fmt::Error)
+            }
+        }
+
+        use stylish::io::Write;
+        let mut s = Vec::<u8>::new();
+        let mut writer = stylish::plain::Plain::new(&mut s);
+        assert!(stylish::writeln!(writer, "{:s}", Foo).is_err());
+    }
+
+    #[test]
+    fn large() {
+        struct Foo([usize; 24]);
+
+        impl stylish::Display for Foo {
+            fn fmt(&self, f: &mut stylish::Formatter<'_>) -> std::fmt::Result {
+                f.write_str("foo")
+            }
+        }
+
+        assert_eq!(stylish::plain::format!("{:s}", Foo([0; 24])), "foo");
+    }
+
+    #[test]
+    fn blue() {
+        assert_eq!(
+            stylish::ansi::format!("{:(fg=blue)}", 2),
+            "\x1b[34m2\x1b[0m"
+        );
+        assert_eq!(
+            stylish::html::format!("{:(fg=blue)}", 2),
+            "<span style=color:blue>2</span>"
+        );
+        assert_eq!(stylish::plain::format!("{:(fg=blue)}", 2), "2");
+    }
+
+    #[test]
+    fn bold() {
+        assert_eq!(stylish::ansi::format!("{:(bold)}", 2), "\x1b[1m2\x1b[0m");
+        assert_eq!(
+            stylish::html::format!("{:(bold)}", 2),
+            "<span style=font-weight:bolder>2</span>"
+        );
+        assert_eq!(stylish::plain::format!("{:(bold)}", 2), "2");
+    }
+
+    #[test]
+    fn blue_bold() {
+        assert_eq!(
+            stylish::ansi::format!("{:(fg=blue,bold)}", 2),
+            "\x1b[34;1m2\x1b[0m"
+        );
+        assert_eq!(
+            stylish::html::format!("{:(fg=blue,bold)}", 2),
+            "<span style=color:blue;font-weight:bolder>2</span>"
+        );
+        assert_eq!(stylish::plain::format!("{:(fg=blue,bold)}", 2), "2");
+    }
+
+    #[test]
+    fn bold_blue() {
+        assert_eq!(
+            stylish::ansi::format!("{:(bold,fg=blue)}", 2),
+            "\x1b[34;1m2\x1b[0m"
+        );
+        assert_eq!(
+            stylish::html::format!("{:(bold,fg=blue)}", 2),
+            "<span style=color:blue;font-weight:bolder>2</span>"
+        );
+        assert_eq!(stylish::plain::format!("{:(bold,fg=blue)}", 2), "2");
+    }
+
+    #[test]
+    fn bold_then_blue() {
+        assert_eq!(
+            stylish::ansi::format!("plain {:(bold)} {:(fg=blue)}", "bold", "blue"),
+            "plain \x1b[1mbold\x1b[0m \x1b[34mblue\x1b[0m"
+        );
+        assert_eq!(
+            stylish::html::format!("plain {:(bold)} {:(fg=blue)}", "bold", "blue"),
+            "plain <span style=font-weight:bolder>bold</span> <span style=color:blue>blue</span>"
+        );
+        assert_eq!(
+            stylish::plain::format!("plain {:(bold)} {:(fg=blue)}", "bold", "blue"),
+            "plain bold blue"
+        );
+    }
+
+    #[test]
+    fn bold_then_bold_blue_then_blue() {
+        assert_eq!(
+            stylish::ansi::format!(
+                "{:(bold)}{:(bold,fg=blue)}{:(fg=blue)}",
+                "bold",
+                "bold-blue",
+                "blue"
+            ),
+            "\x1b[1mbold\x1b[34mbold-blue\x1b[22mblue\x1b[0m"
+        );
+        assert_eq!(
+            stylish::html::format!("{:(bold)}{:(bold,fg=blue)}{:(fg=blue)}", "bold", "bold-blue", "blue"),
+            "<span style=font-weight:bolder>bold</span><span style=color:blue;font-weight:bolder>bold-blue</span><span style=color:blue>blue</span>"
+        );
+        assert_eq!(
+            stylish::plain::format!(
+                "{:(bold)}{:(bold,fg=blue)}{:(fg=blue)}",
+                "bold",
+                "bold-blue",
+                "blue"
+            ),
+            "boldbold-blueblue"
+        );
+    }
+
+    #[test]
+    fn builtin_macros() {
+        assert_eq!(stylish::plain::format!(concat!("a", "b")), "ab");
+        assert_eq!(
+            stylish::plain::format!(concat!(stringify!("a"), "b")),
+            r#""a"b"#
+        );
+    }
 }

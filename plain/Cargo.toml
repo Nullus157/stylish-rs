@@ -9,6 +9,7 @@ default = ["std"]
 std = ["alloc", "stylish-core/std"]
 alloc = ["stylish-core/alloc"]
 macros = ["stylish-core/macros"]
+_tests = []
 
 [dependencies]
 stylish-core.default-features = false
