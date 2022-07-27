@@ -1,4 +1,4 @@
-use crate::{formatter::FormatterArgs, Display, Formatter, Restyle, Result};
+use crate::{formatter::FormatterArgs, Display, Formatter, Result, StyleDiff};
 
 type StdFmtFn<'a> = dyn Fn(&mut core::fmt::Formatter<'_>) -> Result + 'a;
 
@@ -54,8 +54,7 @@ pub enum Argument<'a> {
 
     Arg {
         args: FormatterArgs<'a>,
-        // TODO: This could be a `StyleDiff` and remove the `&dyn Restyle` indirection
-        restyle: &'a dyn Restyle,
+        style: StyleDiff,
         arg: FormatTrait<'a>,
     },
 }
@@ -100,8 +99,8 @@ impl Display for Arguments<'_> {
         for piece in self.pieces {
             match piece {
                 Argument::Lit(lit) => f.write_str(lit)?,
-                Argument::Arg { args, restyle, arg } => {
-                    arg.fmt(&mut f.with(restyle).with_args(args))?
+                Argument::Arg { args, style, arg } => {
+                    arg.fmt(&mut f.with(style).with_args(args))?
                 }
             }
         }

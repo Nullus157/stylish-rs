@@ -48,12 +48,7 @@ pub use stylish_style::{Background, Color, Foreground, Intensity, Restyle, Style
 
 #[cfg(all(feature = "alloc", feature = "macros"))]
 pub use self::to_string::ToStylishString;
-pub use self::{
-    arguments::Arguments,
-    display::Display,
-    formatter::Formatter,
-    write::Write,
-};
+pub use self::{arguments::Arguments, display::Display, formatter::Formatter, write::Write};
 #[cfg(feature = "alloc")]
 pub use self::{format::format, string::String};
 
@@ -68,7 +63,7 @@ pub mod 𓀄 {
     pub use crate::{
         arguments::{Argument, Arguments, FormatTrait, StdFmt},
         formatter::{Align, DebugHex, FormatterArgs, Sign},
-        Background, Color, Display, Foreground, Intensity,
+        Background, Color, Display, Foreground, Intensity, StyleDiff,
     };
 }
 

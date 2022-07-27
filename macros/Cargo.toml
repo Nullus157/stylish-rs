@@ -19,5 +19,6 @@ syn.default-features = false
 syn.features = ["full", "parsing", "proc-macro", "printing"]
 syn.version = "1.0.57"
 stylish-style.default-features = false
+stylish-style.features = ["alloc"]
 stylish-style.version = "=0.1.0"
 stylish-style.path = "../style"

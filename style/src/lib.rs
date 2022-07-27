@@ -13,6 +13,9 @@
 #![warn(unused_import_braces)]
 #![warn(variant_size_differences)]
 
+#[cfg(feature = "alloc")]
+extern crate alloc;
+
 /// A color that can be used with [`Foreground`] to modify [`Style::foreground`]
 /// or [`Background`] to modify [`Style::background`].
 #[allow(dead_code)]
@@ -201,6 +204,22 @@ impl Style {
 impl<T: Restyle + ?Sized> Restyle for &T {
     fn apply(&self, style: Style) -> Style {
         (&**self).apply(style)
+    }
+}
+
+#[cfg(feature = "alloc")]
+impl<T: Restyle + ?Sized> Restyle for alloc::boxed::Box<T> {
+    fn apply(&self, style: Style) -> Style {
+        (&**self).apply(style)
+    }
+}
+
+impl<T: Restyle> Restyle for [T] {
+    fn apply(&self, mut style: Style) -> Style {
+        for restyle in self {
+            style = restyle.apply(style);
+        }
+        style
     }
 }
 

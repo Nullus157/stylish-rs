@@ -1,7 +1,5 @@
 use std::str::FromStr;
 
-use stylish_style::{Color, Intensity};
-
 use nom::{
     branch::alt,
     bytes::complete::tag,
@@ -11,6 +9,7 @@ use nom::{
     sequence::{delimited, pair, preceded, terminated},
     IResult,
 };
+use stylish_style::{Background, Color, Foreground, Intensity, Restyle, Style, StyleDiff};
 
 fn identifier(input: &str) -> IResult<&str, &str> {
     recognize(pair(
@@ -49,41 +48,35 @@ impl<'a> Parse<'a> for Intensity {
     }
 }
 
-#[derive(Debug, Clone)]
-pub enum Restyle {
-    Foreground(Color),
-    Background(Color),
-    Intensity(Intensity),
-}
-
-impl<'a> Parse<'a> for Restyle {
+impl<'a> Parse<'a> for Box<dyn Restyle> {
+    #[allow(trivial_casts)]
     fn parse(input: &'a str) -> IResult<&str, Self> {
         alt((
             map(
                 preceded(tag("fg"), cut(preceded(tag("="), Color::parse))),
-                Restyle::Foreground,
+                |color| Box::new(Foreground(color)) as _,
             ),
             map(
                 preceded(tag("bg"), cut(preceded(tag("="), Color::parse))),
-                Restyle::Background,
+                |color| Box::new(Background(color)) as _,
             ),
-            map(Intensity::parse, Restyle::Intensity),
+            map(Intensity::parse, |intensity| Box::new(intensity) as _),
         ))(input)
     }
 }
 
-#[derive(Debug, Default, Clone)]
-pub struct Restyles {
-    // TODO: This should only allow each variant once, but there's no sort of optional-permutation
-    // helper in nom
-    pub restyles: Vec<Restyle>,
-}
-
-impl<'a> Parse<'a> for Restyles {
+impl<'a> Parse<'a> for StyleDiff {
     fn parse(input: &'a str) -> IResult<&str, Self> {
-        map(separated_list0(tag(","), cut(Restyle::parse)), |restyles| {
-            Restyles { restyles }
-        })(input)
+        // TODO: This should only allow each variant once, but there's no sort of
+        // optional-permutation helper in nom
+        map(
+            separated_list0(tag(","), cut(<Box<dyn Restyle>>::parse)),
+            |restyles| {
+                Style::default()
+                    .with(restyles.as_slice())
+                    .diff_from(Style::default())
+            },
+        )(input)
     }
 }
 
@@ -171,7 +164,7 @@ impl<'a> Parse<'a> for Count<'a> {
 #[derive(Debug, Default, Clone)]
 pub struct FormatSpec<'a> {
     pub formatter_args: FormatterArgs<'a>,
-    pub restyles: Restyles,
+    pub style: StyleDiff,
     pub format_trait: FormatTrait,
 }
 
@@ -192,7 +185,7 @@ impl<'a> Parse<'a> for FormatSpec<'a> {
         let (input, zero) = opt(value(true, tag("0")))(input)?;
         let (input, width) = opt(Count::parse)(input)?;
         let (input, precision) = opt(preceded(tag("."), Count::parse))(input)?;
-        let (input, restyles) = opt(delimited(tag("("), cut(Restyles::parse), tag(")")))(input)?;
+        let (input, style) = opt(delimited(tag("("), cut(StyleDiff::parse), tag(")")))(input)?;
         let (input, debug_hex_and_format_trait) = opt(alt((
             value((None, FormatTrait::Debug), tag("?")),
             value((Some(DebugHex::Lower), FormatTrait::Debug), tag("x?")),
@@ -220,7 +213,7 @@ impl<'a> Parse<'a> for FormatSpec<'a> {
                     precision,
                     debug_hex,
                 },
-                restyles: restyles.unwrap_or_default(),
+                style: style.unwrap_or_default(),
                 format_trait: format_trait.unwrap_or_default(),
             },
         ))

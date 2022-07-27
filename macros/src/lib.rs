@@ -23,7 +23,7 @@ use syn::{
 };
 
 use self::{
-    format::{Parse as _, Format, FormatArg, FormatArgRef, FormatSpec, Piece},
+    format::{Format, FormatArg, FormatArgRef, FormatSpec, Parse as _, Piece},
     to_tokens::Scoped,
 };
 
@@ -136,12 +136,12 @@ fn format_args_impl(
                 format_spec:
                     FormatSpec {
                         formatter_args,
-                        restyles,
+                        style,
                         format_trait,
                     },
             }) => {
                 let formatter_args = Scoped::new(&export, &formatter_args);
-                let restyles = Scoped::new(&export, &restyles);
+                let style = Scoped::new(&export, &style);
                 let arg = match arg {
                     None => {
                         let index = next_arg_iter.next().expect("missing argument");
@@ -175,7 +175,7 @@ fn format_args_impl(
                 let arg = Scoped::new(&export, &arg);
                 quote!(#export::Argument::Arg {
                     args: #formatter_args,
-                    restyle: #restyles,
+                    style: #style,
                     arg: #arg,
                 })
             }

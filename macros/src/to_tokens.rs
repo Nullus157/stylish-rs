@@ -1,11 +1,12 @@
+// TODO: Use this to ensure we update for the `StyleDiff` and associated types
+// https://github.com/rust-lang/rust/issues/89554
+// #![warn(non_exhaustive_omitted_patterns)]
+
 use proc_macro2::TokenStream;
 use quote::{quote, ToTokens};
+use stylish_style::{Color, Foreground, Intensity, StyleDiff};
 
-use stylish_style::{Intensity, Color};
-
-use crate::format::{
-    Align, Count, DebugHex, FormatTrait, FormatterArgs, Restyle, Restyles, Sign,
-};
+use crate::format::{Align, Count, DebugHex, FormatTrait, FormatterArgs, Sign};
 
 fn quote_opt<'a, T: 'a>(opt: Scoped<'a, Option<T>>) -> TokenStream
 where
@@ -78,36 +79,35 @@ impl<'a> ToTokens for Scoped<'a, Intensity> {
     }
 }
 
-impl<'a> ToTokens for Scoped<'a, Restyle> {
+impl<'a> ToTokens for Scoped<'a, Foreground> {
     fn to_tokens(&self, tokens: &mut TokenStream) {
         let export = &self.export;
-        match self.as_ref() {
-            Restyle::Foreground(color) => {
-                let color = self.scope(color);
-                quote!(#export::Foreground(#color))
-            }
-            Restyle::Background(color) => {
-                let color = self.scope(color);
-                quote!(#export::Background(#color))
-            }
-            Restyle::Intensity(intensity) => {
-                let intensity = self.scope(intensity);
-                quote!(#intensity)
-            }
-        }
-        .to_tokens(tokens)
+        let Foreground(color) = self.as_ref();
+        let color = self.scope(color);
+        quote!(#export::Foreground(#color)).to_tokens(tokens)
     }
 }
 
-impl<'a> ToTokens for Scoped<'a, Restyles> {
+impl<'a> ToTokens for Scoped<'a, StyleDiff> {
     fn to_tokens(&self, tokens: &mut TokenStream) {
-        let Restyles { restyles } = self.as_ref();
-        let mut style = quote!(());
-        for restyle in restyles {
-            let restyle = self.scope(restyle);
-            style = quote!((#restyle, #style));
-        }
-        (quote! { &#style }).to_tokens(tokens)
+        let export = &self.export;
+        let StyleDiff {
+            foreground,
+            background,
+            intensity,
+            ..
+        } = self.as_ref();
+        let foreground = quote_opt(self.scope(foreground));
+        let background = quote_opt(self.scope(background));
+        let intensity = quote_opt(self.scope(intensity));
+        quote!({
+            let mut diff = #export::StyleDiff::default();
+            diff.foreground = #foreground;
+            diff.background = #background;
+            diff.intensity = #intensity;
+            diff
+        })
+        .to_tokens(tokens)
     }
 }
 
