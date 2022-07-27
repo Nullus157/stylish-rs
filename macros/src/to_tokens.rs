@@ -1,8 +1,10 @@
 use proc_macro2::TokenStream;
 use quote::{quote, ToTokens};
 
+use stylish_style::{Intensity, Color};
+
 use crate::format::{
-    Align, Color, Count, DebugHex, FormatTrait, FormatterArgs, Intensity, Restyle, Restyles, Sign,
+    Align, Count, DebugHex, FormatTrait, FormatterArgs, Restyle, Restyles, Sign,
 };
 
 fn quote_opt<'a, T: 'a>(opt: Scoped<'a, Option<T>>) -> TokenStream
@@ -57,6 +59,7 @@ impl<'a> ToTokens for Scoped<'a, Color> {
             Color::Cyan => quote!(#export::Color::Cyan),
             Color::White => quote!(#export::Color::White),
             Color::Default => quote!(#export::Color::Default),
+            color => unreachable!("unknown color {color:?}"),
         }
         .to_tokens(tokens)
     }
@@ -69,6 +72,7 @@ impl<'a> ToTokens for Scoped<'a, Intensity> {
             Intensity::Normal => quote!(#export::Intensity::Normal),
             Intensity::Bold => quote!(#export::Intensity::Bold),
             Intensity::Faint => quote!(#export::Intensity::Faint),
+            intensity => unreachable!("unknown intensity {intensity:?}"),
         }
         .to_tokens(tokens)
     }

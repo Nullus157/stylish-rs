@@ -1,5 +1,7 @@
 use std::str::FromStr;
 
+use stylish_style::{Color, Intensity};
+
 use nom::{
     branch::alt,
     bytes::complete::tag,
@@ -17,21 +19,12 @@ fn identifier(input: &str) -> IResult<&str, &str> {
     ))(input)
 }
 
-#[derive(Debug, Clone)]
-pub enum Color {
-    Black,
-    Red,
-    Green,
-    Yellow,
-    Blue,
-    Magenta,
-    Cyan,
-    White,
-    Default,
+pub trait Parse<'a>: Sized {
+    fn parse(input: &'a str) -> IResult<&str, Self>;
 }
 
-impl Color {
-    pub fn parse(input: &str) -> IResult<&str, Self> {
+impl<'a> Parse<'a> for Color {
+    fn parse(input: &'a str) -> IResult<&str, Self> {
         alt((
             value(Color::Black, tag("black")),
             value(Color::Red, tag("red")),
@@ -46,15 +39,8 @@ impl Color {
     }
 }
 
-#[derive(Debug, Clone)]
-pub enum Intensity {
-    Normal,
-    Bold,
-    Faint,
-}
-
-impl Intensity {
-    pub fn parse(input: &str) -> IResult<&str, Self> {
+impl<'a> Parse<'a> for Intensity {
+    fn parse(input: &'a str) -> IResult<&str, Self> {
         alt((
             value(Intensity::Normal, tag("normal")),
             value(Intensity::Bold, tag("bold")),
@@ -70,8 +56,8 @@ pub enum Restyle {
     Intensity(Intensity),
 }
 
-impl Restyle {
-    pub fn parse(input: &str) -> IResult<&str, Self> {
+impl<'a> Parse<'a> for Restyle {
+    fn parse(input: &'a str) -> IResult<&str, Self> {
         alt((
             map(
                 preceded(tag("fg"), cut(preceded(tag("="), Color::parse))),
@@ -93,8 +79,8 @@ pub struct Restyles {
     pub restyles: Vec<Restyle>,
 }
 
-impl Restyles {
-    pub fn parse(input: &str) -> IResult<&str, Self> {
+impl<'a> Parse<'a> for Restyles {
+    fn parse(input: &'a str) -> IResult<&str, Self> {
         map(separated_list0(tag(","), cut(Restyle::parse)), |restyles| {
             Restyles { restyles }
         })(input)
@@ -108,8 +94,8 @@ pub enum Align {
     Right,
 }
 
-impl Align {
-    pub fn parse(input: &str) -> IResult<&str, Self> {
+impl<'a> Parse<'a> for Align {
+    fn parse(input: &'a str) -> IResult<&str, Self> {
         alt((
             value(Self::Left, tag("<")),
             value(Self::Center, tag("^")),
@@ -124,8 +110,8 @@ pub enum Sign {
     Minus,
 }
 
-impl Sign {
-    pub fn parse(input: &str) -> IResult<&str, Self> {
+impl<'a> Parse<'a> for Sign {
+    fn parse(input: &'a str) -> IResult<&str, Self> {
         alt((value(Self::Plus, tag("+")), value(Self::Minus, tag("-"))))(input)
     }
 }
@@ -173,8 +159,8 @@ pub enum Count<'a> {
     Integer(usize),
 }
 
-impl<'a> Count<'a> {
-    pub fn parse(input: &'a str) -> IResult<&str, Self> {
+impl<'a> Parse<'a> for Count<'a> {
+    fn parse(input: &'a str) -> IResult<&str, Self> {
         alt((
             map(terminated(FormatArgRef::parse, tag("$")), Self::Parameter),
             map(map_res(digit1, usize::from_str), Self::Integer),
@@ -189,8 +175,8 @@ pub struct FormatSpec<'a> {
     pub format_trait: FormatTrait,
 }
 
-impl<'a> FormatSpec<'a> {
-    pub fn parse(input: &'a str) -> IResult<&str, Self> {
+impl<'a> Parse<'a> for FormatSpec<'a> {
+    fn parse(input: &'a str) -> IResult<&str, Self> {
         let (input, align) = opt(alt((
             pair(anychar, Align::parse),
             map(Align::parse, |align| (' ', align)),
@@ -247,8 +233,8 @@ pub enum FormatArgRef<'a> {
     Named(&'a str),
 }
 
-impl<'a> FormatArgRef<'a> {
-    pub fn parse(input: &'a str) -> IResult<&str, Self> {
+impl<'a> Parse<'a> for FormatArgRef<'a> {
+    fn parse(input: &'a str) -> IResult<&str, Self> {
         alt((
             map(map_res(digit1, usize::from_str), FormatArgRef::Positional),
             map(identifier, FormatArgRef::Named),
@@ -262,8 +248,8 @@ pub struct FormatArg<'a> {
     pub format_spec: FormatSpec<'a>,
 }
 
-impl<'a> FormatArg<'a> {
-    pub fn parse(input: &'a str) -> IResult<&str, Self> {
+impl<'a> Parse<'a> for FormatArg<'a> {
+    fn parse(input: &'a str) -> IResult<&str, Self> {
         let (input, arg) = opt(FormatArgRef::parse)(input)?;
         let (input, format_spec) = opt(preceded(tag(":"), FormatSpec::parse))(input)?;
         Ok((
@@ -298,8 +284,10 @@ impl<'a> Piece<'a> {
             Self::Arg,
         )(input)
     }
+}
 
-    pub fn parse(input: &'a str) -> IResult<&str, Self> {
+impl<'a> Parse<'a> for Piece<'a> {
+    fn parse(input: &'a str) -> IResult<&str, Self> {
         alt((Self::parse_lit, Self::parse_arg))(input)
     }
 }
@@ -309,8 +297,8 @@ pub struct Format<'a> {
     pub pieces: Vec<Piece<'a>>,
 }
 
-impl<'a> Format<'a> {
-    pub fn parse(input: &'a str) -> IResult<&str, Self> {
+impl<'a> Parse<'a> for Format<'a> {
+    fn parse(input: &'a str) -> IResult<&str, Self> {
         all_consuming(map(many0(Piece::parse), |pieces| Self { pieces }))(input)
     }
 }

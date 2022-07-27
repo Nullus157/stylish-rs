@@ -162,6 +162,6 @@ macro_rules! writeln {
         $crate::write!($dst, "\n")
     };
     ($dst:expr, $($arg:tt)*) => {
-        $dst.write_fmt($crate::𓀄::stylish_macros::format_args_nl!(crate=$crate, $($arg)*))
+        $dst.write_fmt($crate::𓀄::format_args_nl!(crate=$crate, $($arg)*))
     };
 }

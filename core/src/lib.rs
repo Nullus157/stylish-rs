@@ -38,12 +38,13 @@ mod format;
 mod formatter;
 #[cfg(feature = "alloc")]
 mod string;
-mod style;
 #[cfg(all(feature = "alloc", feature = "macros"))]
 mod to_string;
 mod write;
 
 pub use core::fmt::{Error, Result};
+
+pub use stylish_style::{Background, Color, Foreground, Intensity, Restyle, Style, StyleDiff};
 
 #[cfg(all(feature = "alloc", feature = "macros"))]
 pub use self::to_string::ToStylishString;
@@ -51,7 +52,6 @@ pub use self::{
     arguments::Arguments,
     display::Display,
     formatter::Formatter,
-    style::{Background, Color, Foreground, Intensity, Restyle, Style, StyleDiff},
     write::Write,
 };
 #[cfg(feature = "alloc")]
@@ -62,7 +62,7 @@ pub use self::{format::format, string::String};
 pub mod 𓀄 {
     pub use core::{fmt, option::Option};
 
-    pub use stylish_macros;
+    pub use stylish_macros::{format_args, format_args_nl};
     pub use with_builtin_macros::with_builtin;
 
     pub use crate::{
@@ -102,11 +102,11 @@ pub mod 𓀄 {
 #[macro_export]
 macro_rules! format_args {
     ($fmt:literal $(, $($arg:tt)*)?) => {
-        $crate::𓀄::stylish_macros::format_args!(crate=$crate, $fmt $(, $($arg)*)?)
+        $crate::𓀄::format_args!(crate=$crate, $fmt $(, $($arg)*)?)
     };
     ($fmt:expr $(, $($arg:tt)*)?) => {
         $crate::𓀄::with_builtin!(let $fmt_lit = $fmt in {
-            $crate::𓀄::stylish_macros::format_args!(crate=$crate, $fmt_lit $(, $($arg)*)?)
+            $crate::𓀄::format_args!(crate=$crate, $fmt_lit $(, $($arg)*)?)
         })
     };
 }

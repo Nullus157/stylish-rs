@@ -1,0 +1,8 @@
+[package]
+name = "stylish-style"
+version = "0.1.0"
+edition = "2021"
+
+[dev-dependencies]
+stylish.path = ".."
+stylish.version = "0.1.0"

@@ -99,6 +99,7 @@ dependencies = [
  "stack_dst",
  "stylish",
  "stylish-macros",
+ "stylish-style",
  "with_builtin_macros",
 ]
 
@@ -118,6 +119,7 @@ dependencies = [
  "nom",
  "proc-macro2",
  "quote",
+ "stylish-style",
  "syn",
 ]
 
@@ -127,6 +129,13 @@ version = "0.1.0"
 dependencies = [
  "stylish",
  "stylish-core",
+]
+
+[[package]]
+name = "stylish-style"
+version = "0.1.0"
+dependencies = [
+ "stylish",
 ]
 
 [[package]]

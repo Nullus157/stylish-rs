@@ -17,13 +17,13 @@ use std::collections::HashMap;
 use proc_macro2::Span;
 use quote::{quote, ToTokens};
 use syn::{
-    parse::{Parse, ParseStream, Result},
+    parse::{ParseStream, Result},
     parse_macro_input, Expr, ExprAssign, ExprPath, Ident, Index, LitStr, Path, PathArguments,
     Token,
 };
 
 use self::{
-    format::{Format, FormatArg, FormatArgRef, FormatSpec, Piece},
+    format::{Parse as _, Format, FormatArg, FormatArgRef, FormatSpec, Piece},
     to_tokens::Scoped,
 };
 
@@ -37,7 +37,7 @@ struct ArgsInput {
     named_args: Vec<(Ident, Expr)>,
 }
 
-impl Parse for ArgsInput {
+impl syn::parse::Parse for ArgsInput {
     fn parse(input: ParseStream<'_>) -> Result<Self> {
         let krate = if input.peek(Token![crate]) {
             input.parse::<Token![crate]>()?;

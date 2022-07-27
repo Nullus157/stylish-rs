@@ -20,6 +20,9 @@ stylish-macros.default-features = false
 stylish-macros.path = "../macros"
 stylish-macros.version = "=0.1.0"
 stylish-macros.optional = true
+stylish-style.default-features = false
+stylish-style.path = "../style"
+stylish-style.version = "=0.1.0"
 
 [dev-dependencies]
 stylish.path = ".."
