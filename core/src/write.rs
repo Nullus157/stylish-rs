@@ -20,11 +20,13 @@ pub trait Write {
     /// ```rust
     /// use stylish::{Color, Foreground, Style, Write};
     ///
+    /// let blue = Style::default().with(Foreground(Color::Blue));
+    ///
     /// let mut s = String::new();
     /// {
     ///     let mut output = stylish::html(&mut s);
     ///     output.write_str("water is ", Style::default())?;
-    ///     output.write_str("blue", Style::default().with(Foreground(Color::Blue)))?;
+    ///     output.write_str("blue", blue)?;
     ///     output.finish()?;
     /// }
     ///
@@ -44,12 +46,15 @@ pub trait Write {
     /// ```rust
     /// use stylish::{Color, Foreground, Style, Write};
     ///
+    /// let yellow = Style::default().with(Foreground(Color::Yellow));
+    /// let red = Style::default().with(Foreground(Color::Red));
+    ///
     /// let mut s = String::new();
     /// {
     ///     let mut output = stylish::html(&mut s);
-    ///     output.write_char('⚠', Style::default().with(Foreground(Color::Yellow)))?;
+    ///     output.write_char('⚠', yellow)?;
     ///     output.write_char(' ', Style::default())?;
-    ///     output.write_char('⛔', Style::default().with(Foreground(Color::Red)))?;
+    ///     output.write_char('⛔', red)?;
     ///     output.finish()?;
     /// }
     ///

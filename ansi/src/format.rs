@@ -25,7 +25,10 @@ macro_rules! format {
 ///
 /// ```rust
 /// assert_eq!(
-///     stylish::ansi::format(stylish::format_args!("Hello {:(fg=red)}", "Ferris")),
+///     stylish::ansi::format(stylish::format_args!(
+///         "Hello {:(fg=red)}",
+///         "Ferris"
+///     )),
 ///     "Hello \x1b[31mFerris\x1b[0m",
 /// );
 /// ```

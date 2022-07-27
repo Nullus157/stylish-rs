@@ -24,7 +24,10 @@ macro_rules! format {
 ///
 /// ```rust
 /// assert_eq!(
-///     stylish::plain::format(stylish::format_args!("Hello {:(fg=red)}", "Ferris")),
+///     stylish::plain::format(stylish::format_args!(
+///         "Hello {:(fg=red)}",
+///         "Ferris"
+///     )),
 ///     "Hello Ferris",
 /// );
 /// ```

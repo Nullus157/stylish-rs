@@ -82,7 +82,10 @@ pub mod 𓀄 {
 /// # Examples
 ///
 /// ```rust
-/// let s = stylish::html::format(stylish::format_args!("hello {:(fg=green)}", "world"));
+/// let s = stylish::html::format(stylish::format_args!(
+///     "hello {:(fg=green)}",
+///     "world"
+/// ));
 /// assert_eq!(s, stylish::html::format!("hello {:(fg=green)}", "world"));
 /// ```
 #[macro_export]

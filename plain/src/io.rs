@@ -23,8 +23,8 @@ impl<T: std::io::Write> Plain<T> {
     }
 
     /// Inherent delegation to
-    /// [`stylish::io::Write::write_fmt`](stylish_core::io::Write::write_fmt) to not
-    /// require a trait import.
+    /// [`stylish::io::Write::write_fmt`](stylish_core::io::Write::write_fmt) to
+    /// not require a trait import.
     pub fn write_fmt(&mut self, args: stylish_core::Arguments<'_>) -> Result<()> {
         stylish_core::io::Write::write_fmt(self, args)
     }

@@ -29,8 +29,8 @@ impl<T: std::io::Write> Ansi<T> {
     }
 
     /// Inherent delegation to
-    /// [`stylish::io::Write::write_fmt`](stylish_core::io::Write::write_fmt) to not
-    /// require a trait import.
+    /// [`stylish::io::Write::write_fmt`](stylish_core::io::Write::write_fmt) to
+    /// not require a trait import.
     pub fn write_fmt(&mut self, args: stylish_core::Arguments<'_>) -> Result<()> {
         stylish_core::io::Write::write_fmt(self, args)
     }
@@ -46,8 +46,8 @@ impl<T: std::io::Write> Ansi<T> {
     }
 }
 
-/// Does not guarantee a single write, if the style changes will repeatedly write to the underlying
-/// stream until the change is completed.
+/// Does not guarantee a single write, if the style changes will repeatedly
+/// write to the underlying stream until the change is completed.
 impl<T: std::io::Write> Write for Ansi<T> {
     fn write(&mut self, s: &[u8], style: Style) -> Result<usize> {
         if self.current != style && style == Style::default() {

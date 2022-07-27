@@ -34,7 +34,10 @@ macro_rules! format {
 /// Basic usage:
 ///
 /// ```rust
-/// let s = stylish::format(stylish::format_args!("Hello, {:(fg=green)}!", "world"));
+/// let s = stylish::format(stylish::format_args!(
+///     "Hello, {:(fg=green)}!",
+///     "world"
+/// ));
 /// assert_eq!(
 ///     stylish::html::format!("{:s}", s),
 ///     "Hello, <span style=color:green>world</span>!"
