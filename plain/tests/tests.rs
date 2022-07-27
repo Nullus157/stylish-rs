@@ -1,8 +1,5 @@
-#[test]
 #[cfg(not(feature = "_tests"))]
-fn features() {
-    panic!("please test with --all-features");
-}
+compile_error!("please test with --all-features");
 
 #[cfg(feature = "_tests")]
 mod tests {
