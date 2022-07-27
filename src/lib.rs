@@ -162,7 +162,7 @@ pub mod io {
         Ansi::new(inner)
     }
 
-    #[cfg(feature = "ansi")]
+    #[cfg(feature = "plain")]
     pub use stylish_plain::io::Plain;
 
     #[cfg(feature = "plain")]
