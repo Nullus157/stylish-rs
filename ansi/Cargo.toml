@@ -2,7 +2,7 @@
 name = "stylish-ansi"
 version = "0.1.0"
 authors = ["Wim Looman <crates.stylish@nemo157.com>"]
-edition = "2018"
+edition = "2021"
 
 [features]
 default = ["std"]
