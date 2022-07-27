@@ -172,7 +172,7 @@ impl<'a, 'b: 'a> ToTokens for Scoped<'a, FormatterArgs<'b>> {
         let precision = quote_opt(self.scope(precision));
         let debug_hex = quote_opt(self.scope(debug_hex));
         (quote! {
-            #export::FormatterArgs {
+            &#export::FormatterArgs {
                 align: #align,
                 sign: #sign,
                 alternate: #alternate,

@@ -47,13 +47,12 @@ pub enum FormatTrait<'a> {
 }
 
 #[doc(hidden)] // workaround https://github.com/rust-lang/rust/issues/85522
-#[allow(variant_size_differences)]
 #[allow(missing_debug_implementations)]
 pub enum Argument<'a> {
     Lit(&'a str),
 
     Arg {
-        args: FormatterArgs<'a>,
+        args: &'a FormatterArgs<'a>,
         style: StyleDiff,
         arg: FormatTrait<'a>,
     },
