@@ -9,7 +9,7 @@ use crate::util;
 ///
 /// ```rust
 /// let mut writer = stylish::Ansi::new(String::new());
-/// stylish::write!(writer, "Hello {:(fg=red)}", "Ferris");
+/// stylish::write!(writer, "Hello {:(fg=red)}", "Ferris")?;
 /// assert_eq!(writer.finish()?, "Hello \x1b[31mFerris\x1b[0m");
 /// # Ok::<(), core::fmt::Error>(())
 /// ```

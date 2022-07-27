@@ -31,7 +31,7 @@ pub trait Write {
     /// }
     ///
     /// assert_eq!(s, "water is <span style=color:blue>blue</span>");
-    /// # Ok::<(), std::fmt::Error>(())
+    /// # Ok::<(), core::fmt::Error>(())
     /// ```
     fn write_str(&mut self, s: &str, style: Style) -> Result;
 
@@ -62,7 +62,7 @@ pub trait Write {
     ///     s,
     ///     "<span style=color:yellow>⚠</span> <span style=color:red>⛔</span>"
     /// );
-    /// # Ok::<(), std::fmt::Error>(())
+    /// # Ok::<(), core::fmt::Error>(())
     /// ```
     fn write_char(&mut self, c: char, style: Style) -> Result {
         self.write_str(c.encode_utf8(&mut [0; 4]), style)
@@ -75,8 +75,6 @@ pub trait Write {
     /// the [`stylish::write!`] macro itself.
     ///
     /// ```rust
-    /// use stylish::{Color, Foreground, Style, Write};
-    ///
     /// let mut s = String::new();
     /// {
     ///     let mut output = stylish::html(&mut s);
@@ -85,7 +83,7 @@ pub trait Write {
     /// }
     ///
     /// assert_eq!(s, "<span style=color:red>☎</span>");
-    /// # Ok::<(), std::fmt::Error>(())
+    /// # Ok::<(), core::fmt::Error>(())
     /// ```
     fn write_fmt(mut self: &mut Self, args: Arguments<'_>) -> Result {
         Formatter::new(&mut self).write_fmt(args)
@@ -121,8 +119,6 @@ impl<W: Write + ?Sized> Write for &mut W {
 /// # Examples
 ///
 /// ```rust
-/// use stylish::Write;
-///
 /// let mut w = stylish::html(String::new());
 ///
 /// stylish::write!(&mut w, "test")?;
@@ -132,7 +128,7 @@ impl<W: Write + ?Sized> Write for &mut W {
 ///     w.finish()?,
 ///     "testformatted <span style=color:yellow>arguments</span>"
 /// );
-/// # Ok::<(), std::fmt::Error>(())
+/// # Ok::<(), core::fmt::Error>(())
 /// ```
 #[macro_export]
 macro_rules! write {
@@ -152,8 +148,6 @@ macro_rules! write {
 /// # Examples
 ///
 /// ```rust
-/// use stylish::Write;
-///
 /// let mut w = stylish::html(String::new());
 ///
 /// stylish::writeln!(&mut w)?;
@@ -161,7 +155,7 @@ macro_rules! write {
 /// stylish::writeln!(&mut w, "formatted {:(fg=yellow)}", "arguments")?;
 ///
 /// assert_eq!(w.finish()?, "\ntest\nformatted <span style=color:yellow>arguments</span>\n");
-/// # Ok::<(), std::fmt::Error>(())
+/// # Ok::<(), core::fmt::Error>(())
 #[macro_export]
 macro_rules! writeln {
     ($dst:expr $(,)?) => {

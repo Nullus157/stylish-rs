@@ -209,8 +209,6 @@ pub trait Write {
     /// # Examples
     ///
     /// ```rust
-    /// use stylish::{io::Write, Color, Foreground, Style};
-    ///
     /// let mut output = stylish::io::plain(std::io::stdout());
     ///
     /// output.write_fmt(stylish::format_args!("{:(fg=red)}", '☎'))?;

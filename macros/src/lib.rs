@@ -1,3 +1,7 @@
+//! Internal implementation details of [`stylish-core`](https://docs.rs/stylish-core).
+//!
+//! Do not depend on this crate directly.
+
 #![allow(uncommon_codepoints)]
 
 use std::collections::HashMap;

@@ -115,6 +115,8 @@
 //! );
 //! ```
 
+#![doc(test(attr(deny(warnings))))]
+
 #[cfg(feature = "std")]
 extern crate std;
 
@@ -154,7 +156,7 @@ pub mod io {
     ///
     /// ```rust
     /// let mut writer = stylish::io::ansi(Vec::new());
-    /// stylish::write!(writer, "Hello {:(fg=red)}", "Ferris");
+    /// stylish::write!(writer, "Hello {:(fg=red)}", "Ferris")?;
     /// assert_eq!(writer.finish()?, b"Hello \x1b[31mFerris\x1b[0m");
     /// # Ok::<(), std::io::Error>(())
     /// ```
@@ -169,9 +171,8 @@ pub mod io {
     /// An alias for [`stylish::io::Plain::new`] for more succinct code.
     ///
     /// ```rust
-    /// use stylish::Write;
     /// let mut writer = stylish::io::plain(Vec::new());
-    /// stylish::write!(writer, "Hello {:(fg=red)}", "Ferris");
+    /// stylish::write!(writer, "Hello {:(fg=red)}", "Ferris")?;
     /// assert_eq!(writer.into_inner(), b"Hello Ferris");
     /// # Ok::<(), std::io::Error>(())
     /// ```
@@ -185,7 +186,7 @@ pub mod io {
 ///
 /// ```rust
 /// let mut writer = stylish::ansi(String::new());
-/// stylish::write!(writer, "Hello {:(fg=red)}", "Ferris");
+/// stylish::write!(writer, "Hello {:(fg=red)}", "Ferris")?;
 /// assert_eq!(writer.finish()?, "Hello \x1b[31mFerris\x1b[0m");
 /// # Ok::<(), core::fmt::Error>(())
 /// ```
@@ -198,7 +199,7 @@ pub fn ansi<T: core::fmt::Write>(inner: T) -> Ansi<T> {
 ///
 /// ```rust
 /// let mut writer = stylish::html(String::new());
-/// stylish::write!(writer, "Hello {:(fg=red)}", "Ferris");
+/// stylish::write!(writer, "Hello {:(fg=red)}", "Ferris")?;
 /// assert_eq!(
 ///     writer.finish()?,
 ///     "Hello <span style=color:red>Ferris</span>",
@@ -213,9 +214,8 @@ pub fn html<T: core::fmt::Write>(inner: T) -> Html<T> {
 /// An alias for [`stylish::Plain::new`] for more succinct code.
 ///
 /// ```rust
-/// use stylish::Write;
 /// let mut writer = stylish::plain(String::new());
-/// stylish::write!(writer, "Hello {:(fg=red)}", "Ferris");
+/// stylish::write!(writer, "Hello {:(fg=red)}", "Ferris")?;
 /// assert_eq!(writer.into_inner(), "Hello Ferris");
 /// # Ok::<(), core::fmt::Error>(())
 /// ```

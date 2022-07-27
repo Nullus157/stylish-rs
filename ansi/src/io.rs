@@ -10,7 +10,7 @@ use crate::util;
 ///
 /// ```rust
 /// let mut writer = stylish::io::Ansi::new(Vec::new());
-/// stylish::write!(writer, "Hello {:(fg=red)}", "Ferris");
+/// stylish::write!(writer, "Hello {:(fg=red)}", "Ferris")?;
 /// assert_eq!(writer.finish()?, b"Hello \x1b[31mFerris\x1b[0m");
 /// # Ok::<(), std::io::Error>(())
 /// ```

@@ -5,8 +5,9 @@ use stylish_core::{Result, Style, Write};
 ///
 /// ```rust
 /// let mut writer = stylish::Plain::new(String::new());
-/// stylish::write!(writer, "Hello {:(fg=red)}", "Ferris");
+/// stylish::write!(writer, "Hello {:(fg=red)}", "Ferris")?;
 /// assert_eq!(writer.into_inner(), "Hello Ferris");
+/// # Ok::<(), core::fmt::Error>(())
 /// ```
 #[derive(Clone, Debug, Default)]
 pub struct Plain<T> {

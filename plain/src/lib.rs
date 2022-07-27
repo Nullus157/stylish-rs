@@ -3,6 +3,8 @@
 
 #![allow(uncommon_codepoints)]
 
+#![doc(test(attr(deny(warnings))))]
+
 #[cfg(doc)]
 extern crate self as stylish;
 

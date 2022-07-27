@@ -19,7 +19,8 @@ use crate::{Display, Formatter, Result, Style, Write};
 /// use stylish::Write;
 ///
 /// let mut s = stylish::String::new();
-/// stylish::write!(s, "{:(fg=magenta)}", "fuchsia");
+/// stylish::write!(s, "{:(fg=magenta)}", "fuchsia")?;
+/// # Ok::<(), std::fmt::Error>(())
 /// ```
 ///
 /// To use the attributed data you must then write this string to a sink using
@@ -29,13 +30,14 @@ use crate::{Display, Formatter, Result, Style, Write};
 /// use stylish::Write;
 ///
 /// let mut s = stylish::format!("Hello {:(fg=green)}!", "World");
-/// stylish::write!(s, " Is it {:(fg=magenta)} or?", "fuchsia");
+/// stylish::write!(s, " Is it {:(fg=magenta)} or?", "fuchsia")?;
 ///
 /// assert_eq!(
 ///     stylish::html::format!("{:s}", s),
 ///     "Hello <span style=color:green>World</span>! \
 ///     Is it <span style=color:magenta>fuchsia</span> or?",
 /// );
+/// # Ok::<(), std::fmt::Error>(())
 /// ```
 #[derive(Default, Debug, Clone)]
 pub struct String {
