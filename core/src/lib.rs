@@ -35,6 +35,8 @@ mod style;
 mod to_string;
 mod write;
 
+pub use core::fmt::{Error, Result};
+
 #[cfg(all(feature = "alloc", feature = "macros"))]
 pub use self::to_string::ToStylishString;
 pub use self::{
@@ -46,19 +48,20 @@ pub use self::{
 };
 #[cfg(feature = "alloc")]
 pub use self::{format::format, string::String};
-pub use core::fmt::{Error, Result};
 
 #[cfg(feature = "macros")]
 #[doc(hidden)]
 pub mod 𓀄 {
+    pub use core::{fmt, option::Option};
+
+    pub use stylish_macros;
+    pub use with_builtin_macros::with_builtin;
+
     pub use crate::{
         arguments::{Argument, Arguments, FormatTrait, StdFmt},
         formatter::{Align, DebugHex, FormatterArgs, Sign},
         Background, Color, Display, Foreground, Intensity,
     };
-    pub use core::{fmt, option::Option};
-    pub use stylish_macros;
-    pub use with_builtin_macros::with_builtin;
 }
 
 #[cfg(feature = "macros")]

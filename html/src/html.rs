@@ -1,7 +1,9 @@
-use crate::util;
-use askama_escape::{escape, Html as AskamaHtml};
 use core::fmt;
+
+use askama_escape::{escape, Html as AskamaHtml};
 use stylish_core::{Style, Write};
+
+use crate::util;
 
 /// An adaptor to allow writing [`stylish`] attributed data to an output stream
 /// by turning attributes into HTML elements.

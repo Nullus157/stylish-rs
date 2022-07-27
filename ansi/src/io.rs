@@ -1,8 +1,9 @@
-use crate::util;
 use stylish_core::{
     io::{Result, Write},
     Style,
 };
+
+use crate::util;
 
 /// An adaptor to allow writing [`stylish`] attributed data to an output stream
 /// by turning attributes into inline ANSI escape codes.

@@ -1,3 +1,5 @@
+use std::str::FromStr;
+
 use nom::{
     branch::alt,
     bytes::complete::tag,
@@ -7,7 +9,6 @@ use nom::{
     sequence::{delimited, pair, preceded, terminated},
     IResult,
 };
-use std::str::FromStr;
 
 fn identifier(input: &str) -> IResult<&str, &str> {
     recognize(pair(

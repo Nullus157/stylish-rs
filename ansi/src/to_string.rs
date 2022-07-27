@@ -1,6 +1,8 @@
-use crate::format;
 use alloc::string::String;
+
 use stylish_core::Display;
+
+use crate::format;
 
 /// A trait for converting a value to a [`String`] with integrated ANSI styling.
 ///

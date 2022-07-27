@@ -1,6 +1,8 @@
-use crate::Plain;
 use alloc::string::String;
+
 use stylish_core::Arguments;
+
+use crate::Plain;
 
 #[cfg(feature = "macros")]
 /// Create a [`String`] by discarding styling attributes.

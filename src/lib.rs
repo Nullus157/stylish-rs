@@ -129,17 +129,16 @@ use core::fmt as doc_fmt;
 #[cfg(all(doc, feature = "std"))]
 use std::fmt as doc_fmt;
 
+#[cfg(all(feature = "alloc", feature = "macros"))]
+pub use stylish_core::ToStylishString;
+#[cfg(feature = "alloc")]
+pub use stylish_core::{format, String};
 #[cfg(feature = "macros")]
 pub use stylish_core::{format_args, write, writeln};
 pub use stylish_core::{
     Arguments, Background, Color, Display, Error, Foreground, Formatter, Intensity, Restyle,
     Result, Style, StyleDiff, Write,
 };
-
-#[cfg(all(feature = "alloc", feature = "macros"))]
-pub use stylish_core::ToStylishString;
-#[cfg(feature = "alloc")]
-pub use stylish_core::{format, String};
 
 #[cfg(feature = "std")]
 pub mod io {

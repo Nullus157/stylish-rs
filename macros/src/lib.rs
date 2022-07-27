@@ -1,16 +1,18 @@
 #![allow(uncommon_codepoints)]
 
-use self::{
-    format::{Format, FormatArg, FormatArgRef, FormatSpec, Piece},
-    to_tokens::Scoped,
-};
+use std::collections::HashMap;
+
 use proc_macro2::Span;
 use quote::{quote, ToTokens};
-use std::collections::HashMap;
 use syn::{
     parse::{Parse, ParseStream, Result},
     parse_macro_input, Expr, ExprAssign, ExprPath, Ident, Index, LitStr, Path, PathArguments,
     Token,
+};
+
+use self::{
+    format::{Format, FormatArg, FormatArgRef, FormatSpec, Piece},
+    to_tokens::Scoped,
 };
 
 mod format;

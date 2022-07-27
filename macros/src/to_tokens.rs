@@ -1,8 +1,9 @@
+use proc_macro2::TokenStream;
+use quote::{quote, ToTokens};
+
 use crate::format::{
     Align, Color, Count, DebugHex, FormatTrait, FormatterArgs, Intensity, Restyle, Restyles, Sign,
 };
-use proc_macro2::TokenStream;
-use quote::{quote, ToTokens};
 
 fn quote_opt<'a, T: 'a>(opt: Scoped<'a, Option<T>>) -> TokenStream
 where

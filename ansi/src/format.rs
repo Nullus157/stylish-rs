@@ -1,6 +1,8 @@
-use crate::Ansi;
 use alloc::string::String;
+
 use stylish_core::Arguments;
+
+use crate::Ansi;
 
 #[cfg(feature = "macros")]
 /// Create a [`String`] with inline ANSI escape codes styling its formatted

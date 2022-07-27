@@ -1,6 +1,8 @@
-use crate::util;
 use core::fmt;
+
 use stylish_core::{Style, Write};
+
+use crate::util;
 
 /// An adaptor to allow writing [`stylish`] attributed data to an output stream
 /// by turning attributes into inline ANSI escape codes.

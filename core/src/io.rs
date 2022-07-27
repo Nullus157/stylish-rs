@@ -1,9 +1,9 @@
 //! Traits and associated types for writing [`stylish`] attributed data to
 //! fallible IO sinks.
 
-use crate::{Arguments, Style};
-
 pub use std::io::{Error, ErrorKind, Result};
+
+use crate::{Arguments, Style};
 
 struct ErrorTrap<W: Write> {
     inner: W,
