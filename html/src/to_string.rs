@@ -2,7 +2,7 @@ use crate::format;
 use alloc::string::String;
 use stylish_core::Display;
 
-/// A trait for converting a value to a [`String`] with integrated ANSI styling.
+/// A trait for converting a value to a [`String`] with integrated HTML styling.
 ///
 /// This trait is automatically implemented for any type which implements the
 /// [`stylish::Display`] trait. As such, `ToHtmlString` shouldn’t be implemented

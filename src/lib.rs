@@ -74,10 +74,13 @@
 //!
 //! ### Syntax change
 //!
-//! The specific syntax change is extending `format_spec` like so:
+//! The specific syntax change is extending
+#![cfg_attr(feature = "alloc", doc = " [`format_spec`](alloc::fmt#syntax)")]
+#![cfg_attr(not(feature = "alloc"), doc = " `format_spec`")]
+//! like so:
 //!
 //! ```text
-//! format_spec := [[fill]align][sign]['#']['0'][width]['.' precision][attributes][type]
+//! format_spec := [[fill]align][sign]['#']['0'][width]['.' precision][attributes]type
 //! attributes := '(' [attribute [',' attribute]* [',']] ')'
 //! attribute := key ['=' value]
 //! key := identifier
@@ -115,6 +118,9 @@
 #[cfg(feature = "std")]
 extern crate std;
 
+#[cfg(feature = "alloc")]
+extern crate alloc;
+
 #[cfg(doc)]
 extern crate self as stylish;
 
@@ -137,6 +143,9 @@ pub use stylish_core::{format, String};
 
 #[cfg(feature = "std")]
 pub mod io {
+    //! Traits and associated types for writing attributed data to fallible
+    //! IO sinks.
+
     #[cfg(feature = "ansi")]
     pub use stylish_ansi::io::Ansi;
     pub use stylish_core::io::{Error, ErrorKind, Result, Write};
@@ -221,6 +230,8 @@ pub use stylish_ansi::Ansi;
 pub use stylish_ansi::ToAnsiString;
 #[cfg(all(feature = "ansi", feature = "alloc"))]
 pub mod ansi {
+    //! Helpers for writing styles as ANSI escape codes.
+
     pub use stylish_ansi::format;
 }
 
@@ -230,6 +241,8 @@ pub use stylish_html::Html;
 pub use stylish_html::ToHtmlString;
 #[cfg(all(feature = "html", feature = "alloc"))]
 pub mod html {
+    //! Helpers for writing styles as HTML elements.
+
     pub use stylish_html::format;
 }
 
@@ -239,5 +252,7 @@ pub use stylish_plain::Plain;
 pub use stylish_plain::ToPlainString;
 #[cfg(all(feature = "plain", feature = "alloc"))]
 pub mod plain {
+    //! Helpers for discarding styles.
+
     pub use stylish_plain::format;
 }

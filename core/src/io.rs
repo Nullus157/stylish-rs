@@ -90,13 +90,16 @@ pub trait Write {
     /// Each call to `write` may generate an I/O error indicating that the
     /// operation could not be completed. If an error is returned then no
     /// bytes in the buffer were written to this writer, but the writers
-    /// state may have changed to match the new style.
+    /// state may have changed to match the new style (or may be in an
+    /// inconsistent state if the error occurred while changing style).
     ///
     /// It is not considered an error if the entire buffer could not be written
     /// to this writer.
     ///
     /// An error of the [`ErrorKind::Interrupted`] kind is non-fatal and the
-    /// write operation should be retried if there is nothing else to do.
+    /// write operation should be retried if there is nothing else to do. (Note
+    /// to implementors: this means you must internally retry if changing style
+    /// and an `Interrupted` error occurs).
     ///
     /// ```rust
     /// use stylish::{io::Write, Color, Foreground, Style};
