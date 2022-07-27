@@ -1,3 +1,6 @@
+//! Traits and associated types for writing [`stylish`] attributed data to
+//! fallible IO sinks with ANSI escape codes.
+
 use stylish_core::{
     io::{Result, Write},
     Style,

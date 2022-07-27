@@ -3,6 +3,14 @@
 //! Do not depend on this crate directly.
 
 #![allow(uncommon_codepoints)]
+#![warn(missing_copy_implementations)]
+#![warn(missing_debug_implementations)]
+#![warn(missing_docs)]
+#![warn(trivial_casts)]
+#![warn(trivial_numeric_casts)]
+#![warn(unused_extern_crates)]
+#![warn(unused_import_braces)]
+#![warn(variant_size_differences)]
 
 use std::collections::HashMap;
 
@@ -187,6 +195,8 @@ fn format_args_impl(
     }
 }
 
+/// Internal implementation details of
+/// [`stylish_core::format_args!`](https://docs.rs/stylish-core/latest/stylish_core/macro.format_args.html).
 #[proc_macro]
 pub fn format_args(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
     format_args_impl(parse_macro_input!(input as ArgsInput))
@@ -194,6 +204,8 @@ pub fn format_args(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
         .into()
 }
 
+/// Internal implementation details of
+/// [`stylish_core::format_args!`](https://docs.rs/stylish-core/latest/stylish_core/macro.format_args.html).
 #[proc_macro]
 pub fn format_args_nl(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
     let input = parse_macro_input!(input as ArgsInput);

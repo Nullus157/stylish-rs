@@ -115,12 +115,20 @@
 //! );
 //! ```
 
+#![warn(missing_copy_implementations)]
+#![warn(missing_debug_implementations)]
+#![warn(missing_docs)]
+#![warn(trivial_casts)]
+#![warn(trivial_numeric_casts)]
+#![warn(unused_extern_crates)]
+#![warn(unused_import_braces)]
+#![warn(variant_size_differences)]
 #![doc(test(attr(deny(warnings))))]
 
 #[cfg(feature = "std")]
 extern crate std;
 
-#[cfg(feature = "alloc")]
+#[cfg(all(doc, feature = "alloc"))]
 extern crate alloc;
 
 #[cfg(doc)]

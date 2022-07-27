@@ -277,6 +277,7 @@ impl<'a> FormatArg<'a> {
 }
 
 #[derive(Debug, Clone)]
+#[allow(variant_size_differences)]
 pub enum Piece<'a> {
     Lit(&'a str),
     Arg(FormatArg<'a>),

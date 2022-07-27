@@ -1,7 +1,7 @@
 use crate::{Arguments, Display, Restyle, Result, Style, Write};
 
 #[doc(hidden)] // workaround https://github.com/rust-lang/rust/issues/85522
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug)]
 pub enum Align {
     Left,
     Center,
@@ -9,21 +9,21 @@ pub enum Align {
 }
 
 #[doc(hidden)] // workaround https://github.com/rust-lang/rust/issues/85522
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug)]
 pub enum Sign {
     Plus,
     Minus,
 }
 
 #[doc(hidden)] // workaround https://github.com/rust-lang/rust/issues/85522
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug)]
 pub enum DebugHex {
     Lower,
     Upper,
 }
 
 #[doc(hidden)] // workaround https://github.com/rust-lang/rust/issues/85522
-#[derive(Clone, Copy, Default)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct FormatterArgs<'a> {
     pub align: Option<Align>,
     pub sign: Option<Sign>,
@@ -45,6 +45,15 @@ pub struct Formatter<'a> {
     style: Style,
     pub(crate) format: FormatterArgs<'a>,
     write: &'a mut (dyn Write + 'a),
+}
+
+impl core::fmt::Debug for Formatter<'_> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> Result {
+        f.debug_struct("Formatter")
+            .field("style", &self.style)
+            .field("format", &self.format)
+            .finish()
+    }
 }
 
 impl<'a> Formatter<'a> {

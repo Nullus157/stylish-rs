@@ -8,6 +8,9 @@ pub struct StdFmt<'a>(stack_dst::ValueA<StdFmtFn<'a>, [usize; 3]>);
 impl<'a> StdFmt<'a> {
     #[doc(hidden)] // workaround https://github.com/rust-lang/rust/issues/85526
     pub fn new(f: impl Fn(&mut core::fmt::Formatter<'_>) -> Result + 'a) -> StdFmt<'a> {
+        // not possible(/easy) to correctly type the closure, but with the cast
+        // inference works
+        #[allow(trivial_casts)]
         StdFmt(
             stack_dst::ValueA::new_stable(f, |p| p as _)
                 .map_err(|_| ())
@@ -29,6 +32,7 @@ impl core::fmt::Debug for StdFmt<'_> {
 }
 
 #[doc(hidden)] // workaround https://github.com/rust-lang/rust/issues/85522
+#[allow(missing_debug_implementations)]
 pub enum FormatTrait<'a> {
     Display(StdFmt<'a>),
     Debug(StdFmt<'a>),
@@ -43,6 +47,8 @@ pub enum FormatTrait<'a> {
 }
 
 #[doc(hidden)] // workaround https://github.com/rust-lang/rust/issues/85522
+#[allow(variant_size_differences)]
+#[allow(missing_debug_implementations)]
 pub enum Argument<'a> {
     Lit(&'a str),
 
@@ -66,6 +72,7 @@ pub enum Argument<'a> {
 ///     "<span style=background-color:red>Danger</span> Will Robinson",
 /// );
 /// ```
+#[allow(missing_debug_implementations)]
 pub struct Arguments<'a> {
     #[doc(hidden)] // pub for macros
     pub pieces: &'a [Argument<'a>],

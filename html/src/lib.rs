@@ -2,8 +2,14 @@
 //! [`stylish`] helpers for writing styles as HTML elements.
 
 #![allow(uncommon_codepoints)]
-
-#![doc(test(attr(deny(warnings))))]
+#![warn(missing_copy_implementations)]
+#![warn(missing_debug_implementations)]
+#![warn(missing_docs)]
+#![warn(trivial_casts)]
+#![warn(trivial_numeric_casts)]
+#![warn(unused_extern_crates)]
+#![warn(unused_import_braces)]
+#![warn(variant_size_differences)]
 
 #[cfg(doc)]
 extern crate self as stylish;
