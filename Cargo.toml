@@ -52,3 +52,8 @@ stylish-plain.default-features = false
 stylish-plain.path = "plain"
 stylish-plain.version = "0.1.0"
 stylish-plain.optional = true
+
+[package.metadata.docs.rs]
+all-features = true
+targets = ["x86_64-unknown-linux-gnu"]
+rustdoc-args = ["--cfg", "docsrs"]

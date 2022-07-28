@@ -11,6 +11,7 @@
 #![warn(unused_import_braces)]
 #![warn(variant_size_differences)]
 #![doc(test(attr(deny(warnings))))]
+#![cfg_attr(docsrs, feature(doc_cfg, doc_auto_cfg))]
 
 #[cfg(doc)]
 extern crate self as stylish;
