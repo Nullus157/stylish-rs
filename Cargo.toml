@@ -6,7 +6,7 @@ edition = "2021"
 [workspace]
 
 [features]
-default = ["std"]
+default = ["std", "macros"]
 std = [
     "alloc",
     "stylish-core/std",

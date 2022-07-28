@@ -114,6 +114,17 @@
 //!     "Hello <span style=color:red>Ferris</span> and <span style=color:cyan>Gorris</span>",
 //! );
 //! ```
+//!
+//! # Features
+//!
+//! | Feature  | Activation         | Effect
+//! |----------|--------------------|--------
+//! | `std`    | **on**-by-default  | Enables the [`io`] module (and `io` helpers in other modules)
+//! | `alloc`  | implied by `std`   | Enables [`String`] and a variety of items that use it
+//! | `macros` | **on**-by-default  | Enables macros throughout the other enabled modules
+//! | `ansi`   | *off*-by-default   | Enables the [`mod@ansi`] module and items that use it
+//! | `html`   | *off*-by-default   | Enables the [`mod@html`] module and items that use it
+//! | `plain`  | *off*-by-default   | Enables the [`mod@plain`] module and items that use it
 
 #![warn(missing_copy_implementations)]
 #![warn(missing_debug_implementations)]
