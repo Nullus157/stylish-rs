@@ -11,6 +11,7 @@
 #![warn(unused_extern_crates)]
 #![warn(unused_import_braces)]
 #![warn(variant_size_differences)]
+#![cfg_attr(stylish_proc_macro_expand, feature(proc_macro_expand))]
 
 use std::collections::HashMap;
 
@@ -48,7 +49,23 @@ impl syn::parse::Parse for ArgsInput {
         } else {
             None
         };
+        #[cfg(not(stylish_proc_macro_expand))]
         let format = input.parse()?;
+        #[cfg(stylish_proc_macro_expand)]
+        let format = {
+            use syn::spanned::Spanned;
+            let expr = input.parse::<Expr>()?;
+            let span = expr.span();
+            let tokens = proc_macro::TokenStream::from(expr.into_token_stream());
+            let expanded = tokens.expand_expr().map_err(|e| {
+                syn::parse::Error::new(span, format!("failed to expand format string: {e}"))
+            })?;
+            #[cfg(stylish_proc_macro_expand_debug)]
+            if expanded.to_string() != tokens.to_string() {
+                eprintln!("{tokens} => {expanded}");
+            }
+            syn::parse(expanded)?
+        };
         let mut positional_args = Vec::new();
         let mut named_args = Vec::new();
         let mut onto_named = false;

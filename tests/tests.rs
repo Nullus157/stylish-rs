@@ -182,4 +182,12 @@ mod tests {
             r#""a"b"#
         );
     }
+
+    #[cfg(stylish_proc_macro_expand)]
+    #[test]
+    fn extended_builtin_macros() {
+        // `file!()` is not supported by `with_builtin_macros`, but it works with
+        // `proc_macro_expand`
+        assert_eq!(stylish::plain::format!(file!()), file!());
+    }
 }
