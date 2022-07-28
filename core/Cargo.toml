@@ -1,7 +1,6 @@
 [package]
 name = "stylish-core"
 version = "0.1.0"
-authors = ["Wim Looman <crates.stylish@nemo157.com>"]
 edition = "2021"
 
 [features]
