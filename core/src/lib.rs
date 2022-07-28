@@ -97,11 +97,34 @@ pub mod 𓀄 {
 #[macro_export]
 macro_rules! format_args {
     ($fmt:literal $(, $($arg:tt)*)?) => {
+        $crate::_format_args!($fmt $(, $($arg)*)?)
+    };
+    ($fmt:expr $(, $($arg:tt)*)?) => {
+        $crate::_format_args!($fmt $(, $($arg)*)?)
+    };
+}
+
+#[cfg(feature = "macros")]
+#[cfg(not(stylish_proc_macro_expand))]
+#[doc(hidden)]
+#[macro_export]
+macro_rules! _format_args {
+    ($fmt:literal $(, $($arg:tt)*)?) => {
         $crate::𓀄::format_args!(crate=$crate, $fmt $(, $($arg)*)?)
     };
     ($fmt:expr $(, $($arg:tt)*)?) => {
         $crate::𓀄::with_builtin!(let $fmt_lit = $fmt in {
             $crate::𓀄::format_args!(crate=$crate, $fmt_lit $(, $($arg)*)?)
         })
+    };
+}
+
+#[cfg(feature = "macros")]
+#[cfg(stylish_proc_macro_expand)]
+#[doc(hidden)]
+#[macro_export]
+macro_rules! _format_args {
+    ($fmt:expr $(, $($arg:tt)*)?) => {
+        $crate::𓀄::format_args!(crate=$crate, $fmt $(, $($arg)*)?)
     };
 }

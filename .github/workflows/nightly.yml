@@ -18,6 +18,22 @@ jobs:
         command: test
         args: --workspace --locked --all-features
 
+  proc-macro-expand:
+    name: cargo +nightly test --cfg stylish_proc_macro_expand
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: hecrj/setup-rust-action@v1
+      with:
+        rust-version: nightly
+    - uses: actions-rs/cargo@v1
+      env:
+        RUSTFLAGS: --cfg stylish_proc_macro_expand
+      with:
+        toolchain: nightly
+        command: test
+        args: --workspace --locked --all-features
+
   fmt:
     name: cargo +nightly fmt --check
     runs-on: ubuntu-latest
