@@ -203,14 +203,14 @@ impl Style {
 
 impl<T: Restyle + ?Sized> Restyle for &T {
     fn apply(&self, style: Style) -> Style {
-        (&**self).apply(style)
+        (**self).apply(style)
     }
 }
 
 #[cfg(feature = "alloc")]
 impl<T: Restyle + ?Sized> Restyle for alloc::boxed::Box<T> {
     fn apply(&self, style: Style) -> Style {
-        (&**self).apply(style)
+        (**self).apply(style)
     }
 }
 

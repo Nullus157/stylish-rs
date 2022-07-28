@@ -251,18 +251,18 @@ pub trait Write {
 
 impl<W: Write + ?Sized> Write for &mut W {
     fn write(&mut self, s: &[u8], style: Style) -> Result<usize> {
-        (&mut **self).write(s, style)
+        (**self).write(s, style)
     }
 
     fn flush(&mut self) -> Result<()> {
-        (&mut **self).flush()
+        (**self).flush()
     }
 
     fn write_all(&mut self, s: &[u8], style: Style) -> Result<()> {
-        (&mut **self).write_all(s, style)
+        (**self).write_all(s, style)
     }
 
     fn write_fmt(&mut self, args: Arguments<'_>) -> Result<()> {
-        (&mut **self).write_fmt(args)
+        (**self).write_fmt(args)
     }
 }

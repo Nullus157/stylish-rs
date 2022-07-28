@@ -92,15 +92,15 @@ pub trait Write {
 
 impl<W: Write + ?Sized> Write for &mut W {
     fn write_str(&mut self, s: &str, style: Style) -> Result {
-        (&mut **self).write_str(s, style)
+        (**self).write_str(s, style)
     }
 
     fn write_char(&mut self, c: char, style: Style) -> Result {
-        (&mut **self).write_char(c, style)
+        (**self).write_char(c, style)
     }
 
     fn write_fmt(&mut self, args: Arguments<'_>) -> Result {
-        (&mut **self).write_fmt(args)
+        (**self).write_fmt(args)
     }
 }
 
