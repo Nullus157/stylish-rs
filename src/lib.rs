@@ -236,10 +236,11 @@ pub fn plain<T: core::fmt::Write>(inner: T) -> Plain<T> {
 pub use stylish_ansi::Ansi;
 #[cfg(all(feature = "ansi", feature = "alloc", feature = "macros"))]
 pub use stylish_ansi::ToAnsiString;
-#[cfg(all(feature = "ansi", feature = "alloc"))]
+#[cfg(feature = "ansi")]
 pub mod ansi {
     //! Helpers for writing styles as ANSI escape codes.
 
+    #[cfg(feature = "alloc")]
     pub use stylish_ansi::format;
 }
 
@@ -247,10 +248,11 @@ pub mod ansi {
 pub use stylish_html::Html;
 #[cfg(all(feature = "html", feature = "alloc", feature = "macros"))]
 pub use stylish_html::ToHtmlString;
-#[cfg(all(feature = "html", feature = "alloc"))]
+#[cfg(feature = "html")]
 pub mod html {
     //! Helpers for writing styles as HTML elements.
 
+    #[cfg(feature = "alloc")]
     pub use stylish_html::format;
 }
 
@@ -258,9 +260,10 @@ pub mod html {
 pub use stylish_plain::Plain;
 #[cfg(all(feature = "plain", feature = "alloc", feature = "macros"))]
 pub use stylish_plain::ToPlainString;
-#[cfg(all(feature = "plain", feature = "alloc"))]
+#[cfg(feature = "plain")]
 pub mod plain {
     //! Helpers for discarding styles.
 
+    #[cfg(feature = "alloc")]
     pub use stylish_plain::format;
 }
