@@ -2,6 +2,7 @@
 name = "stylish-macros"
 version = "0.1.0"
 edition = "2021"
+repository = "https://github.com/Nullus157/stylish-rs"
 
 [lib]
 proc-macro = true

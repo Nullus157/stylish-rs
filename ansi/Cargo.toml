@@ -2,6 +2,7 @@
 name = "stylish-ansi"
 version = "0.1.0"
 edition = "2021"
+repository = "https://github.com/Nullus157/stylish-rs"
 
 [features]
 default = ["std"]
