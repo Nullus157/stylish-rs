@@ -1,4 +1,6 @@
-Yet another crate implementing colorized output.
+[![version-badge][]][version] [![license-badge][]][license] [![rust-version-badge][]][rust-version]
+
+Yet another crate implementing colorized text.
 
 There was one primary design goal separating [`stylish`][] from existing crates:
 
@@ -39,6 +41,13 @@ trivial to get started with [`stylish`][].
 
 [`std::fmt`]: std::fmt
 [`stylish`]: ::stylish
+
+[version-badge]: https://img.shields.io/crates/v/stylish.svg?style=flat-square
+[version]: https://crates.io/crates/stylish
+[license-badge]: https://img.shields.io/crates/l/stylish.svg?style=flat-square
+[license]: #license
+[rust-version-badge]: https://img.shields.io/badge/rust-latest%20stable-blueviolet.svg?style=flat-square
+[rust-version]: #rust-version-policy
 
 # Writing data with attributes
 
@@ -143,3 +152,24 @@ assert_eq!(
 [`ansi`]: mod@stylish::ansi
 [`html`]: mod@stylish::html
 [`plain`]: mod@stylish::plain
+
+# Rust Version Policy
+
+This crate only supports the current stable version of Rust, patch releases may
+use new features at any time.
+
+# License
+
+Licensed under either of
+
+ * Apache License, Version 2.0 (`LICENSE-APACHE` or <http://www.apache.org/licenses/LICENSE-2.0>)
+ * MIT license (`LICENSE-MIT` or <http://opensource.org/licenses/MIT>)
+
+at your option.
+
+## Contribution
+
+Unless you explicitly state otherwise, any contribution intentionally submitted
+for inclusion in the work by you shall be dual licensed as above, without any
+additional terms or conditions.
+
