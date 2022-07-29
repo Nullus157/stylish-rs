@@ -4,6 +4,7 @@ version = "0.1.0"
 edition = "2021"
 repository = "https://github.com/Nullus157/stylish-rs"
 license = "MIT OR Apache-2.0"
+description = "`stylish` helpers for writing styles as ANSI escape codes"
 readme = "../README.md"
 
 [features]

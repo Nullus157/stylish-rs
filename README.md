@@ -1,4 +1,4 @@
-Yet another crate implementing colorized output.
+Yet another crate implementing colorized text.
 
 There was one primary design goal separating [`stylish`][] from existing crates:
 
