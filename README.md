@@ -1,3 +1,5 @@
+[![version-badge][]][version] [![license-badge][]][license] [![rust-version-badge][]][rust-version]
+
 Yet another crate implementing colorized text.
 
 There was one primary design goal separating [`stylish`][] from existing crates:
@@ -39,6 +41,13 @@ trivial to get started with [`stylish`][].
 
 [`std::fmt`]: std::fmt
 [`stylish`]: ::stylish
+
+[version-badge]: https://img.shields.io/crates/v/stylish.svg?style=flat-square
+[version]: https://crates.io/crates/stylish
+[license-badge]: https://img.shields.io/crates/l/stylish.svg?style=flat-square
+[license]: #license
+[rust-version-badge]: https://img.shields.io/badge/rust-latest%20stable-blueviolet.svg?style=flat-square
+[rust-version]: #rust-version-policy
 
 # Writing data with attributes
 
