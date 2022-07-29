@@ -74,6 +74,8 @@ jobs:
     - uses: JasonEtco/create-an-issue@v2
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        REPO: ${{ github.repository }}
+        RUN: ${{ github.run_id }}
       with:
         update_existing: true
         filename: .github/nightly-issue.md
