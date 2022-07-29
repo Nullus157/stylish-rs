@@ -4,8 +4,9 @@ version = 3
 
 [[package]]
 name = "askama_escape"
-version = "0.10.1"
-source = "git+https://github.com/Nemo157/askama?branch=askama_escape-no_std#dfe705cb16de5f6cf04a8eb8db6896c848255669"
+version = "0.10.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "619743e34b5ba4e9703bba34deac3427c72507c7159f5fd030aea8cac0cfe341"
 
 [[package]]
 name = "bitvec"
