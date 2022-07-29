@@ -73,18 +73,18 @@ jobs:
         toolchain: nightly
         command: check
 
-  issue:
+  create-issue:
     name: create issue
     runs-on: ubuntu-latest
     if: failure()
     needs: [temp, test, proc-macro-expand, fmt, clippy]
     steps:
+    - uses: actions/checkout@v2
     - uses: JasonEtco/create-an-issue@v2
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         update_existing: true
-        search_existing: all
         filename: .github/nightly-issue.md
 
 on:
