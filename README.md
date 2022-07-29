@@ -144,6 +144,11 @@ assert_eq!(
 [`html`]: mod@stylish::html
 [`plain`]: mod@stylish::plain
 
+# Rust Version Policy
+
+This crate only supports the current stable version of Rust, patch releases may
+use new features at any time.
+
 # License
 
 Licensed under either of
