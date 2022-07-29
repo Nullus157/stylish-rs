@@ -15,8 +15,7 @@ macros = ["stylish-core/macros"]
 
 [dependencies]
 askama_escape.default-features = false
-askama_escape.git = "https://github.com/Nemo157/askama"
-askama_escape.branch = "askama_escape-no_std"
+askama_escape.version = "0.10.3"
 stylish-core.default-features = false
 stylish-core.path = "../core"
 stylish-core.version = "0.1.0"
