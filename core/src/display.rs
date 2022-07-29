@@ -54,6 +54,6 @@ pub trait Display {
 
 impl<T: Display + ?Sized> Display for &T {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
-        (&**self).fmt(f)
+        (**self).fmt(f)
     }
 }
