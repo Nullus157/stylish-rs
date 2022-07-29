@@ -64,20 +64,11 @@ jobs:
         command: clippy
         args: --workspace --all-targets --all-features --locked -- -D warnings
 
-  temp:
-    name: temp job to test issue creation
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions-rs/cargo@v1
-      with:
-        toolchain: nightly
-        command: check
-
   create-issue:
     name: create issue
     runs-on: ubuntu-latest
     if: failure()
-    needs: [temp, test, proc-macro-expand, fmt, clippy]
+    needs: [test, proc-macro-expand, fmt, clippy]
     steps:
     - uses: actions/checkout@v2
     - uses: JasonEtco/create-an-issue@v2
