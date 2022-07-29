@@ -57,7 +57,7 @@ jobs:
     - uses: hecrj/setup-rust-action@v1
       with:
         rust-version: nightly
-        components: rustfmt
+        components: clippy
     - uses: actions-rs/cargo@v1
       with:
         toolchain: nightly
