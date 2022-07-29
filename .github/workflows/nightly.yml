@@ -64,6 +64,31 @@ jobs:
         command: clippy
         args: --workspace --all-targets --all-features --locked -- -D warnings
 
+  temp:
+    name: temp job to test issue creation
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions-rs/cargo@v1
+      with:
+        toolchain: nightly
+        command: check
+
+  issue:
+    name: create issue
+    runs-on: ubuntu-latest
+    if: failure()
+    needs: [temp, test, proc-macro-expand, fmt, clippy]
+    steps:
+    - uses: JasonEtco/create-an-issue@v2
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        update_existing: true
+        search_existing: all
+        filename: .github/nightly-issue.md
+
 on:
   schedule:
   - cron: '0 2 * * *'
+  push:
+    branches: [prīmum]
