@@ -1,6 +1,6 @@
 [package]
 name = "stylish-core"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 repository = "https://github.com/Nullus157/stylish-rs"
 license = "MIT OR Apache-2.0"
@@ -21,7 +21,7 @@ stack_dst.default-features = false
 stack_dst.version = "0.6.0"
 stylish-macros.default-features = false
 stylish-macros.path = "../macros"
-stylish-macros.version = "=0.1.0"
+stylish-macros.version = "=0.1.1"
 stylish-macros.optional = true
 stylish-style.default-features = false
 stylish-style.path = "../style"
