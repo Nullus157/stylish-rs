@@ -25,6 +25,8 @@ stylish-style.default-features = false
 stylish-style.features = ["alloc"]
 stylish-style.version = "=0.1.0"
 stylish-style.path = "../style"
+unicode-ident.default-features = false
+unicode-ident.version = "1.0.3"
 
 [package.metadata.docs.rs]
 all-features = true

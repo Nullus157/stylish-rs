@@ -3,7 +3,7 @@ use std::str::FromStr;
 use nom::{
     branch::alt,
     bytes::complete::tag,
-    character::complete::{alpha1, alphanumeric1, anychar, digit1, none_of},
+    character::complete::{anychar, char, digit1, none_of, satisfy},
     combinator::{all_consuming, cut, map, map_res, opt, recognize, value},
     multi::{many0, many1, separated_list0},
     sequence::{delimited, pair, preceded, terminated},
@@ -13,8 +13,8 @@ use stylish_style::{Background, Color, Foreground, Intensity, Restyle, Style, St
 
 fn identifier(input: &str) -> IResult<&str, &str> {
     recognize(pair(
-        alt((alpha1, tag("_"))),
-        many0(alt((alphanumeric1, tag("_")))),
+        alt((satisfy(unicode_ident::is_xid_start), char('_'))),
+        many0(satisfy(unicode_ident::is_xid_continue)),
     ))(input)
 }
 
