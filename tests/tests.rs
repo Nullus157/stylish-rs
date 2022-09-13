@@ -1,3 +1,5 @@
+#![allow(uncommon_codepoints)]
+
 #[cfg(not(feature = "_tests"))]
 compile_error!("please test with --all-features");
 
@@ -181,6 +183,14 @@ mod tests {
             stylish::plain::format!(concat!(stringify!("a"), "b")),
             r#""a"b"#
         );
+    }
+
+    #[test]
+    fn non_ascii_idents() {
+        let 𓀄 = 5;
+        assert_eq!(stylish::plain::format!("{𓀄}"), "5");
+        assert_eq!(stylish::plain::format!("{}", 𓀄), "5");
+        assert_eq!(stylish::plain::format!("{𓀄}", 𓀄 = 5), "5");
     }
 
     #[cfg(stylish_proc_macro_expand)]
