@@ -54,8 +54,8 @@ pub mod 𓀄 {
     pub use with_builtin_macros::with_builtin;
 
     pub use crate::{
-        arguments::{Argument, Arguments, FormatTrait, StdFmt},
-        formatter::{Align, DebugHex, FormatterArgs, Sign},
+        arguments::{Arguments, StdFmt, StdFmtDebug, StdFmtOther},
+        formatter::{Align, DebugHex, Formatter, FormatterArgs, Sign},
         Background, Color, Display, Foreground, Intensity, StyleDiff,
     };
 }

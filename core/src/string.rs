@@ -51,12 +51,14 @@ impl String {
     /// ```rust
     /// assert_eq!(stylish::html::format!("{:s}", stylish::String::new()), "");
     /// ```
+    #[inline]
     pub fn new() -> Self {
         Self::default()
     }
 }
 
 impl Write for String {
+    #[inline]
     fn write_str(&mut self, s: &str, style: Style) -> Result {
         if Some(style) != self.styles.last().map(|&(_, style)| style) {
             self.styles.push((self.string.len(), style));
@@ -67,6 +69,7 @@ impl Write for String {
 }
 
 impl Display for String {
+    #[inline]
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
         let mut styles = self.styles.iter().peekable();
         while let Some(&(start, style)) = styles.next() {

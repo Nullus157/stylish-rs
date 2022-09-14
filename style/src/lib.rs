@@ -129,12 +129,14 @@ pub trait Restyle {
 }
 
 impl Default for Color {
+    #[inline]
     fn default() -> Self {
         Self::Default
     }
 }
 
 impl Default for Intensity {
+    #[inline]
     fn default() -> Self {
         Self::Normal
     }
@@ -178,6 +180,7 @@ impl Style {
     ///     }
     /// ));
     /// ```
+    #[inline]
     pub fn diff_from(self, original: Style) -> StyleDiff {
         fn diff<T: PartialEq>(original: T, new: T) -> Option<T> {
             if original == new {
@@ -224,6 +227,7 @@ impl<T: Restyle> Restyle for Option<T> {
 }
 
 impl Restyle for StyleDiff {
+    #[inline]
     fn apply(&self, style: Style) -> Style {
         (
             self.foreground.map(Foreground),
@@ -235,12 +239,14 @@ impl Restyle for StyleDiff {
 }
 
 impl Restyle for Style {
+    #[inline]
     fn apply(&self, _style: Style) -> Style {
         *self
     }
 }
 
 impl Restyle for Foreground {
+    #[inline]
     fn apply(&self, style: Style) -> Style {
         let &Foreground(foreground) = self;
         Style {
@@ -251,6 +257,7 @@ impl Restyle for Foreground {
 }
 
 impl Restyle for Background {
+    #[inline]
     fn apply(&self, style: Style) -> Style {
         let &Background(background) = self;
         Style {
@@ -261,6 +268,7 @@ impl Restyle for Background {
 }
 
 impl Restyle for Intensity {
+    #[inline]
     fn apply(&self, style: Style) -> Style {
         Style {
             intensity: *self,
@@ -270,6 +278,7 @@ impl Restyle for Intensity {
 }
 
 impl Restyle for () {
+    #[inline]
     fn apply(&self, style: Style) -> Style {
         style
     }

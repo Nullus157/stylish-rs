@@ -214,6 +214,7 @@ pub trait Write {
     /// output.write_fmt(stylish::format_args!("{:(fg=red)}", '☎'))?;
     /// # Ok::<(), std::io::Error>(())
     /// ```
+    #[inline]
     fn write_fmt(&mut self, args: Arguments<'_>) -> Result<()> {
         let mut trap = ErrorTrap::new(self);
 
@@ -241,6 +242,7 @@ pub trait Write {
     /// )?;
     /// # Ok::<(), std::io::Error>(())
     /// ```
+    #[inline]
     fn by_ref(&mut self) -> &mut Self
     where
         Self: Sized,

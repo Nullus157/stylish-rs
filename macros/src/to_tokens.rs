@@ -97,17 +97,22 @@ impl<'a> ToTokens for Scoped<'a, StyleDiff> {
             intensity,
             ..
         } = self.as_ref();
-        let foreground = quote_opt(self.scope(foreground));
-        let background = quote_opt(self.scope(background));
-        let intensity = quote_opt(self.scope(intensity));
-        quote!({
-            let mut diff = #export::StyleDiff::default();
-            diff.foreground = #foreground;
-            diff.background = #background;
-            diff.intensity = #intensity;
-            diff
-        })
-        .to_tokens(tokens)
+        let mut inner = TokenStream::new();
+        quote!(let mut diff = #export::StyleDiff::default();).to_tokens(&mut inner);
+        if let Some(foreground) = foreground {
+            let foreground = self.scope(foreground);
+            quote!(diff.foreground = Some(#foreground);).to_tokens(&mut inner);
+        }
+        if let Some(background) = background {
+            let background = self.scope(background);
+            quote!(diff.background = Some(#background);).to_tokens(&mut inner);
+        }
+        if let Some(intensity) = intensity {
+            let intensity = self.scope(intensity);
+            quote!(diff.intensity = Some(#intensity);).to_tokens(&mut inner);
+        }
+        quote!(diff).to_tokens(&mut inner);
+        quote!({ #inner }).to_tokens(tokens);
     }
 }
 
@@ -198,7 +203,7 @@ impl ToTokens for FormatTrait {
             FormatTrait::Binary => quote!(Binary),
             FormatTrait::LowerExp => quote!(LowerExp),
             FormatTrait::UpperExp => quote!(UpperExp),
-            FormatTrait::Stylish => quote!(Stylish),
+            FormatTrait::Stylish => unreachable!(),
         }
         .to_tokens(tokens)
     }
@@ -208,13 +213,27 @@ impl<'a> ToTokens for Scoped<'a, (FormatTrait, TokenStream)> {
     fn to_tokens(&self, tokens: &mut TokenStream) {
         let export = &self.export;
         match self.as_ref() {
-            (FormatTrait::Stylish, arg) => {
-                quote!(#export::FormatTrait::Stylish(#arg))
-            }
+            (FormatTrait::Stylish, arg) => arg.to_tokens(tokens),
             (format_trait, arg) => {
-                quote!(#export::FormatTrait::#format_trait(match #arg { __stylish_arg => #export::StdFmt::new(move |f| #export::fmt::#format_trait::fmt(__stylish_arg, f)) }))
+                let inner = quote! {
+                    #export::StdFmt {
+                        f: &match #arg {
+                            __stylish_arg => {
+                                #[inline]
+                                move |__stylish_formatter: &mut #export::fmt::Formatter<'_>| -> #export::fmt::Result {
+                                    #export::fmt::#format_trait::fmt(__stylish_arg, __stylish_formatter)
+                                }
+                            }
+                        }
+                    }
+                };
+                if let FormatTrait::Debug = format_trait {
+                    quote! { #export::StdFmtDebug(#inner) }
+                } else {
+                    quote! { #export::StdFmtOther(#inner) }
+                }
+                .to_tokens(tokens)
             }
         }
-        .to_tokens(tokens)
     }
 }

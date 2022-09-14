@@ -54,6 +54,7 @@ macro_rules! format {
 ///     "Hello, <span style=color:green>world</span>!"
 /// );
 /// ```
+#[inline]
 pub fn format(args: Arguments<'_>) -> String {
     let mut output = String::new();
     output
