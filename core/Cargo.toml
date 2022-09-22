@@ -17,8 +17,6 @@ macros = ["dep:with_builtin_macros", "dep:stylish-macros"]
 with_builtin_macros.default-features = false
 with_builtin_macros.version = "0.0.3"
 with_builtin_macros.optional = true
-stack_dst.default-features = false
-stack_dst.version = "0.6.0"
 stylish-macros.default-features = false
 stylish-macros.path = "../macros"
 stylish-macros.version = "=0.1.1"
