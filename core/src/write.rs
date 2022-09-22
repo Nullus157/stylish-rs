@@ -64,6 +64,7 @@ pub trait Write {
     /// );
     /// # Ok::<(), core::fmt::Error>(())
     /// ```
+    #[inline]
     fn write_char(&mut self, c: char, style: Style) -> Result {
         self.write_str(c.encode_utf8(&mut [0; 4]), style)
     }
@@ -85,6 +86,7 @@ pub trait Write {
     /// assert_eq!(s, "<span style=color:red>☎</span>");
     /// # Ok::<(), core::fmt::Error>(())
     /// ```
+    #[inline]
     fn write_fmt(mut self: &mut Self, args: Arguments<'_>) -> Result {
         Formatter::new(&mut self).write_fmt(args)
     }

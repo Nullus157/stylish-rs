@@ -112,12 +112,8 @@ fn format_args_impl(
     let (leftover, format) = Format::parse(&format).unwrap();
     assert!(leftover.is_empty());
     let num_positional_args = positional_args.len();
-    let positional_args_ident = Ident::new("__stylish_positional_args", Span::mixed_site());
-    let named_args_ident = Ident::new("__stylish_named_args", Span::mixed_site());
     let positional_args = positional_args.into_iter();
-    let positional_args = quote! {
-        (#(&#positional_args,)*)
-    };
+    let positional_args = quote! { (#(&#positional_args,)*) };
     let (named_args_names, named_args_values): (Vec<_>, Vec<_>) = named_args.into_iter().unzip();
     let named_args_names: HashMap<String, usize> = named_args_names
         .into_iter()
@@ -126,19 +122,18 @@ fn format_args_impl(
         .map(|(i, s)| (s, i))
         .collect();
     let named_args_values = named_args_values.into_iter();
-    let named_args = quote! {
+    let named_args_values = quote! {
         (#(&#named_args_values,)*)
     };
-    let implicit_named_args_ident = Ident::new("__stylish_implicit_named_args", Span::mixed_site());
     let mut implicit_named_args_values = Vec::new();
     let mut next_arg_iter = (0..num_positional_args).map(Index::from);
-    let pieces: Vec<_> = format
+    let statements: Vec<_> = format
         .pieces
         .into_iter()
         .map(|piece| match piece {
             Piece::Lit(lit) => {
                 let lit = LitStr::new(&lit.replace("{{", "{"), span);
-                quote!(#export::Argument::Lit(#lit))
+                quote!(#export::Formatter::write_str(__stylish_formatter, #lit)?)
             }
             Piece::Arg(FormatArg {
                 arg,
@@ -154,16 +149,16 @@ fn format_args_impl(
                 let arg = match arg {
                     None => {
                         let index = next_arg_iter.next().expect("missing argument");
-                        quote!(#positional_args_ident.#index)
+                        quote!(__stylish_positional_args.#index)
                     }
                     Some(FormatArgRef::Positional(i)) => {
                         let index = Index::from(i);
-                        quote!(#positional_args_ident.#index)
+                        quote!(__stylish_positional_args.#index)
                     }
                     Some(FormatArgRef::Named(name)) => {
                         if let Some(&i) = named_args_names.get(name) {
                             let index = Index::from(i);
-                            quote!(#named_args_ident.#index)
+                            quote!(__stylish_named_args.#index)
                         } else {
                             let i = implicit_named_args_values.len();
                             implicit_named_args_values.push(ExprPath {
@@ -176,17 +171,22 @@ fn format_args_impl(
                                 .into(),
                             });
                             let index = Index::from(i);
-                            quote!(#implicit_named_args_ident.#index)
+                            quote!(__stylish_implicit_named_args.#index)
                         }
                     }
                 };
                 let arg = (format_trait, arg);
                 let arg = Scoped::new(&export, &arg);
-                quote!(#export::Argument::Arg {
-                    args: #formatter_args,
-                    style: #style,
-                    arg: #arg,
-                })
+                quote! {
+                    #export::Display::fmt(
+                        &#arg,
+                        &mut #export::Formatter::with_args(
+                            __stylish_formatter,
+                            #formatter_args,
+                            #style
+                        ),
+                    )?
+                }
             }
         })
         .collect();
@@ -195,10 +195,14 @@ fn format_args_impl(
     };
     quote! {
         #export::Arguments {
-            pieces: &match (#positional_args, #named_args, #implicit_named_args) {
-                (#positional_args_ident, #named_args_ident, #implicit_named_args_ident) => [
-                    #(#pieces),*
-                ],
+            f: &match (#positional_args, #named_args_values, #implicit_named_args) {
+                (__stylish_positional_args, __stylish_named_args, __stylish_implicit_named_args) => {
+                    #[inline]
+                    move |__stylish_formatter: &mut #export::Formatter| -> #export::fmt::Result {
+                        #(#statements;)*
+                        #export::fmt::Result::Ok(())
+                    }
+                }
             }
         }
     }

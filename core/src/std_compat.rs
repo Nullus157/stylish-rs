@@ -55,36 +55,19 @@ macro_rules! std_write {
         })
     };
 
-    (@str $f:ident $val:ident [Display $($flag:ident)*]) => {
+    // For most traits we can pipe them through `Display` since they have the same function
+    // signature
+    (@str $f:ident $val:ident [Other $($flag:ident)*]) => {
         std_write!(@str $f $val [$($flag)*] { { debug_hex: _, } => (("",),); })
     };
+
+    // But `Debug` is special as it has extra hex flags
     (@str $f:ident $val:ident [Debug $($flag:ident)*]) => {
         std_write!(@str $f $val [$($flag)*] {
             { debug_hex: None, } => (("?",),);
             { debug_hex: Some(crate::formatter::DebugHex::Lower), } => (("x?",),);
             { debug_hex: Some(crate::formatter::DebugHex::Upper), } => (("X?",),);
         })
-    };
-    (@str $f:ident $val:ident [Octal $($flag:ident)*]) => {
-        std_write!(@str $f $val [$($flag)*] { { debug_hex: _, } => (("o",),); })
-    };
-    (@str $f:ident $val:ident [LowerHex $($flag:ident)*]) => {
-        std_write!(@str $f $val [$($flag)*] { { debug_hex: _, } => (("x",),); })
-    };
-    (@str $f:ident $val:ident [UpperHex $($flag:ident)*]) => {
-        std_write!(@str $f $val [$($flag)*] { { debug_hex: _, } => (("X",),); })
-    };
-    (@str $f:ident $val:ident [Pointer $($flag:ident)*]) => {
-        std_write!(@str $f $val [$($flag)*] { { debug_hex: _, } => (("p",),); })
-    };
-    (@str $f:ident $val:ident [Binary $($flag:ident)*]) => {
-        std_write!(@str $f $val [$($flag)*] { { debug_hex: _, } => (("b",),); })
-    };
-    (@str $f:ident $val:ident [LowerExp $($flag:ident)*]) => {
-        std_write!(@str $f $val [$($flag)*] { { debug_hex: _, } => (("e",),); })
-    };
-    (@str $f:ident $val:ident [UpperExp $($flag:ident)*]) => {
-        std_write!(@str $f $val [$($flag)*] { { debug_hex: _, } => (("E",),); })
     };
 
     ($f:ident, $trait:ident, $val:ident) => {

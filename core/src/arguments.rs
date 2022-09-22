@@ -1,62 +1,44 @@
-use crate::{formatter::FormatterArgs, Display, Formatter, Result, StyleDiff};
+use crate::{Display, Formatter, Result};
 
-type StdFmtFn<'a> = dyn Fn(&mut core::fmt::Formatter<'_>) -> Result + 'a;
-
-#[doc(hidden)] // workaround https://github.com/rust-lang/rust/issues/85522
-pub struct StdFmt<'a>(stack_dst::ValueA<StdFmtFn<'a>, [usize; 3]>);
-
-impl<'a> StdFmt<'a> {
-    #[doc(hidden)] // workaround https://github.com/rust-lang/rust/issues/85526
-    pub fn new(f: impl Fn(&mut core::fmt::Formatter<'_>) -> Result + 'a) -> StdFmt<'a> {
-        // not possible(/easy) to correctly type the closure, but with the cast
-        // inference works
-        #[allow(trivial_casts)]
-        StdFmt(
-            stack_dst::ValueA::new_stable(f, |p| p as _)
-                .map_err(|_| ())
-                .expect("StdFmt was more than 3 words, this is a bug in stylish-core"),
-        )
-    }
+#[doc(hidden)]
+/// pub for macros
+pub struct StdFmt<'a> {
+    #[doc(hidden)]
+    /// pub for macros
+    pub f: &'a (dyn Fn(&mut core::fmt::Formatter<'_>) -> Result + 'a),
 }
 
 impl core::fmt::Display for StdFmt<'_> {
+    #[inline]
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> Result {
-        (self.0)(f)
+        (self.f)(f)
     }
 }
 
 impl core::fmt::Debug for StdFmt<'_> {
+    #[inline]
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> Result {
-        (self.0)(f)
+        (self.f)(f)
     }
 }
 
-#[doc(hidden)] // workaround https://github.com/rust-lang/rust/issues/85522
+#[doc(hidden)]
 #[allow(missing_debug_implementations)]
-pub enum FormatTrait<'a> {
-    Display(StdFmt<'a>),
-    Debug(StdFmt<'a>),
-    Octal(StdFmt<'a>),
-    LowerHex(StdFmt<'a>),
-    UpperHex(StdFmt<'a>),
-    Pointer(StdFmt<'a>),
-    Binary(StdFmt<'a>),
-    LowerExp(StdFmt<'a>),
-    UpperExp(StdFmt<'a>),
-    Stylish(&'a dyn Display),
-}
+/// pub for macros
+pub struct StdFmtOther<'a>(
+    #[doc(hidden)]
+    /// pub for macros
+    pub StdFmt<'a>,
+);
 
-#[doc(hidden)] // workaround https://github.com/rust-lang/rust/issues/85522
+#[doc(hidden)]
 #[allow(missing_debug_implementations)]
-pub enum Argument<'a> {
-    Lit(&'a str),
-
-    Arg {
-        args: &'a FormatterArgs<'a>,
-        style: StyleDiff,
-        arg: FormatTrait<'a>,
-    },
-}
+/// pub for macros
+pub struct StdFmtDebug<'a>(
+    #[doc(hidden)]
+    /// pub for macros
+    pub StdFmt<'a>,
+);
 
 /// A precompiled version of a format string and its by-reference arguments.
 ///
@@ -72,37 +54,30 @@ pub enum Argument<'a> {
 /// ```
 #[allow(missing_debug_implementations)]
 pub struct Arguments<'a> {
-    #[doc(hidden)] // pub for macros
-    pub pieces: &'a [Argument<'a>],
+    #[doc(hidden)]
+    /// pub for macros
+    pub f: &'a (dyn Fn(&mut Formatter<'_>) -> Result + 'a),
 }
 
-impl Display for FormatTrait<'_> {
+impl Display for StdFmtOther<'_> {
+    #[inline]
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
-        match self {
-            Self::Display(arg) => std_write!(f, Display, arg),
-            Self::Debug(arg) => std_write!(f, Debug, arg),
-            Self::Octal(arg) => std_write!(f, Display, arg),
-            Self::LowerHex(arg) => std_write!(f, Display, arg),
-            Self::UpperHex(arg) => std_write!(f, Display, arg),
-            Self::Pointer(arg) => std_write!(f, Display, arg),
-            Self::Binary(arg) => std_write!(f, Display, arg),
-            Self::LowerExp(arg) => std_write!(f, Display, arg),
-            Self::UpperExp(arg) => std_write!(f, Display, arg),
-            Self::Stylish(arg) => arg.fmt(f),
-        }
+        let arg = &self.0;
+        std_write!(f, Other, arg)
+    }
+}
+
+impl Display for StdFmtDebug<'_> {
+    #[inline]
+    fn fmt(&self, f: &mut Formatter<'_>) -> Result {
+        let arg = &self.0;
+        std_write!(f, Debug, arg)
     }
 }
 
 impl Display for Arguments<'_> {
+    #[inline]
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
-        for piece in self.pieces {
-            match piece {
-                Argument::Lit(lit) => f.write_str(lit)?,
-                Argument::Arg { args, style, arg } => {
-                    arg.fmt(&mut f.with(style).with_args(args))?
-                }
-            }
-        }
-        Ok(())
+        (self.f)(f)
     }
 }

@@ -48,6 +48,7 @@ pub struct Formatter<'a> {
 }
 
 impl core::fmt::Debug for Formatter<'_> {
+    #[inline]
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> Result {
         f.debug_struct("Formatter")
             .field("style", &self.style)
@@ -57,6 +58,7 @@ impl core::fmt::Debug for Formatter<'_> {
 }
 
 impl<'a> Formatter<'a> {
+    #[inline]
     pub(crate) fn new(write: &'a mut (dyn Write + 'a)) -> Self {
         Self {
             style: Style::default(),
@@ -99,11 +101,17 @@ impl<'a> Formatter<'a> {
         }
     }
 
-    pub(crate) fn with_args<'b>(&'b mut self, format: &FormatterArgs<'b>) -> Formatter<'b> {
+    #[doc(hidden)]
+    /// pub for macros
+    pub fn with_args<'b>(
+        &'b mut self,
+        format: &FormatterArgs<'b>,
+        restyle: impl Restyle,
+    ) -> Formatter<'b> {
         Formatter {
             write: &mut *self.write,
             format: *format,
-            style: self.style,
+            style: self.style.with(restyle),
         }
     }
 
@@ -130,6 +138,7 @@ impl<'a> Formatter<'a> {
     ///     "Hello <span style=color:red>Ferris</span> and <span style=color:cyan>Gorris</span>"
     /// );
     /// ```
+    #[inline]
     pub fn write_str(&mut self, s: &str) -> Result {
         self.write.write_str(s, self.style)?;
         Ok(())
@@ -157,6 +166,7 @@ impl<'a> Formatter<'a> {
     ///     "Hello <span style=color:red>Ferris</span> and <span style=color:cyan>Gorris</span>"
     /// );
     /// ```
+    #[inline]
     pub fn write_fmt(&mut self, args: Arguments<'_>) -> Result {
         args.fmt(self)?;
         Ok(())
@@ -164,16 +174,19 @@ impl<'a> Formatter<'a> {
 }
 
 impl<'a> Write for Formatter<'a> {
+    #[inline]
     fn write_str(&mut self, s: &str, style: Style) -> Result {
         self.with(style).write_str(s)
     }
 
+    #[inline]
     fn write_fmt(&mut self, args: Arguments<'_>) -> Result {
         self.write_fmt(args)
     }
 }
 
 impl<'a> core::fmt::Write for Formatter<'a> {
+    #[inline]
     fn write_str(&mut self, s: &str) -> Result {
         self.write_str(s)
     }

@@ -33,6 +33,7 @@ macro_rules! format {
 ///     "Hello Ferris",
 /// );
 /// ```
+#[inline]
 pub fn format(args: Arguments<'_>) -> String {
     let mut output = Plain::new(String::new());
     output
