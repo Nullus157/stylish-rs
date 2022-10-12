@@ -173,7 +173,7 @@ fn format_args_impl(
                             implicit_named_args_values.push(ExprPath {
                                 attrs: Vec::new(),
                                 qself: None,
-                                path: Ident::new(
+                                path: Ident::new_raw(
                                     name,
                                     Span::call_site().resolved_at(format_string.span()),
                                 )

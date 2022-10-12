@@ -20,7 +20,7 @@ quote.default-features = false
 quote.version = "1.0.8"
 syn.default-features = false
 syn.features = ["full", "parsing", "proc-macro", "printing"]
-syn.version = "1.0.57"
+syn.version = "1.0.102"
 stylish-style.default-features = false
 stylish-style.features = ["alloc"]
 stylish-style.version = "=0.1.0"
