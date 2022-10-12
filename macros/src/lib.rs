@@ -5,7 +5,7 @@
 #![allow(uncommon_codepoints)]
 #![cfg_attr(stylish_proc_macro_expand, feature(proc_macro_expand))]
 
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 use proc_macro2::Span;
 use quote::{quote, ToTokens};
@@ -126,7 +126,9 @@ fn format_args_impl(
         (#(&#named_args_values,)*)
     };
     let mut implicit_named_args_values = Vec::new();
-    let mut next_arg_iter = (0..num_positional_args).map(Index::from);
+    let mut used_positional_args = HashSet::new();
+    let mut used_named_args = HashSet::new();
+    let mut next_arg_iter = 0..num_positional_args;
     let statements: Vec<_> = format
         .pieces
         .into_iter()
@@ -148,16 +150,23 @@ fn format_args_impl(
                 let style = Scoped::new(&export, &style);
                 let arg = match arg {
                     None => {
-                        let index = next_arg_iter.next().expect("missing argument");
+                        let i = next_arg_iter.next().expect("missing argument");
+                        let index = Index::from(i);
+                        used_positional_args.insert(i);
                         quote!(__stylish_positional_args.#index)
                     }
                     Some(FormatArgRef::Positional(i)) => {
                         let index = Index::from(i);
+                        if i >= num_positional_args {
+                            panic!("missing positional argument {i}");
+                        }
+                        used_positional_args.insert(i);
                         quote!(__stylish_positional_args.#index)
                     }
                     Some(FormatArgRef::Named(name)) => {
                         if let Some(&i) = named_args_names.get(name) {
                             let index = Index::from(i);
+                            used_named_args.insert(name.to_owned());
                             quote!(__stylish_named_args.#index)
                         } else {
                             let i = implicit_named_args_values.len();
@@ -190,6 +199,13 @@ fn format_args_impl(
             }
         })
         .collect();
+    let unused_positional_args =
+        &HashSet::from_iter(0..num_positional_args) - &used_positional_args;
+    let unused_named_args =
+        &HashSet::from_iter(named_args_names.keys().cloned()) - &used_named_args;
+    if !unused_positional_args.is_empty() || !unused_named_args.is_empty() {
+        panic!("unused formatting arguments");
+    }
     let implicit_named_args = quote! {
         (#(&#implicit_named_args_values,)*)
     };
