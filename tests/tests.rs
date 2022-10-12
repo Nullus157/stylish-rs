@@ -193,6 +193,27 @@ mod tests {
         assert_eq!(stylish::plain::format!("{𓀄}", 𓀄 = 5), "5");
     }
 
+    #[test]
+    fn capture_raw_strings_and_idents() {
+        let r#type = "apple";
+        assert_eq!(
+            stylish::plain::format!(r#"The fruit is an {type}"#),
+            "The fruit is an apple"
+        );
+
+        let r#type = "orange";
+        assert_eq!(
+            stylish::plain::format!(r"The fruit is an {type}"),
+            "The fruit is an orange"
+        );
+
+        let r#type = "mango";
+        assert_eq!(
+            stylish::plain::format!("The fruit is a {type}"),
+            "The fruit is a mango"
+        );
+    }
+
     #[cfg(stylish_proc_macro_expand)]
     #[test]
     fn extended_builtin_macros() {
