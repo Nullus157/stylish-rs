@@ -70,7 +70,7 @@ impl<T: fmt::Write> Write for Ansi<T> {
         }
         self.current = style;
 
-        write!(self.inner, "{}", s)?;
+        write!(self.inner, "{s}")?;
         Ok(())
     }
 }
