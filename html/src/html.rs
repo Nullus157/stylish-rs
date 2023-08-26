@@ -52,6 +52,10 @@ impl<T: core::fmt::Write> Html<T> {
 
 impl<T: fmt::Write> Write for Html<T> {
     fn write_str(&mut self, s: &str, style: Style) -> fmt::Result {
+        if s.is_empty() {
+            return Ok(());
+        }
+
         if style == Style::default() {
             if self.current != Style::default() {
                 self.inner.write_str("</span>")?;
