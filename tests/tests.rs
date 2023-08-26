@@ -194,6 +194,18 @@ mod tests {
     }
 
     #[test]
+    fn empty_string() {
+        assert_eq!(
+            stylish::ansi::format!("{:(fg=blue)}{:(fg=red)}{:(fg=blue)}", "foo", "", "bar"),
+            "\u{1b}[34mfoobar\u{1b}[0m",
+        );
+        assert_eq!(
+            stylish::html::format!("{:(fg=blue)}{:(fg=red)}{:(fg=blue)}", "foo", "", "bar"),
+            "<span style=color:blue>foobar</span>",
+        );
+    }
+
+    #[test]
     fn capture_raw_strings_and_idents() {
         let r#type = "apple";
         assert_eq!(

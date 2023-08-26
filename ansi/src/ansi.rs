@@ -48,6 +48,10 @@ impl<T: core::fmt::Write> Ansi<T> {
 
 impl<T: fmt::Write> Write for Ansi<T> {
     fn write_str(&mut self, s: &str, style: Style) -> fmt::Result {
+        if s.is_empty() {
+            return Ok(());
+        }
+
         if self.current != style && style == Style::default() {
             self.inner.write_str("\x1b[0m")?;
         } else {
