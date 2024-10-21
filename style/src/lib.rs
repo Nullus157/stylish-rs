@@ -32,6 +32,22 @@ pub enum Color {
     Cyan,
     /// White
     White,
+    // Bright Black
+    BrightBlack,
+    // Bright Red
+    BrightRed,
+    // Bright Green
+    BrightGreen,
+    // Bright Yellow
+    BrightYellow,
+    // Bright Blue
+    BrightBlue,
+    // Bright Magenta
+    BrightMagenta,
+    // Bright Cyan
+    BrightCyan,
+    // Bright White
+    BrightWhite,
     /// Default color
     Default,
 }
