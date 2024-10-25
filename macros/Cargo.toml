@@ -1,6 +1,6 @@
 [package]
 name = "stylish-macros"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2021"
 repository = "https://github.com/Nullus157/stylish-rs"
 license = "MIT OR Apache-2.0"
@@ -23,7 +23,7 @@ syn.features = ["full", "parsing", "proc-macro", "printing"]
 syn.version = "1.0.102"
 stylish-style.default-features = false
 stylish-style.features = ["alloc"]
-stylish-style.version = "=0.1.0"
+stylish-style.version = "=0.1.1"
 stylish-style.path = "../style"
 unicode-ident.default-features = false
 unicode-ident.version = "1.0.3"
