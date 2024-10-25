@@ -74,6 +74,7 @@ mod tests {
 
     #[test]
     fn large() {
+        #[allow(dead_code)]
         struct Foo([usize; 24]);
 
         impl stylish::Display for Foo {
