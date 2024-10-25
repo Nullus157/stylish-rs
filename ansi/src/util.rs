@@ -11,6 +11,16 @@ pub(crate) fn foreground(color: Color) -> &'static str {
         Color::Cyan => "36",
         Color::White => "37",
         Color::Default => "39",
+
+        Color::BrightBlack => "90",
+        Color::BrightRed => "91",
+        Color::BrightGreen => "92",
+        Color::BrightYellow => "93",
+        Color::BrightBlue => "94",
+        Color::BrightMagenta => "95",
+        Color::BrightCyan => "96",
+        Color::BrightWhite => "97",
+
         _ => "39",
     }
 }
@@ -26,6 +36,16 @@ pub(crate) fn background(color: Color) -> &'static str {
         Color::Cyan => "46",
         Color::White => "47",
         Color::Default => "49",
+
+        Color::BrightBlack => "100",
+        Color::BrightRed => "101",
+        Color::BrightGreen => "102",
+        Color::BrightYellow => "103",
+        Color::BrightBlue => "104",
+        Color::BrightMagenta => "105",
+        Color::BrightCyan => "106",
+        Color::BrightWhite => "107",
+
         _ => "49",
     }
 }
