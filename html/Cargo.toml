@@ -1,6 +1,6 @@
 [package]
 name = "stylish-html"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2021"
 repository = "https://github.com/Nullus157/stylish-rs"
 license = "MIT OR Apache-2.0"
@@ -18,7 +18,7 @@ askama_escape.default-features = false
 askama_escape.version = "0.10.3"
 stylish-core.default-features = false
 stylish-core.path = "../core"
-stylish-core.version = "0.1.0"
+stylish-core.version = "0.1.2"
 
 [dev-dependencies]
 stylish.path = ".."
