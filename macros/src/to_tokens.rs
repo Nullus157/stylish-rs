@@ -142,7 +142,7 @@ impl<'a> ToTokens for Scoped<'a, Sign> {
 impl<'a, 'b: 'a> ToTokens for Scoped<'a, Count<'b>> {
     fn to_tokens(&self, tokens: &mut TokenStream) {
         match self.as_ref() {
-            Count::Parameter(_) => todo!(),
+            Count::Parameter(_value) => todo!("parameter reference counts are not yet supported"),
             Count::Integer(value) => quote!(&#value).to_tokens(tokens),
         }
     }
